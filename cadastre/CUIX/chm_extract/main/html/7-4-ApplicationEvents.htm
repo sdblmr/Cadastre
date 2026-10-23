@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Message Events</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Development Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Message Events</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="dev_body_text">
+    Message events refer to events triggered at the software level, such as keyboard/mouse input, software exit, or system variable changes.
+</p>
+
+<hr algin="left" >
+<p class="define_head_1">Common Message Events</p>
+<p class="define_text_1"></p>
+<table class="table-desc">
+    <TR>
+    <TH>Event</TH>
+    <TH>Function Overview</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">PreTranslateMessage</td>
+        <td class="table-item-odd">Intercepts keyboard and mouse input events</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">SystemVariableChanged</td>
+        <td class="table-item-odd">System variable modification event</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">BeginQuit</td>
+        <td class="table-item-odd">Software exit event; can prevent closing via IsVetoed property</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">BeginDoubleClick</td>
+        <td class="table-item-odd">Double-click event</td>
+    </TR>
+</table>
+
+<hr algin="left" >
+<p class="define_head_1">Adding and Removing Message Events</p>
+<p class="define_head_2">Adding Events</p>
+<pre class="code_sample">
+    static public void AddAppEvents()
+    {
+        Database db = HostApplicationServices.WorkingDatabase;
+        Document doc = Application.DocumentManager.GetDocument(db);
+        Editor ed = doc.Editor;
+
+        try
+        {
+            Application.PreTranslateMessage += Application_PreTranslateMessage;
+            Application.SystemVariableChanged += Application_SystemVariableChanged;
+            Application.BeginQuit += Application_BeginQuit;
+            Application.BeginDoubleClick += Application_BeginDoubleClick;
+        }
+        catch (System.Exception ex)
+        {
+            Application.ShowAlertDialog(ex.ToString());
+        }
+        ed.WriteMessage("\nApplication Events Added!");
+    }
+</pre>
+<p class="define_head_2">Removing Events</p>
+<pre class="code_sample">
+    static public void RemoveAppEvents()
+    {
+        Database db = HostApplicationServices.WorkingDatabase;
+        Document doc = Application.DocumentManager.GetDocument(db);
+        Editor ed = doc.Editor;
+
+        try
+        {
+            Application.PreTranslateMessage -= Application_PreTranslateMessage;
+            Application.SystemVariableChanged -= Application_SystemVariableChanged;
+            Application.BeginQuit -= Application_BeginQuit;
+            Application.BeginDoubleClick -= Application_BeginDoubleClick;
+        }
+        catch (System.Exception ex)
+        {
+            Application.ShowAlertDialog(ex.ToString());
+        }
+        ed.WriteMessage("\nApplication Events Removed!");
+    }
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Defining Event Content</p>
+<p class="define_head_2">Keyboard and Mouse Input Events</p>
+<p class="define_text_2">
+    In this event, PreTranslateMessageEventArgs contains the current mouse/keyboard input state. Use "message" to get the current operation and "wParam" to retrieve the input value.
+</p>
+<pre class="code_sample">
+    const int WM_CHAR = 258;
+    private static void Application_PreTranslateMessage(object sender, PreTranslateMessageEventArgs e)
+    {
+        // Check if it's a lowercase letter input
+        if (e.Message.message == WM_CHAR &&
+            (e.Message.wParam.ToInt32() >= 97 && e.Message.wParam.ToInt32() <= 122))
+        {
+            MSG msg = e.Message;
+            // Convert lowercase to uppercase
+            msg.wParam = (IntPtr)(e.Message.wParam.ToInt32() - 32);
+            e.Message = msg;
+        }
+    }
+</pre>
+<p class="define_head_2">Application Events</p>
+<pre class="code_sample">
+    private static void Application_BeginQuit(object sender, BeginQuitEventArgs e)
+    {
+        var res = System.Windows.Forms.MessageBox.Show("Are your sure to quit?", "Alert", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Warning);
+        if (res == System.Windows.Forms.DialogResult.No)
+        {
+            // Set to true to prevent application exit
+            e.IsVetoed = true;
+        }
+    }
+
+    private static void Application_SystemVariableChanged(object sender, ZwSoft.ZwCAD.ApplicationServices.SystemVariableChangedEventArgs e)
+    {
+        if (e.Changed)
+        {
+            WriteMsg($"\nSystem variable {e.Name} was changed.");
+        }
+    }
+    private static void Application_BeginDoubleClick(object sender, BeginDoubleClickEventArgs e)
+    {
+        WriteMsg($"\nDouble click at {e.Location}");
+    }
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Implementation Code</p>
+<p class="define_text_1">Refer to the .NET sample project code: ZwDotNetGuide/ApplicationEvents</p>
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

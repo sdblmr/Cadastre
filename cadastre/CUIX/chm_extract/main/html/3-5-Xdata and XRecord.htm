@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Usage of Extended Data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+<div class="hear_text">ZWCAD 2026 .NET Developer's Guide</div>
+</div>
+</div>
+</div>
+
+<div class="clr"></div>
+<div class="Tophead"><span class="Tophead_text">Usage of Extended Data</span></div> 
+<div class="clr"></div>
+
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="define_head_1">Basic Concepts</p>
+<p class="define_text_1">ZWCAD allows applications to attach extended data to entities to provide additional information. For example, you can add dimensions and material properties (e.g., length, width, height, material) to a "door frame" entity. This enables targeted operations by identifying such information through extended data.</p>
+<p class="define_text_1">This article explores the application of extended data (XData), extended records (XRecord), and the named object dictionary (NameDict) in ZWCAD development. XData allows users to attach custom data to entities but has limited capacity. XRecord provides larger storage and is often used as an alternative to XData. NameDict, part of the drawing database, stores design parameters unrelated to entities. The article details how to add, view, and delete such data, with source code references for further study.</p>
+
+<hr algin="left" >
+<p class="define_head_1">XData Extended Data</p>
+<p class="define_text_1">Extended data can be attached to any entity and saved with the ZWCAD drawing. ZWCAD manages but does not utilize extended data. While XData is an effective way to attach user data to entities, each entity's extended data cannot exceed 16KB. Note: Extended data can also be added to non-graphical objects like layers and linetypes, as long as the class is derived from DBObject.</p>
+
+<p class="define_text_1">
+From the sample code for adding extended data, the data types for object extended data are represented by DxfCode enums prefixed with "ExtendedData." For example, ExtendedDataRegAppName represents the application name, ExtendedDataAsciiString represents a string, and ExtendedDataLayerName represents a layer. These DxfCode enums correspond to DXF group codes. Below is a list of DxfCode enums and their DXF group code meanings:</p>
+
+<p class="define_text_1">1. 1000 (DxfCode.ExtendedDataASCIIString): ASCII string in extended data, up to 255 bytes.</p>
+<p class="define_text_1">2. 1001 (DxfCode.ExtendedDataRegAppName): Registered application name in extended data, up to 31-byte ASCII string.</p>
+<p class="define_text_1">3. 1002 (DxfCode.ExtendedDataControlString): Control string in extended data.</p>
+<p class="define_text_1">4. 1003 (DxfCode.ExtendedDataLayerName): Layer name in extended data.</p>
+<p class="define_text_1">5. 1004 (DxfCode.ExtendedDataBinaryChunk): Binary data chunk in extended data, up to 127 bytes.</p>
+<p class="define_text_1">6. 1005 (DxfCode.ExtendedDataHandle): Entity handle in extended data, represented as a 16-digit hexadecimal string.</p>
+<p class="define_text_1">7. 1010, 1020, 1030 (DxfCode.ExtendedDataXCoordinate, DxfCode.ExtendedDataYCoordinate, DxfCode.ExtendedDataZCoordinate): Point coordinates in extended data.</p>
+
+<p class="define_text_1">8. 1011 (DxfCode.ExtendedDataWorldXCoordinate): World X-coordinate in extended data, up to 31-byte ASCII string.</p>
+<p class="define_head_2">1. Select Entity to Add XData</p>
+
+<pre class="code_sample">
+[CommandMethod("AddXData")]
+static public void AddXData()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    ZwSoft.ZwCAD.EditorInput.Editor ed = doc.Editor;
+
+    PromptEntityResult result = doc.Editor.GetEntity("\nSelect the entity");
+    if (result.Status != PromptStatus.OK)
+    {
+        return;
+    }
+    Transaction trans = doc.TransactionManager.StartTransaction();
+    using (trans)
+    {
+        Entity entity = (Entity)trans.GetObject(result.ObjectId, OpenMode.ForWrite);
+        RegAppTable regTable = (RegAppTable)trans.GetObject(db.RegAppTableId, OpenMode.ForWrite);
+        String strAppName = "XData";
+        if (!regTable.Has(strAppName))
+        {
+            RegAppTableRecord regAppTableRecord = new RegAppTableRecord();
+            regAppTableRecord.Name = strAppName;
+            regTable.Add(regAppTableRecord);
+            trans.AddNewlyCreatedDBObject(regAppTableRecord, true);
+            if (entity != null)
+            {
+                entity.XData = new ResultBuffer(new TypedValue((int)DxfCode.ExtendedDataRegAppName, strAppName),
+                    new TypedValue((int)DxfCode.ExtendedDataAsciiString, "hello"),
+                    new TypedValue((int)DxfCode.ExtendedDataInteger32, 2),
+                    new TypedValue((int)DxfCode.ExtendedDataReal, 3.14));
+            }
+        }
+        else
+        {
+            ed.WriteMessage("\nExtended data with the same name already exists.");
+        }
+        trans.Commit();
+    }
+}
+</pre>
+<p class="define_head_2">2. Select Entity to Retrieve XData</p>
+<pre class="code_sample">
+[CommandMethod("GetXData")]
+static public void GetXData()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    ZwSoft.ZwCAD.EditorInput.Editor ed = doc.Editor;
+
+    PromptEntityResult result = doc.Editor.GetEntity("\nSelect the entity");
+    if (result.Status != PromptStatus.OK)
+    {
+        return;
+    }
+    Transaction trans = doc.TransactionManager.StartTransaction();
+    using (trans)
+    {
+        Entity entity = (Entity)trans.GetObject(result.ObjectId, OpenMode.ForRead);
+        RegAppTable regTable = (RegAppTable)trans.GetObject(db.RegAppTableId, OpenMode.ForRead);
+        String strAppName = "XData";
+        if (regTable.Has(strAppName))
+        {
+            if (entity != null)
+            {
+                if (entity.XData != null)
+                {
+
+                    ResultBuffer rb = entity.XData;
+                    //Translate the contents of the ResultBuffer into an array of TypedValue and assign it to the variable 'values'.
+                    TypedValue[] values = rb.AsArray();
+                    // Iterate through the data in the XData and print each value in the editor.
+                    foreach (TypedValue value in values)
+                    {
+                        ed.WriteMessage("\nXData value: " + value.Value.ToString());
+                    }
+
+                }
+                else
+                {
+                    ed.WriteMessage("\nThe entity has no extended data.");
+                }
+
+            }
+        }
+        else
+        {
+            ed.WriteMessage("\nThe extended data with this name does not exist.");
+        }
+        trans.Commit();
+    }
+}
+</pre>
+<p class="define_head_1">Execution Results:</p>
+<p class="define_text_1">Draw an entity in model space and execute AddXData. After selecting the entity and executing GetXdata, the command-line output is:</p>
+<p class="define_text_1">XData value: XData<br>
+  XData value: hello<br>
+  XData value: 2<br>
+  XData value: 3.14.<br>
+</p>
+
+<p class="define_head_2">3. Modify XData for Selected Entities</p>
+<pre class="code_sample">
+[CommandMethod("ModXData")]
+static public void ModXData()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    ZwSoft.ZwCAD.EditorInput.Editor ed = doc.Editor;
+
+    PromptEntityResult result = doc.Editor.GetEntity("\nSelect the entity");
+    if (result.Status != PromptStatus.OK)
+    {
+        return;
+    }
+    Transaction trans = doc.TransactionManager.StartTransaction();
+    using (trans)
+    {
+        Entity entity = (Entity)trans.GetObject(result.ObjectId, OpenMode.ForWrite);
+        RegAppTable regTable = (RegAppTable)trans.GetObject(db.RegAppTableId, OpenMode.ForWrite);
+        String strAppName = "XData";
+        if (regTable.Has(strAppName))
+        {
+            if (entity != null)
+            {
+                if (entity.XData != null)
+                {
+                    entity.XData = new ResultBuffer(new TypedValue((int)DxfCode.ExtendedDataRegAppName, strAppName),
+                        new TypedValue((int)DxfCode.ExtendedDataAsciiString, "Mod"),
+                        new TypedValue((int)DxfCode.ExtendedDataInteger32, 1),
+                        new TypedValue((int)DxfCode.ExtendedDataReal, 6.28));
+                }
+                else
+                {
+                    ed.WriteMessage("\nThe entity has no extended data.");
+                }
+
+            }
+        }
+        else
+        {
+            ed.WriteMessage("\nThe extended data with this name does not exist.");
+        }
+        trans.Commit();
+    }
+}
+</pre>
+<p class="define_head_1">Execution Results:</p>
+<p class="define_text_1">Execute ModXData and select the entity from the previous step. Then execute GetXdata, and the command-line output becomes:<br>
+  XData value: XData<br>
+  XData value: Mod<br>
+  XData value: 1<br>
+  XData value: 6.28.<br>
+</p>
+
+<p class="define_head_2">4. Delete XData for Selected Entities</p>
+<pre class="code_sample">
+[CommandMethod("DelXData")]
+static public void DelXData()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    ZwSoft.ZwCAD.EditorInput.Editor ed = doc.Editor;
+
+    PromptEntityResult result = doc.Editor.GetEntity("\nSelect the entity");
+    if (result.Status != PromptStatus.OK)
+    {
+        return;
+    }
+    Transaction trans = doc.TransactionManager.StartTransaction();
+    using (trans)
+    {
+        Entity entity = (Entity)trans.GetObject(result.ObjectId, OpenMode.ForWrite);
+        RegAppTable regTable = (RegAppTable)trans.GetObject(db.RegAppTableId, OpenMode.ForWrite);
+        String strAppName = "XData";
+        if (regTable.Has(strAppName))
+        {
+            if (entity != null && entity.XData != null)
+            {
+                entity.XData = new ResultBuffer(new TypedValue((int)DxfCode.ExtendedDataRegAppName, "XData"));
+            }
+            else
+            {
+                ed.WriteMessage("\nThe entity has no extended data.");
+            }
+        }
+        else
+        {
+            ed.WriteMessage("\nThe extended data with this name does not exist.");
+        }
+        trans.Commit();
+    }
+}
+</pre>
+<p class="define_head_1">Execution Results:</p>
+<p class="define_text_1">Execute DelXData and select the entity from the previous step. Then execute GetXdata, and the command-line outputs:<br>
+The entity has no extended data.
+</p>
+<hr align="left">
+<p class="define_head_1">XRecord Extension Dictionary</p>
+
+<p class="define_text_1">
+Similar to the role of Extended Data, but dictionaries provide a better mechanism for storing external data. Compared to Extended Data:
+</p>
+<p class="define_text_1">Each object's Extended Data cannot exceed 16KB, while the Extension Dictionary has no such limitation.</p>
+<p class="define_text_1">Extended Data can only store limited types of data, while the Extension Dictionary imposes no such restrictions.</p>
+
+<p class="define_text_1">The Extension Dictionary is a dictionary associated with a specific entity object. Each object can have only one extension dictionary, which can store information related to the object. This information can be XRecord objects or other types of objects. Steps to add an XRecord to the Extension Dictionary:</p>
+<p class="define_text_1">(1) Create an extension dictionary for the entity. By default, entities do not have an extension dictionary. Use the entity's CreateExtensionDictionary function to create one.</p>
+<p class="define_text_1">(2) Use the entity's ExtensionDictionary property to access its extension dictionary.</p>
+<p class="define_text_1">(3) Create an XRecord using the parameterless constructor of the XRecord class.</p>
+<p class="define_text_1">(4) Add data to the new XRecord. This is done by assigning a value to the Data property of the XRecord class, which is a ResultBuffer object (for simplicity, the example uses a TypedValueList class instead of ResultBuffer).</p>
+<p class="define_text_1">(5) Add the XRecord to the entity's extension dictionary using the SetAt function of the DBDictionary class.</p>
+<p class="define_text_1">To access the XRecord stored in the extension dictionary, use the entity's ExtensionDictionary property to retrieve the dictionary, then call the GetAt function to obtain the XRecord.</p>
+<p class="define_text_1">Storing and retrieving data in an XRecord is similar to Extended Data, but XRecords use standard DXF group codes (represented by the DxfCode enumeration values), which differs from Extended Data. For reference on ZWCAD's standard group codes, consult the relevant sections of the DXF documentation, as shown below:</p>
+<p class="define_text_2">1. 0 (DxfCode.Start): Object type (string). Generally, this is the .NET type name, e.g., "Line," "Arc," etc. Note: Special cases include Polyline (use "LWPOLYLINE") and Block Reference ("BlockReference" uses "INSERT").</p>
+<p class="define_text_2">2. 1(DxfCode.Text): Primary text value of the entity (string), e.g., the string content of text or attributes.</p>
+<p class="define_text_2">3. 2(DxfCode.BlockName): Object name (string), e.g., attribute tags, block names, etc.</p>
+<p class="define_text_2">4. 8(DxfCode.LayerName): Layer name (string).</p>
+<p class="define_text_2">5. 10(DxfCode.XCoordinate): Primary point (start point of a line or text, center point of a circle, etc.), represented as a 3D point using an array of three real numbers.</p>
+<p class="define_text_2">6. 60(DxfCode.Visiblility): Object visibility (integer), 0 for visible, 1 for invisible.</p>
+<p class="define_text_2">7. 62(DxfCode.Color): Color number (integer), ranging from 0 to 256. 0 indicates ByBlock, 256 indicates ByLayer.</p>
+<p class="define_head_2">1. Select Entity to Add XRecord</p>
+
+<pre class="code_sample">
+[CommandMethod("AddXRecord")]
+static public void AddXRecord()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptEntityResult result = ed.GetEntity("\nSelect the entity");
+    if (result.Status != PromptStatus.OK)
+    {
+        return;
+    }
+    Transaction trans = doc.TransactionManager.StartTransaction();
+    using (trans)
+    {
+        Entity entity = (Entity)trans.GetObject(result.ObjectId, OpenMode.ForWrite);
+        if (entity.ExtensionDictionary == ObjectId.Null)
+        {
+            entity.CreateExtensionDictionary();
+        }
+        ObjectId objId = entity.ExtensionDictionary;
+        DBDictionary dict = (DBDictionary)trans.GetObject(objId, OpenMode.ForWrite);
+        if (!dict.Contains("XRecord"))
+        {
+            Xrecord xrecord = new Xrecord();
+            ResultBuffer rb = new ResultBuffer(new TypedValue((int)DxfCode.Text, "hello"),
+                new TypedValue((int)DxfCode.Int32, 2),
+                new TypedValue((int)DxfCode.Real, 3.14));
+            xrecord.Data = rb;
+            dict.SetAt("XRecord", xrecord);
+            trans.AddNewlyCreatedDBObject(xrecord, true);
+        }
+        else
+        {
+            ed.WriteMessage("\nAn extension dictionary with the same name already exists for this entity.");
+        }
+
+        trans.Commit();
+    }
+}
+</pre>
+
+<p class="define_head_2">2. Select Entity to Query XRecord</p>
+<pre class="code_sample">
+[CommandMethod("GetXRecord")]
+static public void GetXRecord()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptEntityResult result = ed.GetEntity("\nSelect the entity");
+    if (result.Status != PromptStatus.OK)
+    {
+        return;
+    }
+    Transaction trans = doc.TransactionManager.StartTransaction();
+    using (trans)
+    {
+        Entity entity = (Entity)trans.GetObject(result.ObjectId, OpenMode.ForRead);
+        ObjectId objId = entity.ExtensionDictionary;
+        if (objId != ObjectId.Null)
+        {
+            DBDictionary dict = (DBDictionary)trans.GetObject(objId, OpenMode.ForRead);
+            if (dict.Contains("XRecord"))
+            {
+                ObjectId XrecId = dict.GetAt("XRecord");
+                Xrecord xrecord = (Xrecord)trans.GetObject(XrecId, OpenMode.ForRead);
+                TypedValue[] XrecData = xrecord.Data.AsArray();
+                foreach (TypedValue value in XrecData)
+                {
+                    ed.WriteMessage("\nXData value: " + value.Value.ToString());
+                }
+            }
+        }
+        else
+        {
+            ed.WriteMessage("\nThe entity has no extension dictionary called \"XRecord\".");
+        }
+        trans.Commit();
+    }
+}
+</pre>
+
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Execute AddXRecord to select the previous entity, then execute GetXRecord. Command line output:<br>
+  Xrecord value: hello<br>
+  Xrecord value: 2<br>
+  Xrecord value: 3.14<br>
+</p>
+
+<p class="define_head_2">3. Select Entity to Modify XRecord</p>
+
+<pre class="code_sample">
+[CommandMethod("ModXRecord")]
+static public void ModXRecord()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptEntityResult result = ed.GetEntity("\nSelect the entity");
+    if (result.Status != PromptStatus.OK)
+    {
+        return;
+    }
+    Transaction trans = doc.TransactionManager.StartTransaction();
+    using (trans)
+    {
+        Entity entity = (Entity)trans.GetObject(result.ObjectId, OpenMode.ForWrite);
+        ObjectId objId = entity.ExtensionDictionary;
+        if (objId != ObjectId.Null)
+        {
+            DBDictionary dict = (DBDictionary)trans.GetObject(objId, OpenMode.ForWrite);
+            if (dict.Contains("XRecord"))
+            {
+                ObjectId XrecId = dict.GetAt("XRecord");
+                Xrecord xrecord = (Xrecord)trans.GetObject(XrecId, OpenMode.ForWrite);
+                if (xrecord == null)
+                {
+                    return;
+                }
+                ResultBuffer rb = new ResultBuffer(new TypedValue((int)DxfCode.Text, "MOD"),
+                    new TypedValue((int)DxfCode.Int32, 1),
+                    new TypedValue((int)DxfCode.Real, 6.28));
+                xrecord.Data = rb;
+            }
+        }
+        else
+        {
+            ed.WriteMessage("\nThe entity has no extension dictionary called \"XRecord\".");
+        }
+        trans.Commit();
+    }
+}
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Execute ModXRecord to select the previous entity, then execute ModXRecord. Command line output:<br>
+  XData value: Mod<br>
+  XData value: 1<br>
+  XData value: 6.28?<br>
+</p>
+<p class="define_head_2">4. Select Entity to Delete XRecord</p>
+<pre class="code_sample">
+[CommandMethod("DelXRecord")]
+static public void DelXRecord()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptEntityResult result = ed.GetEntity("\nSelect the entity");
+    if (result.Status != PromptStatus.OK)
+    {
+        return;
+    }
+    Transaction trans = doc.TransactionManager.StartTransaction();
+    using (trans)
+    {
+        Entity entity = (Entity)trans.GetObject(result.ObjectId, OpenMode.ForWrite);
+        ObjectId objId = entity.ExtensionDictionary;
+        if (objId != ObjectId.Null)
+        {
+            DBDictionary dict = (DBDictionary)trans.GetObject(objId, OpenMode.ForWrite);
+            if (dict.Contains("XRecord"))
+            {
+                dict.Remove("XRecord");
+            }
+            entity.ReleaseExtensionDictionary();
+        }
+        else
+        {
+            ed.WriteMessage("\nThe entity has no extension dictionary.");
+        }
+        trans.Commit();
+    }
+}
+</pre>
+<p class="define_head_1">Execution Results:</p>
+<p class="define_text_1">After selecting the entity from the previous step using DelXRecord and executing GetXRecord, the command line outputs:<br>
+<p class="define_text_1">The entity has no extension dictionary called "XRecord".
+<p class="define_head_1">Named Dictionary</p>
+
+<p class="define_text_1">The Named Objects Dictionary is used to store data unrelated to entities. ZWCAD itself uses the Named Objects Dictionary to preserve information such as group dictionaries (storing grouping information) and multiline style dictionaries.</p>
+<p class="define_text_1">The basic steps to add a new dictionary entry to the Named Objects Dictionary are as follows:<br>
+<p class="define_text_1">(1) Use the NamedObjectsDictionaryId property of the Database class to obtain the Id of the Named Objects Dictionary, then use the GetObject function of the transaction to retrieve the Named Objects Dictionary.</p>
+<p class="define_text_1">(2) Create a new dictionary entry using the parameterless constructor of the DBDictionary class.</p>
+<p class="define_text_1">(3) Add contained data to the new dictionary entry, which can be extension records.</p>
+<p class="define_text_1">(4) Use the SetAt function of the DBDictionary class in the Named Objects Dictionary to add the newly created dictionary entry. To access the contents stored in the Named Objects Dictionary, combine the NamedObjectsDictionaryId property of the entity with the GetObject function of the transaction to retrieve the Named Objects Dictionary, then call the GetAt function of the dictionary to obtain its contents.</p>
+
+<p class="define_head_2">1. Add NameDict</p>
+<pre class="code_sample">
+[CommandMethod("AddDict")]
+public static void AddDict()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    using (Transaction trans = db.TransactionManager.StartTransaction())
+    {
+        // Add a named object dictionary for the drawing: Manager
+
+        ObjectId id = ObjectId.Null; // Store the Id of the added named dictionary item
+                                     // Open the named objects dictionary of the database
+        DBDictionary dicts = (DBDictionary)db.NamedObjectsDictionaryId.GetObject(OpenMode.ForRead);
+        DBDictionary newdict;
+        if (!dicts.Contains("Manager")) // If the dictionary item with the specified keyword does not exist
+        {
+            newdict = new DBDictionary(); // Create a new dictionary item
+            dicts.UpgradeOpen(); // Switch the named objects dictionary to write mode
+            id = dicts.SetAt("Manager", newdict); // Set the search keyword for the new dictionary item
+            dicts.DowngradeOpen(); // For safety, switch the named objects dictionary back to read mode
+                                   // Add the new dictionary item to the transaction
+            db.TransactionManager.AddNewlyCreatedDBObject(newdict, true);
+        }
+        else
+        {
+            newdict = (DBDictionary)trans.GetObject(dicts.GetAt("Manager"), OpenMode.ForWrite);
+        }
+
+        if (!newdict.Contains("AnnualSalary"))
+        {
+            ResultBuffer rb = new ResultBuffer(
+            new TypedValue((int)DxfCode.Real, 500000.0));
+
+            Xrecord xrec = new Xrecord(); // Create a new extended record for the object
+            xrec.Data = rb; // Specify the content of the extended record
+
+            // Add the new extended record to the extension dictionary and specify its search keyword
+            ObjectId idXrec = newdict.SetAt("AnnualSalary", xrec);
+            db.TransactionManager.AddNewlyCreatedDBObject(xrec, true);
+        }
+
+        trans.Commit();
+    }
+}</pre>    
+<p class="define_head_2">2. Retrieve NameDict Data</p>
+<pre class="code_sample">
+[CommandMethod("GetDictAndXRecord")]
+static public void GetDictAndXRecord()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+    Transaction trans = doc.TransactionManager.StartTransaction();
+    using (trans)
+    {
+        // Get the named objects dictionary
+        DBDictionary NamedObjectsDict = (DBDictionary)trans.GetObject(db.NamedObjectsDictionaryId, OpenMode.ForRead);
+        if (NamedObjectsDict.Contains("Manager"))
+        {
+            // Get the dictionary ID for "Manager"
+            ObjectId DictId = NamedObjectsDict.GetAt("Manager");
+
+            // Open the "Manager" dictionary
+            DBDictionary Dict = (DBDictionary)trans.GetObject(DictId, OpenMode.ForRead);
+
+            if (Dict.Contains("AnnualSalary"))
+            {
+                // Get the XRecord ID for "AnnualSalary"
+                ObjectId XrecId = Dict.GetAt("AnnualSalary");
+                Xrecord xrecord = (Xrecord)trans.GetObject(XrecId, OpenMode.ForRead);
+
+                // Retrieve and display the XRecord data
+                TypedValue[] XrecData = xrecord.Data.AsArray();
+                foreach (TypedValue value in XrecData)
+                {
+                    ed.WriteMessage("\nManager AnnualSalary: " + value.Value.ToString());
+                }
+            }
+        }
+        trans.Commit();
+    }
+}
+</pre>
+<p class="define_head_1">Execution Results:</p>
+<p class="define_text_1">After executing AddDict and then GetDictAndXRecord, the command line outputs:<br>
+<p class="define_text_1">Manager AnnualSalary: 500000.    
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

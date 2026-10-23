@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Plotting and Printing</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Developer Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Plotting and Printing</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+    <div class="content_resize">
+    <div class="article">
+    <div class="clr"></div>
+
+<p class="define_head_1">Description</p>
+<p class="dev_body_text">In ZWCAD applications, designers often need to plot or print CAD drawings. Using the PLOT command for printing can be inefficient. ZWCAD provides rich API interfaces for printing, allowing customization to improve efficiency. This chapter introduces a complete printing example to demonstrate the usage of plotting APIs.</p>
+<hr align="left">
+<p class="define_head_1">Key Class Introductions:</p>
+<p class="define_text_1">Before formal plotting, you must configure page settings such as printing devices, paper size, scale, and plot area. In ZWCAD, these settings are called page setups. This example simulates ZWCAD's "Page Setup Dialog" to complete the printing configuration.</p>
+<p class="define_head_1">PlotSettings Class:</p>
+<p class="define_text_1">
+In .NET, plotting configurations are represented by the PlotSettings class. The Layout class is derived from PlotSettings. The difference between Layout and PlotSettings is that a Layout object is associated with a BlockTableRecord containing geometric data to be plotted, while PlotSettings is a standalone collection of configurations applicable to any drawing.</p>
+
+<p class="define_text_1">Common properties of the PlotSettings class are listed below:</p>
+
+<table class="table-desc">
+    <TR>
+    <TH>Enum Value</TH>
+    <TH>Type</TH>
+	<TH>Plot Setting Options</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">CanonicalMediaName</td>
+        <td class="table-item-odd">string</td>
+        <td class="table-item-odd">Standard paper size</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">CurrentStyleSheet</td>
+        <td class="table-item-odd">string</td>
+        <td class="table-item-odd">Plot style table</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">CustomPrintScale</td>
+        <td class="table-item-odd">CustomScale</td>
+        <td class="table-item-odd">Custom print scale (effective only when UseStandardScale is false)</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">ModelType</td>
+        <td class="table-item-odd">bool</td>
+        <td class="table-item-odd">Whether in model space</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">PlotCentered</td>
+        <td class="table-item-odd">bool</td>
+        <td class="table-item-odd">Whether to center the plot</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">PlotConfigurationName</td>
+        <td class="table-item-odd">string</td>
+        <td class="table-item-odd">Plot device name</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">PlotOrigin</td>
+        <td class="table-item-odd">Point2d</td>
+        <td class="table-item-odd">Plot origin (offset from the media edge of the paper boundary)</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">PlotPaperUnits</td>
+        <td class="table-item-odd">PlotPaperUnits</td>
+        <td class="table-item-odd">Plot units (Inches, Millimeters, Pixels)</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">PlotRotation</td>
+        <td class="table-item-odd">PlotRotation</td>
+        <td class="table-item-odd">Orientation (Degrees000=portrait, Degrees090=landscape, Degrees180=portrait reversed, Degrees270=landscape reversed)</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">PlotType</td>
+        <td class="table-item-odd">PlotType</td>
+        <td class="table-item-odd">Plot type (Display=current model space content; Extents=content within boundaries; Limits=content within limits; View=named view; Window=area specified by PlotWindowArea; Layout=content within paper boundary. Not available in model space)</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">PlotWindowArea</td>
+        <td class="table-item-odd">Extents2d</td>
+        <td class="table-item-odd">Window area to plot</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">StdScaleType</td>
+        <td class="table-item-odd">StdScaleType</td>
+        <td class="table-item-odd">Standard scale type (effective only when UseStandardScale is true)</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">UseStandardScale</td>
+        <td class="table-item-odd">bool</td>
+        <td class="table-item-odd">Whether to use standard scale</td>
+    </TR>
+</TABLE>
+
+<p class="define_text_1">The properties of the PlotSettings class listed above are read-only. To modify them, you must use the PlotSettingsValidator class. Its functions start with "Set" followed by the property name. The first parameter is the PlotSettings object, and the second is the value. For example, the function to set paper size is:</p>
+<pre class="code_sample">
+public void SetCanonicalMediaName(PlotSettings plotSet, string mediaName);
+</pre>
+
+<p class="define_head_1">Notes:</p>
+<p class="define_text_1">1. The filename extension for plot configurations in ZWCAD is ****.pc5.</p>
+<p class="define_text_1">2. The bool bPlotToFile parameter in BeginDocument controls whether to plot to a file. If true, it generates a file (e.g., PDF) using a corresponding .pc5 configuration like "dwg to pdf.pc5". If false, it uses a physical printer configuration.</p>
+<p class="define_text_1">3.ppd.IsVisible = true; controls the display of the print progress dialog. Setting it to false enables "background printing".</p>
+<p class="define_text_1">&nbsp;</p>
+<p class="define_text_1">Below is a complete printing example:</p>
+
+<pre class="code_sample">
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZwSoft.ZwCAD.Runtime;
+using ZwSoft.ZwCAD.ApplicationServices;
+using ZwSoft.ZwCAD.Geometry;
+using ZwSoft.ZwCAD.DatabaseServices;
+using ZwSoft.ZwCAD.EditorInput;
+using ZwSoft.ZwCAD.PlottingServices;
+using System.Collections.Specialized;
+[assembly: CommandClass(typeof(PlotSample.Commands))]
+
+namespace PlotSample
+{
+    class Commands
+    {
+        [CommandMethod("PdfPlot")]
+        static public void PlotDocument()
+        {
+            try
+            {   //Send the zoom command to center the area that needs to be printed.
+                var document = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                document.SendStringToExecute("_zoom a ", false, false, false);
+
+                Document doc = Application.DocumentManager.MdiActiveDocument;
+                Database db = doc.Database;
+
+                Transaction tr = db.TransactionManager.StartTransaction();
+                using (tr)
+                {
+                    // We'll be plotting the current layout
+                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForRead);
+                    Layout lo = (Layout)tr.GetObject(btr.LayoutId, OpenMode.ForRead);
+
+                    // We need a PlotInfo object linked to the layout
+                    PlotInfo pi = new PlotInfo();
+                    pi.Layout = btr.LayoutId;
+
+                    // We need a PlotSettings object based on the layout settings which we then customize
+                    PlotSettings ps = new PlotSettings(lo.ModelType);
+                    ps.CopyFrom(lo);
+
+                    // The PlotSettingsValidator helps create a valid PlotSettings object
+                    PlotSettingsValidator psv = PlotSettingsValidator.Current;
+
+                    // We'll plot the "extents", centered and scaled to fit
+                    psv.SetPlotType(ps, ZwSoft.ZwCAD.DatabaseServices.PlotType.Extents);
+
+                    // To print specific coordinates using the "Window" option, you need to restore the following two lines of code and comment out the line psv.SetPlotType(ps, ZwSoft.ZwCAD.DatabaseServices.PlotType.Extents);:
+                    //psv.SetPlotType(ps, ZwSoft.ZwCAD.DatabaseServices.PlotType.Window);
+                    //psv.SetPlotWindowArea(ps,new Extents2d(new Point2d(0.0, 0.0),new Point2d(9.0, 12.0)));
+
+                    //Set "StdScaleType.ScaleToFit" to center the printing area on the print canvas.
+                    psv.SetUseStandardScale(ps, true);
+                    psv.SetStdScaleType(ps, StdScaleType.ScaleToFit);
+
+                    //Set "PlotRotation.Degrees090" to rotate by 90 degrees.
+                    psv.SetPlotCentered(ps, true);
+                    psv.SetPlotRotation(ps, PlotRotation.Degrees090);
+
+                    // We'll use the DWG to PDF.pc5, as for today we're just plotting to file
+                    try
+                    {
+                        psv.SetCurrentStyleSheet(ps, "monochrome.ctb");
+                        psv.SetPlotConfigurationName(ps, "DWG to PDF.pc5", "ISO_A4_(210.00_x_297.00_MM)");
+
+                    }
+                    catch (System.Exception)
+                    {
+                        //If the settings for "DWG to PDF.pc5" and "ISO_A4_(210.00_x_297.00_MM)" fail, the default printer device and paper size will be set to prevent the program from crashing.
+                        StringCollection styleSheetList = psv.GetPlotStyleSheetList();
+                        psv.SetCurrentStyleSheet(ps, styleSheetList[0]);
+
+                        StringCollection devlist = psv.GetPlotDeviceList();
+                        psv.RefreshLists(ps);
+                        StringCollection medlist = psv.GetCanonicalMediaNameList(ps);
+                        psv.SetPlotConfigurationName(ps, devlist[1], medlist[0]);
+
+                    }
+
+                    // We need to link the PlotInfo to the PlotSettings and then validate it
+                    pi.OverrideSettings = ps;
+
+                    PlotInfoValidator piv = new PlotInfoValidator();
+                    piv.MediaMatchingPolicy = MatchingPolicy.MatchEnabled;
+                    piv.Validate(pi);
+
+
+
+                    // Check a plot is already in progress
+                    if (PlotFactory.ProcessPlotState == ProcessPlotState.NotPlotting)
+                    {
+                        // A PlotEngine does the actual plotting(can also create one for Preview)
+                        PlotEngine pe = PlotFactory.CreatePublishEngine();
+
+                        using (pe)
+                        {
+                            // Create a Progress Dialog to provide info and allow the user to cancel.
+                            PlotProgressDialog ppd = new PlotProgressDialog(false, 1, true);
+
+                            using (ppd)
+                            {
+								ppd.set_PlotMsgString(PlotMessageIndex.DialogTitle, "plot Progress");
+                                ppd.set_PlotMsgString(PlotMessageIndex.CancelJobButtonMessage, "Cancel");
+                                ppd.set_PlotMsgString(PlotMessageIndex.CancelSheetButtonMessage, "Cancel");
+                                ppd.set_PlotMsgString(PlotMessageIndex.SheetSetProgressCaption, "plot Progress");
+                                ppd.set_PlotMsgString(PlotMessageIndex.SheetProgressCaption, "plot Progress");
+
+                                ppd.LowerPlotProgressRange = 0;
+                                ppd.UpperPlotProgressRange = 100;
+                                ppd.PlotProgressPos = 0;
+
+                                // Let's start the plot
+                                ppd.OnBeginPlot();
+                                ppd.IsVisible = true;
+                                pe.BeginPlot(ppd, null);
+
+                                // We'll be plotting a single document
+                                pe.BeginDocument(pi, doc.Name, null, 1, true, "C:\\ZWCAD.pdf");
+
+                                // Which contains a single sheet
+                                ppd.OnBeginSheet();
+                                ppd.LowerSheetProgressRange = 0;
+                                ppd.UpperSheetProgressRange = 100;
+                                ppd.SheetProgressPos = 0;
+
+                                PlotPageInfo ppi = new PlotPageInfo();
+                                pe.BeginPage(ppi, pi, true, null);
+                                pe.BeginGenerateGraphics(null);
+                                pe.EndGenerateGraphics(null);
+
+                                // Finish the sheet
+
+                                pe.EndPage(null);
+                                ppd.SheetProgressPos = 100;
+                                ppd.OnEndSheet();
+
+                                // Finish the document
+
+                                pe.EndDocument(null);
+
+                                // And finish the plot
+
+                                ppd.PlotProgressPos = 100;
+                                ppd.OnEndPlot();
+                                pe.EndPlot(null);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //If a plotting process is already in progress, add handling code.
+
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw new System.Exception(ex.Message);
+            }
+        }
+     }
+  }
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Execution Effect:</p>
+<p class="define_text_1">Create a new dwg drawing, draw arbitrary entities in the model space, execute the PdfPlot command to pop up the print progress dialog box. After the dialog box closes, the printed file "C:\\ZWCAD.pdf" will be generated.</p>
+
+
+    </div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

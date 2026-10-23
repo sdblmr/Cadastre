@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Auto Load dll</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+
+
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Developer's Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Auto Loading dll Files</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+    <div class="content_resize">
+    <div class="article">
+    <div class="clr"></div>
+
+
+<p class="define_head_1">Description</p>
+<p class="dev_body_text">After developing a dll plugin, the manual approach is to load it using the NETLOAD command. However, when releasing a product, we cannot expect users to manually execute the command every time. We need an automatic method to load the dll so that the plugin is automatically attached when ZWCAD starts, enabling its features. Alternatively, this automatic loading mechanism can be packaged into a professional product installer (exe).</p>
+<hr algin="left" >
+<p class="define_head_1">Registry Loading</p>
+<p class="define_text_1">Registry loading enables automatic loading of secondary development programs. It can also be implemented via third-party installer scripts that modify the registry. The method involves registering the secondary development program under specific registry entries. The relevant registry paths are:</p>
+<pre class="code_sample">HKEY_LOCAL_MACHINE\SOFTWARE\ZWSOFT\ZWCAD\2026\zh-CN\Applications
+HKEY_CURRENT_USER\Software\ZWSOFT\ZWCAD\2026\zh-CN\Applications</pre>
+<p class="define_text_1">The difference between these two entries is that HKEY_LOCAL_MACHINE applies to all users, while HKEY_CURRENT_USER applies only to the current user.</p>
+<p class="define_text_1">You can write the registration information into a .reg file and import it into the registry to enable on-demand loading. The following .reg file example demonstrates the on-demand loading of the ZWTest.dll program:</p>
+<pre class="code_sample"><i>Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ZWSOFT\ZWCAD\2026\zh-CN\Applications\ZWTest]
+"LOADER"="ZWTest.dll"
+"LOADCTRLS"=dword:00000002
+"DESCRIPTION"=""
+"Managed"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ZWSOFT\ZWCAD\2026\zh-CN\Applications\ZWTest\Commands]
+"ZWTest"="ZWTest"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ZWSOFT\ZWCAD\2026\zh-CN\Applications\ZWTest\Groups]
+"NET_ZWTest_COMMANDS"="NET_ZWTest_COMMANDS"
+</i>
+</pre>
+<p class="define_text_1">This registers the command <i>ZWTest</i> under the command group <i>NET_ZWTest_COMMANDS</i>. The loading method is set to 00000002, which loads the plugin when ZWCAD 2026 starts. To enable on-demand loading (i.e., loading only when the registered command is executed), set the loading method to 00000008.</p>
+<ul class="command_ul">
+<li><p><b>LOADER</b> specifies the program file to load. It can include a path or omit it. If omitted, the file is searched according to the file search order.</p></li>
+<li><p><b>LOADCTRLS</b> defines the loading method.</p></li>
+<li><p><b>DESCRIPTION</b> provides descriptive text for the program.</p></li>
+<li><p><b>Managed</b> set to 00000001 indicates a managed program.</p></li>
+<li><p><b>Commands</b> lists the commands registered by the program.</p></li>
+<li><p><b>Groups</b> lists the command group names registered by the program.</p></li>
+
+</ul>
+<p class="define_head_1">Note</p>
+<p class="define_text_1">In the registry paths above, "zh-CN" represents the Chinese version. For the English version, use "en-US". For the Mechanical version, the registry path is: HKEY_LOCAL_MACHINE\SOFTWARE\ZWSOFT\ZWCADM\2026:</p>
+<hr algin="left" >
+<p class="define_head_1">ZWCAD2026.lsp Auto-Loading</p>
+<p class="define_text_1">This file is automatically loaded and executed when ZWCAD 2026 starts. You can add LISP code to this file to load secondary development programs. For example, to auto-load ZWTest.dll, add the following code:</p>
+<pre class="code_sample">(command "netload" "ZWTest.dll")</pre>
+<p class="define_head_2">Notes</p>
+<ul class="command_ul">
+<li><p>The default location of ZWCAD2026.lsp is in the installation directory. For the Mechanical version, it is ZWCADM2026.lsp:</p>
+  <p class="prompt">Platform version: C:\Program Files\ZWSOFT\ZWCAD 2026\Support</p>
+    <p class="prompt">Mechanical version: C:\Program Files\ZWSOFT\ZWCAD Mechanical 2026 Chs\Support</p>
+  </li>
+<li><p>When specifying the file, you can use a full path or just the filename. If only the filename is provided, ZWCAD 2026 searches in the following order: current working directory, support file search paths defined in options, and finally the ZWCAD.EXE directory. This search order applies to all files without specified paths in ZWCAD 2026.</p>
+</li> 
+</ul>
+    </div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cloning Database Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+<div class="hear_text">ZWCAD 2026 .NET Developer's Guide</div>
+</div>
+</div>
+</div>
+
+<div class="clr"></div>
+<div class="Tophead"><span class="Tophead_text">Cloning Database Objects</span></div> 
+<div class="clr"></div>
+
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="define_head_1">Cloning Database Objects</p>
+<p class="define_text_1">This chapter explains how to clone database objects. Cloning operations are divided into DeepClone and WblockClone, corresponding to cloning within the same database and cloning between different databases, respectively.</p>
+<p class="define_head_2">The table below lists the interfaces required for cloning database objects:</p>
+<table class="table-desc">
+    <TR>
+    <TH>Interface</TH>
+    <TH>Purpose</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#sample1">Database.DeepCloneObjects</a></td>
+        <td class="table-item-odd">Clone objects within the same database</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#sample2">Database.Wblock</a></td>
+        <td class="table-item-odd">Clone objects to a new database</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#sample3">Database.WblockCloneObjects</a></td>
+        <td class="table-item-odd">Clone objects to another database</td>
+    </TR>
+</TABLE>
+
+<p class="define_head_1">Code Samples</p>
+<p class="define_head_2" id="sample1">1. Cloning Objects Within the Same Database</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("DeepCloneDiffOwnerObjects")]
+    public void DeepCloneDiffOwnerObjects()
+    {
+        // Get the current working database and document objects
+        Database db = HostApplicationServices.WorkingDatabase;
+        Document doc = Application.DocumentManager.GetDocument(db);
+        ZwSoft.ZwCAD.EditorInput.Editor ed = doc.Editor;
+    
+        // First selection: objects to clone into model space
+        PromptSelectionOptions selOptsMS = new PromptSelectionOptions();
+        selOptsMS.MessageForAdding = "Select entities to clone(clone to the model space)";
+        PromptSelectionResult selResMS = ed.GetSelection(selOptsMS);
+        if (selResMS.Status != PromptStatus.OK)
+            return;
+        SelectionSet sSetMS = selResMS.Value;
+        ObjectId[] objIdsMS = sSetMS.GetObjectIds();  // Get the selected object ID array
+    
+        // Second selection: objects to clone into paper space
+        PromptSelectionOptions selOptsPS = new PromptSelectionOptions();
+        selOptsPS.MessageForAdding = "Select entities to clone(clone to the paper space)";
+        PromptSelectionResult selResPS = ed.GetSelection(selOptsPS);
+        if (selResPS.Status != PromptStatus.OK)
+            return;
+        SelectionSet sSetPS = selResPS.Value;
+        ObjectId[] objIdsPS = sSetPS.GetObjectIds();
+    
+        // Process the cloned object collection for model space
+        ObjectId ownerId = ObjectId.Null;
+        ObjectIdCollection objectIdCollectionMS = new ObjectIdCollection();
+        using (Transaction zcTrans = doc.TransactionManager.StartTransaction())  // Start transaction
+        {
+            // Iterate through selected model space objects
+            for (int i = 0; i < objIdsMS.Length; i++)
+            {
+                DBObject obj = zcTrans.GetObject(objIdsMS[i], OpenMode.ForRead);
+                // Collect objects belonging to the same owner
+                if (obj.OwnerId == ownerId)
+                {
+                    objectIdCollectionMS.Add(objIdsMS[i]);
+                }
+                else if (i == 0)  // Record the first object's owner ID as the baseline
+                {
+                    ownerId = obj.OwnerId;
+                    objectIdCollectionMS.Add(objIdsMS[i]);
+                }
+            }
+            zcTrans.Commit();  // Commit transaction
+        }
+    
+        // Process the cloned object collection for paper space (same logic as model space)
+        ownerId = ObjectId.Null;
+        ObjectIdCollection objectIdCollectionPS = new ObjectIdCollection();
+        using (Transaction zcTrans = doc.TransactionManager.StartTransaction())
+        {
+            for (int i = 0; i < objIdsPS.Length; i++)
+            {
+                DBObject obj = zcTrans.GetObject(objIdsPS[i], OpenMode.ForRead);
+                if (obj.OwnerId == ownerId)
+                {
+                    objectIdCollectionPS.Add(objIdsPS[i]);
+                }
+                else if (i == 0)
+                {
+                    ownerId = obj.OwnerId;
+                    objectIdCollectionPS.Add(objIdsPS[i]);
+                }
+            }
+            zcTrans.Commit();
+        }
+    
+        // Get block table record IDs for model space and paper space
+        ObjectId modelspaceId = SymbolUtilityServices.GetBlockModelSpaceId(db);
+        ObjectId paperspaceId = SymbolUtilityServices.GetBlockPaperSpaceId(db);
+    
+        // Perform DeepClone operations
+        IdMapping idMapping = new IdMapping();
+        db.DeepCloneObjects(objectIdCollectionMS, modelspaceId, idMapping, false);  // Clone to model space
+        db.DeepCloneObjects(objectIdCollectionPS, paperspaceId, idMapping, false);  // Clone to paper space
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("DeepCloneDiffOwnerObjects")&gt;
+    Public Sub DeepCloneDiffOwnerObjects()
+        ' Get the current working database and document objects
+        Dim db As Database = HostApplicationServices.WorkingDatabase
+        Dim doc As Document = Application.DocumentManager.GetDocument(db)
+        Dim ed As ZwSoft.ZwCAD.EditorInput.Editor = doc.Editor
+
+        ' First selection: objects to clone into model space
+        Dim selOptsMS As New PromptSelectionOptions()
+        selOptsMS.MessageForAdding = "Select entities to clone(clone to the model space)"
+        Dim selResMS As PromptSelectionResult = ed.GetSelection(selOptsMS)
+        If selResMS.Status <> PromptStatus.OK Then
+            Return
+        End If
+        Dim sSetMS As SelectionSet = selResMS.Value
+        Dim objIdsMS As ObjectId() = sSetMS.GetObjectIds() ' Get the selected object ID array
+
+        ' Second selection: objects to clone into paper space
+        Dim selOptsPS As New PromptSelectionOptions()
+        selOptsPS.MessageForAdding = "Select entities to clone(clone to the paper space)"
+        Dim selResPS As PromptSelectionResult = ed.GetSelection(selOptsPS)
+        If selResPS.Status <> PromptStatus.OK Then
+            Return
+        End If
+        Dim sSetPS As SelectionSet = selResPS.Value
+        Dim objIdsPS As ObjectId() = sSetPS.GetObjectIds()
+
+        ' Process model space clone object collection
+        Dim ownerId As ObjectId = ObjectId.Null
+        Dim objectIdCollectionMS As New ObjectIdCollection()
+        Using zcTrans As Transaction = doc.TransactionManager.StartTransaction() ' Start transaction
+            ' Iterate through selected model space objects
+            For i As Integer = 0 To objIdsMS.Length - 1
+                Dim obj As DBObject = zcTrans.GetObject(objIdsMS(i), OpenMode.ForRead)
+                ' Collect objects belonging to the same owner
+                If obj.OwnerId = ownerId Then
+                    objectIdCollectionMS.Add(objIdsMS(i))
+                ElseIf i = 0 Then ' Record the first object's owner ID as the baseline
+                    ownerId = obj.OwnerId
+                    objectIdCollectionMS.Add(objIdsMS(i))
+                End If
+            Next
+            zcTrans.Commit() ' Commit transaction
+        End Using
+
+        ' Process paper space clone object collection (same logic as model space)
+        ownerId = ObjectId.Null
+        Dim objectIdCollectionPS As New ObjectIdCollection()
+        Using zcTrans As Transaction = doc.TransactionManager.StartTransaction()
+            For i As Integer = 0 To objIdsPS.Length - 1
+                Dim obj As DBObject = zcTrans.GetObject(objIdsPS(i), OpenMode.ForRead)
+                If obj.OwnerId = ownerId Then
+                    objectIdCollectionPS.Add(objIdsPS(i))
+                ElseIf i = 0 Then
+                    ownerId = obj.OwnerId
+                    objectIdCollectionPS.Add(objIdsPS(i))
+                End If
+            Next
+            zcTrans.Commit()
+        End Using
+
+        ' Get block table record IDs for model space and paper space
+        Dim modelspaceId As ObjectId = SymbolUtilityServices.GetBlockModelSpaceId(db)
+        Dim paperspaceId As ObjectId = SymbolUtilityServices.GetBlockPaperSpaceId(db)
+
+        ' Perform DeepClone operation
+        Dim idMapping As New IdMapping()
+        db.DeepCloneObjects(objectIdCollectionMS, modelspaceId, idMapping, False) ' Clone to model space
+        db.DeepCloneObjects(objectIdCollectionPS, paperspaceId, idMapping, False) ' Clone to paper space
+    End Sub
+</pre>
+<p class="define_head_1">Execution Results:</p>
+<p class="define_text_1">Let the user select entities to clone to the model space and paper space of the same database, then perform the cloning.</p>
+
+<p class="define_head_2" id="sample2">2. Clone to a New Database</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    // Helper function: Get all entities in the model space of a specified database
+    public void getMsEnts(Database db, ObjectIdCollection objectIdCollection)
+    {
+        ZwSoft.ZwCAD.DatabaseServices.TransactionManager tm = db.TransactionManager;
+        using (Transaction myT = tm.StartTransaction())  // Start transaction
+        {
+            // Get block table and model space block table record
+            BlockTable bt = (BlockTable)tm.GetObject(db.BlockTableId, OpenMode.ForRead, false);
+            BlockTableRecord btr = (BlockTableRecord)tm.GetObject(
+                bt[BlockTableRecord.ModelSpace], 
+                OpenMode.ForRead, 
+                false
+            );
+    
+            // Iterate through all entity IDs in model space
+            foreach (ObjectId id in btr)
+            {
+                if (id != null)
+                    objectIdCollection.Add(id);  // Add entity ID to collection
+            }
+            myT.Commit();  // Commit transaction
+        }
+    }
+    
+    // Perform Wblock operation
+    [CommandMethod("WblockSample")]
+    public void WblockSample()
+    {
+        ObjectIdCollection objectIdCollection = new ObjectIdCollection();  // Collection to store entity IDs
+        String str = null;
+    
+        // Show file dialog to get DWG file path
+        OpenFileDialog openFile = new OpenFileDialog("Choose the dwg file", null, "dwg", null, 0);
+        System.Windows.Forms.DialogResult dlr = openFile.ShowDialog();
+        
+        if (System.Windows.Forms.DialogResult.OK == dlr)
+        {
+            str = openFile.Filename;  // Get user-selected file path
+        }
+        else
+        {
+            return;  // Exit if user cancels
+        }
+    
+        // Create new database and read selected DWG file
+        Database db = new Database(false, true);
+        db.ReadDwgFile(str, FileOpenMode.OpenForReadAndAllShare, false, null);
+    
+        // Get all entity IDs in model space
+        getMsEnts(db, objectIdCollection);
+    
+        // Perform Wblock operation to create new database
+        Database destDb = db.Wblock(objectIdCollection, Point3d.Origin);  // Use origin as insertion point
+    
+        // Generate new filename and save result
+        String strPath = System.IO.Path.GetDirectoryName(str) + "\\" +
+          System.IO.Path.GetFileNameWithoutExtension(str) + "_WblockTest.dwg";
+        destDb.SaveAs(strPath, DwgVersion.Current);  // Save as current DWG version
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    ' Helper function: Get all entities in the model space of a specified database
+    Public Sub GetMsEnts(db As Database, objectIdCollection As ObjectIdCollection)
+        Dim tm As ZwSoft.ZwCAD.DatabaseServices.TransactionManager = db.TransactionManager
+        Using myT As Transaction = tm.StartTransaction() ' Start transaction
+            ' Get block table and model space block table record
+            Dim bt As BlockTable = CType(tm.GetObject(db.BlockTableId, OpenMode.ForRead, False), BlockTable)
+            Dim btr As BlockTableRecord = CType(tm.GetObject(bt(BlockTableRecord.ModelSpace), OpenMode.ForRead, False), BlockTableRecord)
+    
+            ' Iterate through all entity IDs in model space
+            For Each id As ObjectId In btr
+                If id IsNot Nothing Then
+                    objectIdCollection.Add(id) ' Add entity ID to collection
+                End If
+            Next
+            myT.Commit() ' Commit transaction
+        End Using
+    End Sub
+    
+    ' Perform Wblock operation
+    &lt;CommandMethod("WblockSample")&gt;
+    Public Sub WblockSample()
+        Dim objectIdCollection As New ObjectIdCollection() ' Collection to store entity IDs
+        Dim filePath As String = Nothing
+    
+        ' Show file dialog to get DWG file path
+        Dim openFile As New OpenFileDialog("Choose the dwg file", Nothing, "dwg", Nothing, 0)
+        Dim dlr As System.Windows.Forms.DialogResult = openFile.ShowDialog()
+    
+        If dlr = System.Windows.Forms.DialogResult.OK Then
+            filePath = openFile.Filename ' Retrieve the file path selected by the user
+        Else
+            Return ' If the user cancels, they will exit
+        End If
+    
+        ' Create a new database and read the selected DWG file
+        Dim db As New Database(False, True)
+        db.ReadDwgFile(filePath, FileOpenMode.OpenForReadAndAllShare, False, Nothing)
+    
+        ' Retrieve all entity ID in the model space
+        GetMsEnts(db, objectIdCollection)
+    
+        ' Execute Wblock operation to create a new database
+        Dim destDb As Database = db.Wblock(objectIdCollection, Point3d.Origin) ' ???????
+    
+        ' Generate a new file name and save the result
+        Dim strPath As String = System.IO.Path.GetDirectoryName(filePath) & "\" &
+            System.IO.Path.GetFileNameWithoutExtension(filePath) & "_WblockTest.dwg"
+        destDb.SaveAs(strPath, DwgVersion.Current) ' Save as current version DWG
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Allow the user to select a DWG file and copy all entities in its model space to a new DWG file.</p>
+
+<p class="define_head_2" id="sample3">3. Copy Between Two Databases</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("WblockCloneObjectsSample")]
+    public void WblockCloneObjectsSample()
+    {
+        Database zwDb = HostApplicationServices.WorkingDatabase;
+        Document zwDoc = Application.DocumentManager.GetDocument(zwDb);
+        
+        // Create an ObjectIdCollection to store entity IDs
+        ObjectIdCollection objectIdCollection = new ObjectIdCollection();
+        String str = null;
+    
+        // Show file dialog to get DWG file path
+        OpenFileDialog openFile = new OpenFileDialog("Choose the dwg file", null, "dwg", null, 0);
+        System.Windows.Forms.DialogResult dlr = openFile.ShowDialog();
+        
+        if (System.Windows.Forms.DialogResult.OK == dlr)
+        {
+            str = openFile.Filename;
+        }
+        else
+        {
+            return;
+        }
+    
+        try
+        {
+            // Create a new Database instance to read the selected DWG file
+            Database db = new Database(false, true);
+            // Read the DWG file into the database
+            db.ReadDwgFile(str, FileOpenMode.OpenForReadAndAllShare, false, null);
+    
+            // Call helper function getMsEnts to retrieve all entity IDs in model space
+            // The definition of getMsEnts is consistent with Sample 2
+            getMsEnts(db, objectIdCollection);
+    
+            // Create an IdMapping object to track cloned object ID mappings
+            IdMapping idMap = new IdMapping();
+            // Clone selected entities into the current working database's model space
+            zwDb.WblockCloneObjects(objectIdCollection, zwDb.CurrentSpaceId, idMap, DuplicateRecordCloning.Replace, false);
+        }
+        catch (ZwSoft.ZwCAD.Runtime.Exception ex)
+        {
+            zwDoc.Editor.WriteMessage(ex.ToString());
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("WblockCloneObjectsSample")&gt;
+    Public Sub WblockCloneObjectsSample()
+        Dim zwDb As Database = HostApplicationServices.WorkingDatabase
+        Dim zwDoc As Document = Application.DocumentManager.GetDocument(zwDb)
+        
+        ' Create an ObjectIdCollection to store entity IDs
+        Dim objectIdCollection As New ObjectIdCollection()
+        Dim str As String = Nothing
+
+        ' Show file dialog to get DWG file path
+        Dim openFile As New OpenFileDialog("Choose the dwg file", Nothing, "dwg", Nothing, 0)
+        Dim dlr As System.Windows.Forms.DialogResult = openFile.ShowDialog()
+        
+        If dlr = System.Windows.Forms.DialogResult.OK Then
+            str = openFile.Filename
+        Else
+            Return
+        End If
+
+        ' Create a new Database instance to read the selected DWG file
+        Dim db As New Database(False, True)
+        ' Read the DWG file into the database
+        db.ReadDwgFile(str, FileOpenMode.OpenForReadAndAllShare, False, Nothing)
+
+        ' Call helper function getMsEnts to retrieve all entity IDs in model space
+        ' The definition of getMsEnts is consistent with Sample 2
+        getMsEnts(db, objectIdCollection)
+
+        ' Create an IdMapping object to track cloned object ID mappings
+        Dim idMap As New IdMapping()
+        ' Clone selected entities into the current working database's model space
+        zwDb.WblockCloneObjects(objectIdCollection, zwDb.CurrentSpaceId, idMap, DuplicateRecordCloning.Replace, False)
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Allow the user to select a DWG file and copy all entities in its model space to the currently active document.</p>
+
+
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

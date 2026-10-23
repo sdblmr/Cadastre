@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Frequently Asked Questions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Development Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Frequently Asked Questions</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+    <div class="content_resize">
+    <div class="article">
+    <div class="clr"></div>
+
+<p class="define_head_1">Description</p>
+<p class="dev_body_text">When developing .NET programs in ZWCAD, developers often encounter issues. This chapter summarizes these problems to help developers quickly find solutions.</p>
+<hr algin="left" >
+<p class="define_head_1">Issue 1: Break Mode Exception</p>
+<p class="define_text_2">As shown below, debugging .NET programs in ZWCAD may frequently enter "Application is in Break Mode," preventing further code debugging.</p>
+<p class="figure"><img class="pics" src="../pics/11-1-Debug%20Error.png"></p>
+<p class="define_text_1">Causes and Solutions:</p>
+<p class="define_text_2">This issue primarily occurs when debugging WinForm dialogs. The solution is to execute the NETDEBUG command after starting the debugger, then use the debug panel to run commands for code debugging.</p>
+
+<p class="define_head_1">Issue 2: Slow Debugging Startup</p>
+<p class="define_text_2">Many users report that launching ZWCAD for debugging is extremely slow.</p>
+<p class="define_text_1">Causes and Solutions:</p>
+<p class="define_text_2">The delay may be due to ZWCAD loading excessive LISP module debugging information during startup. Try renaming zwlisp.zrx in the ZWCAD installation directory.</p>
+<p class="define_text_2">Alternatively, start ZWCAD first, use the NETLOAD command to load the DLL, then attach to the zwcad.exe process in the task list via "Attach to Process."</p>
+
+<p class="define_head_1">Issue 3: DLL Plugin Load Failure</p>
+<p class="define_text_2">Developers often face issues where compiled DLLs fail to load via NETLOAD. Below are common solutions.</p>
+<p class="define_head_2"> Case 1: Failure During Development</p>
+<p class="define_text_2">Possible Cause 1:<br>Verify the compilation settings: .NET projects for ZWCAD 2017-2020 must use NetFramework 4.0, while ZWCAD 2021-2025 require NetFramework 4.7. ZRX projects for ZWCAD 2017-2020 need v100 compilation, and ZWCAD 2021-2025 require v141.</p>
+<p class="define_text_2">Possible Cause 2:<br>Missing dependency libraries. If a ZRX project references third-party libraries not in the search path, loading may fail. Note: Starting with ZWCAD 2024, dynamic link libraries in the ZRX directory must also be added to the search path.</p>
+
+<p class="define_head_2"> Case 2: Inconsistent Loading Across Computers</p>
+<p class="define_text_2">Possible Cause 1:<br>High security settings on some computers may lock the DLL/ZRX. Right-click the file, open Properties, and unlock it.</p>
+<p class="figure"><img class="pics" src="../pics/11-1-Dll%20locked.png"></p>
+<p class="define_text_2">Possible Cause 2:<br>Missing system DLLs. Compile in Release mode to minimize dependency on debug libraries. Use the Depends tool to identify missing system dependencies.</p>
+<p class="figure"><img class="pics" src="../pics/11-1-Depends.png"></p>
+<p class="define_text_2">Possible Cause 3:<br>Insufficient permissions. Try launching ZWCAD with Administrator privileges.</p>
+<p class="define_text_2">Possible Cause 4:<br>The Standard Edition of ZWCAD does not support ZRX/DLL loading. Upgrade to the Professional Edition.</p>
+
+<p class="define_head_1">Issue 4: Calling ZRX Functions in .NET</p>
+<p class="define_text_2">While .NET interfaces cover most ZRX functions, some require direct invocation. Below are examples of common ZRX functions in .NET:</p>
+<pre class="code_sample">
+ [DllImport("zwcad.exe", EntryPoint = "zcedCommand")]
+ private static extern int acedCommand(IntPtr vlist);</pre>
+<pre class="code_sample">
+[DllImport("zwcad.exe", EntryPoint = "zcedCmd", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+private static extern int zcedCmd(System.IntPtr vlist);
+[CommandMethod("Test")]
+static public void HelloCS()
+{
+  ResultBuffer rb2 = new ResultBuffer
+   {
+      new TypedValue((int)LispDataType.Text, "layer"),
+      new TypedValue((int)LispDataType.Text, "m"),
+      new TypedValue((int)LispDataType.Text, "net7"),
+      new TypedValue((int)LispDataType.Text, "")
+     };
+     zcedCmd(rb2.UnmanagedObject);
+}</pre>
+<pre class="code_sample">
+[DllImport("ZwDatabase.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "?zcdbGetZdsName@@YA?AW4ErrorStatus@Zcad@@AEAY01_JVZcDbObjectId@@@Z")]
+static extern int zcdbGetZdsName(out ZdsName ename, ObjectId id);
+
+[DllImport("zwcad.exe", CallingConvention = CallingConvention.Cdecl, EntryPoint = "zcdbEntGet")]
+static extern IntPtr zcdbEntGet(ZdsName ename);
+
+[CommandMethod("UpdateDim")]
+ public void UpdateDim()
+ {
+    var doc = Application.DocumentManager.MdiActiveDocument;
+    var db = doc.Database;
+    var ed = doc.Editor;
+
+    var promptRes = ed.GetEntity("\nPick a Dim:");
+     if (promptRes.Status != PromptStatus.OK)
+     {
+       return;
+      }
+
+      using(var tr = db.TransactionManager.StartTransaction())
+      {
+         var Ent = tr.GetObject(promptRes.ObjectId, OpenMode.ForRead) as Entity;
+          if (Ent is Dimension dim)
+           {
+              var dict = tr.GetObject(dim.ExtensionDictionary, OpenMode.ForRead) as DBDictionary;
+              var extDictId = dict.GetAt("ACAD_DIMASSOC");
+              ZdsName ename;
+              zcdbGetZdsName(out ename, extDictId);
+              var result = zcdbEntGet(ename);
+                if (result != IntPtr.Zero)
+                 {
+                        var resBuffer = ResultBuffer.Create(result, true);
+                        foreach (var item in resBuffer)
+                        {
+                            if (item.TypeCode == 331)
+                            {
+                                var assocEnt = tr.GetObject((ObjectId)item.Value, OpenMode.ForWrite) as Entity;
+                                assocEnt.RecordGraphicsModified(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+                //Ent.RecordGraphicsModified(true);
+                tr.Commit();
+            }
+        }
+
+    }</pre>
+<pre class="code_sample">
+[DllImport("zwcad.exe", EntryPoint = "zcedPostCommand", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+extern static private int acedPostCommand(string strExpr);</pre>
+<pre class="code_sample">
+  [DllImport("zwcad.exe", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl, EntryPoint = "zcedUsrBrk")]
+   extern static private int UsrBrk();</pre>
+<pre class="code_sample">
+  [System.Security.SuppressUnmanagedCodeSecurity]
+  [DllImport("zwcad.exe", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl, EntryPoint = "?zcedGetEnv@@YAHPEB_WPEA_W_K@Z")]// Case sensitivity cannot be changed
+   static extern int AcedGetEnv(string envName, StringBuilder ReturnValue);
+    [CommandMethod("HelloCS")]
+     static public void HelloCS()
+     {
+        Database db = HostApplicationServices.WorkingDatabase;
+        Document doc = Application.DocumentManager.GetDocument(db);
+        ZwSoft.ZwCAD.EditorInput.Editor ed = doc.Editor;
+        StringBuilder ReturnValue = new StringBuilder(1024);  
+        AcedGetEnv("PLOTCONFIGPATH", ReturnValue);
+        ed.WriteMessage(ReturnValue.ToString());
+       }  </pre>
+<p class="define_head_1">Issue 5: Encountered the eLockViolation Exception When Operating the Database</p>
+<p class="define_text_2">When performing write operations on the database within commands  defined using Session markers, event callback functions, palettes, or modaless dialogs, you must use the Document.LockDocument() method to lock the current document; otherwise, the eLockViolation exception will be thrown. Example code is as follows:</p>
+<pre class="code_sample">
+    using (var acLckDoc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument())
+    {
+        // Performs write operations on the database
+    }
+</pre>
+    </div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

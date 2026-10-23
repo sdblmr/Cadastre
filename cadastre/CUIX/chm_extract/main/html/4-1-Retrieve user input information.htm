@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Retrieve User Input Information</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+
+
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Developer's Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Retrieve User Input Information</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+    <div class="content_resize">
+    <div class="article">
+    <div class="clr"></div>
+
+
+<p class="define_head_1">Description</p>
+<p class="dev_body_text">This section explains how to interact with users via the command line to retrieve input information, such as real numbers, strings, keywords, etc.</p>
+<hr algin="left" >
+<p class="define_head_1">User Input Functions</p>
+<p class="define_text_1">The table below lists functions for retrieving user input. Subsequent articles will demonstrate their usage.</p>
+<table class="table-desc">
+    <TR>
+    <TH>Function Name</TH>
+    <TH>Purpose</TH>
+    <TH>Prompt Options Class</TH>
+    <TH>Prompt Result Class</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#GetDouble">GetDouble()</td>
+        <td class="table-item-odd">Prompts the user to input a real number</td>
+                <td class="table-item-odd">PromptDoubleOptions</td>
+        <td class="table-item-odd">PromptDoubleResult</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#GetInteger">GetInteger()</td>
+        <td class="table-item-odd">Prompts the user to input an integer</td>
+                <td class="table-item-odd">PromptIntegerOptions</td>
+        <td class="table-item-odd">PromptIntegerResult</td>
+    </TR>
+        <TR>
+        <td class="table-item-odd"><a href="#GetKeywords">GetKeywords()</td>
+        <td class="table-item-odd">Prompts the user to input a keyword</td>
+                <td class="table-item-odd">PromptKeywordOptions</td>
+        <td class="table-item-odd">PromptResult&nbsp;</td>
+          <TR>
+        <td class="table-item-odd"><a href="#GetString">GetString()</td>
+        <td class="table-item-odd">Prompts the user to input a string</td>
+                <td class="table-item-odd">PromptStringOptions</td>
+        <td class="table-item-odd">PromptResult</td>
+    </TR>
+    
+</TABLE>
+<hr algin="left" >
+<p class="define_head_1" id="GetDouble">GetDouble() - Retrieve a Real Number</p>
+<pre class="code_sample">
+public void TestGetDouble()
+{
+    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+    PromptDoubleOptions dblOpts = new PromptDoubleOptions("Input a real number:");
+
+    dblOpts.AllowNone = false;
+    dblOpts.AllowZero = false;
+    dblOpts.DefaultValue = 0.0;
+
+    PromptDoubleResult dblRes = ed.GetDouble(dblOpts);
+    if (dblRes.Status == PromptStatus.OK)
+    {
+        ed.WriteMessage("\nThe real number is {0}", dblRes.Value);
+    }
+    else if (dblRes.Status == PromptStatus.Cancel)
+    {
+        ed.WriteMessage("\nYou have cancelled!");
+    }
+    else
+    {
+        ed.WriteMessage("\nOther status: " + dblRes.Status.ToString());
+    }
+}
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">When executing the TestGetDouble command, the user is prompted with "Input a real number:". If the user enters 10.2, the command line outputs "The real number is 10.2".</p>
+
+<hr algin="left" >
+<p class="define_head_1" id="GetInteger">GetInteger() - Retrieve an Integer</p>
+<pre class="code_sample">
+[CommandMethod("TestGetInteger")]
+public void TestGetInteger()
+{
+    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+    PromptIntegerOptions intOpts = new PromptIntegerOptions("Input an Integer:");
+    intOpts.AllowNegative = false;
+    intOpts.AllowNone = false;
+    intOpts.AllowZero = false;
+    intOpts.DefaultValue = 100;
+    PromptIntegerResult IntRes = ed.GetInteger(intOpts);
+    if (IntRes.Status == PromptStatus.OK)
+    {
+        ed.WriteMessage("\nThe Integer is {0}", IntRes.Value);
+    }
+    else if (IntRes.Status == PromptStatus.Cancel)
+    {
+        ed.WriteMessage("\nYou have cancelled!");
+    }
+    else
+    {
+        ed.WriteMessage("\nOther status: " + IntRes.Status.ToString());
+    }
+}
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">When executing the TestGetKeyWord command, the user is prompted with "Input an Integer:". If the user enters 10, the command line outputs "The Integer is 10".</p>
+
+<hr algin="left" >
+<p class="define_head_1" id="GetKeywords">GetKeywords() - Retrieve a Keyword</p>
+<pre class="code_sample">
+[CommandMethod("TestGetKeyWord")]
+public void TestGetKeyWord()
+{
+    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+
+    PromptKeywordOptions kwOpts = new PromptKeywordOptions("Input KeyWord ");
+
+    kwOpts.Keywords.Add("A", "A", "Branch A(A)", true, true);
+    kwOpts.Keywords.Add("B", "B", "Branch B(B)", true, true);
+    kwOpts.Keywords.Add("C", "C", "Branch C(C)", true, true);
+    kwOpts.Keywords.Add("D", "D", "Branch D(D)", true, true);
+    kwOpts.Keywords.Default = "D";
+
+    PromptResult kwordRes = ed.GetKeywords(kwOpts);
+
+    if (kwordRes.Status == PromptStatus.OK)
+    {
+        switch (kwordRes.StringResult)
+        {
+            case "A":
+                ed.WriteMessage("This is Branch A");
+                break;
+            case "B":
+                ed.WriteMessage("This is Branch B");
+                break;
+            case "C":
+                ed.WriteMessage("This is Branch C");
+                break;
+            case "D":
+                ed.WriteMessage("This is Branch D");
+                break;
+        }
+    }
+    else
+    {
+        ed.WriteMessage("Other Status: " + kwordRes.Status.ToString());
+    }
+}
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">When executing the TestGetKeyWord command, the user is prompted with "Input KeyWord [Branch A(A)/Branch B(B)/Branch C(C)/Branch D(D)]:". If the user enters B, the command line outputs "This is Branch B".</p>
+<hr algin="left" >
+<p class="define_head_1" id="GetString">GetString() - Retrieve a String</p>
+<pre class="code_sample">
+[CommandMethod("TestGetString")]
+public void TestGetString()
+{
+    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+    PromptStringOptions strOpts = new PromptStringOptions("Input a string: ");
+    strOpts.AllowSpaces = false;     //Spaces are not allowed
+    PromptResult strRes = ed.GetString(strOpts);
+    if (strRes.Status == PromptStatus.OK)
+    {
+        ed.WriteMessage("The string is " + strRes.StringResult);
+    }
+    else if (strRes.Status == PromptStatus.Cancel)
+    {
+        ed.WriteMessage("\nYou have cancelled!");
+    }
+    else
+    {
+        ed.WriteMessage("\nOther status: " + strRes.Status.ToString());
+    }
+}
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">When executing the TestGetString command, the user is prompted to input a string "Input a string:". If the user enters "hello", the command line will output "The string is hello".</p>
+
+    </div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

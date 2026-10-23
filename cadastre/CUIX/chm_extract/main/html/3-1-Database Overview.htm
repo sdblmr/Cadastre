@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DWG Database Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+<div class="hear_text">ZWCAD 2026 .NET Developer Guide</div>
+</div>
+</div>
+</div>
+
+<div class="clr"></div>
+<div class="Tophead"><span class="Tophead_text">DWG Database Overview</span></div> 
+<div class="clr"></div>
+
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="define_head_1">DWG Database Structure Overview</p>
+<p class="dev_body_text">The DWG database is the core storage structure of ZWCAD graphic files, organizing data hierarchically. All graphical objects (e.g., lines, circles, block references), non-graphical objects (e.g., layers, linetypes), and dictionaries are stored in this database. Key components include:</p>
+<p class="define_text_1">Symbol Tables: Store specific types of objects as table records. Examples include the Block Table for blocks, Layer Table for layers, and Linetype Table for linetypes.</p>
+<p class="define_text_1">Named Object Dictionary: The root container for user-defined data and certain DWG data, also known as the root dictionary, which can nest sub-dictionaries.</p>
+<p class="dev_body_text">Note: The DWG database is single-threaded and supports only single-threaded operations.</p>
+
+<hr algin="left" >
+<p class="define_head_1">Concept and Classification of Symbol Tables</p>
+<p class="define_head_2">Definition of Symbol Tables</p>
+<p class="define_text_2">Symbol tables are containers in ZWCAD for managing specific types of objects. Each symbol table stores a group of table records (TableRecord) of the same type. Symbol tables are built-in structures of the database; developers cannot directly create or delete them.</p>
+<p class="define_head_2">Common Symbol Tables and Functions</p>
+<p class="define_text_2">
+    <table class="table-desc">
+        <TR>
+        <TH>Symbol Table Type</TH>
+        <TH>Stored Content</TH>
+        <TH>Typical Operations</TH>
+        </TR>
+        <TR>
+            <td class="table-item-odd">BlockTable</td>
+            <td class="table-item-odd">Block definitions (BlockTableRecord)</td>
+            <td class="table-item-odd">Retrieve model space and paper space block table records; create or traverse block definitions</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">LayerTable</td>
+            <td class="table-item-odd">Layer properties (color, linetype, etc.)</td>
+            <td class="table-item-odd">Control layer visibility, freeze, and lock states</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">LinetypeTable</td>
+            <td class="table-item-odd">Linetype definitions (e.g., dashed, dotted)</td>
+            <td class="table-item-odd">Add linetypes</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">TextStyleTable</td>
+            <td class="table-item-odd">Text styles (font, height, etc.)</td>
+            <td class="table-item-odd">Add or modify custom text styles</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">DimStyleTable</td>
+            <td class="table-item-odd">Dimension styles (arrows, tolerances, etc.)</td>
+            <td class="table-item-odd">Add or modify custom dimension styles</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">UcsTable</td>
+            <td class="table-item-odd">Coordinate systems</td>
+            <td class="table-item-odd">Add or modify custom coordinate systems</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">ViewportTable</td>
+            <td class="table-item-odd">Viewports</td>
+            <td class="table-item-odd">Add or modify viewports</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">RegAppTable</td>
+            <td class="table-item-odd">Application names</td>
+            <td class="table-item-odd">Add or modify secondary development application names</td>
+        </TR>
+    </TABLE>
+</p>
+
+<p class="define_head_2">Common Dictionaries and Functions</p>
+<p class="define_text_2">
+    <table class="table-desc">
+        <TR>
+        <TH>Dictionary Name</TH>
+        <TH>Purpose</TH>
+        </TR>
+        <TR>
+            <td class="table-item-odd">ACAD_LAYOUT</td>
+            <td class="table-item-odd">Stores layout (Layout) information</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">ACAD_GROUP</td>
+            <td class="table-item-odd">Stores group information</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">ACAD_SCALELIST</td>
+            <td class="table-item-odd">Stores scale information</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">ACAD_TABLESTYLE</td>
+            <td class="table-item-odd">Stores table style information</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">ACAD_MLEADERSTYLE</td>
+            <td class="table-item-odd">Stores multileader style information</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">ACAD_VISUALSTYLE</td>
+            <td class="table-item-odd">Stores visual style information</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">ACAD_PLOTSETTINGS</td>
+            <td class="table-item-odd">Stores plot settings information</td>
+        </TR>
+    </TABLE>
+</p>
+
+<hr algin="left" >
+<p class="define_head_1">Role and Usage of Transactions</p>
+<p class="define_head_2">Necessity of Transactions</p>
+<p class="define_text_2">Ensure atomicity of database operations (commit or rollback).</p>
+<p class="define_text_2">Manage object locking states to prevent modification conflicts.</p>
+<p class="define_head_2">Basic Workflow</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    // Start transaction
+    using (Transaction tr = db.TransactionManager.StartTransaction()) {
+        try {
+            // Operate on database objects
+            // ...
+
+            // If all operations succeed, commit the transaction
+            tr.Commit();
+        } catch {
+            // If an exception occurs, roll back the transaction
+            tr.Abort();
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    ' Start transaction
+    Using tr As Transaction = db.TransactionManager.StartTransaction()
+    Try
+        ' Operate on database objects
+        ' ...
+
+        ' If all operations succeed, commit the transaction
+        tr.Commit()
+    Catch ex As Exception
+        ' If an exception occurs, roll back the transaction
+        tr.Abort()
+    End Using
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Detailed Explanation of BlockTable</p>
+<p class="define_head_2">Structure of BlockTable</p>
+<p class="define_text_2">The BlockTable is one of the most important symbol tables in the DWG database, containing all block definitions (BlockTableRecord). Each block definition can include multiple graphical entities (Entity), such as lines, circles, or nested block references.</p>
+<p class="define_head_2">Common Operation Examples</p>
+<p class="define_head_3">1. Creating Entities in Model Space</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    // Start transaction
+    using (Transaction tr = db.TransactionManager.StartTransaction()) {
+        // Get BlockTable
+        BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+    
+        // Get Model Space BlockTableRecord
+        BlockTableRecord modelSpace = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+        
+        // Add a line to Model Space
+        Line line = new Line(new Point3d(0, 0, 0), new Point3d(100, 100, 0));
+        modelSpace.AppendEntity(line);
+        tr.AddNewlyCreatedDBObject(line, true);
+    
+        // Commit transaction
+        tr.Commit(); 
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    ' Start transaction
+    Using tr As Transaction = db.TransactionManager.StartTransaction()
+        ' Get BlockTable
+        Dim bt As BlockTable = TryCast(tr.GetObject(db.BlockTableId, OpenMode.ForRead), BlockTable)
+
+        ' Get Model Space BlockTableRecord
+        Dim modelSpace As BlockTableRecord = TryCast(tr.GetObject(bt(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+        
+        ' Add a line to Model Space
+        Dim line As New Line(New Point3d(0, 0, 0), New Point3d(100, 100, 0))
+        modelSpace.AppendEntity(line)
+        tr.AddNewlyCreatedDBObject(line, True)
+        
+        ' Commit transaction
+        tr.Commit()
+    End Using
+</pre>
+<p class="define_head_3">2. Create a Block Definition and Insert a Block Reference in Model Space</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    // Start transaction
+    using (Transaction tr = db.TransactionManager.StartTransaction()) {
+        // Get BlockTable
+        BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+    
+        // Get Model Space BlockTableRecord
+        BlockTableRecord modelSpace = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+    
+        // Create a new BlockTableRecord
+        BlockTableRecord newBlock = new BlockTableRecord();
+        newBlock.Name = "MyBlock";
+        bt.UpgradeOpen();
+        bt.Add(newBlock);
+        tr.AddNewlyCreatedDBObject(newBlock, true);
+    
+        // Add a line to the block
+        Line line = new Line(new Point3d(0, 0, 0), new Point3d(100, 100, 0));
+        newBlock.AppendEntity(line);
+        tr.AddNewlyCreatedDBObject(line, true);
+
+        // Insert a BlockReference in Model Space
+        BlockReference br = new BlockReference(new Point3d(0, 0, 0), newBlock.ObjectId);
+        modelSpace.AppendEntity(br);
+        tr.AddNewlyCreatedDBObject(br, true);
+
+        // Commit transaction
+        tr.Commit();
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    ' Start transaction
+    Using tr As Transaction = db.TransactionManager.StartTransaction()
+        ' Get BlockTable
+        Dim bt As BlockTable = TryCast(tr.GetObject(db.BlockTableId, OpenMode.ForRead), BlockTable)
+    
+        ' Get Model Space BlockTableRecord
+        Dim modelSpace As BlockTableRecord = TryCast(tr.GetObject(bt(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+    
+        ' Create a new BlockTableRecord
+        Dim newBlock As New BlockTableRecord()
+        newBlock.Name = "MyBlock"
+        bt.UpgradeOpen()
+        bt.Add(newBlock)
+        tr.AddNewlyCreatedDBObject(newBlock, True)
+    
+        ' Add a line to the block
+        Dim line As New Line(New Point3d(0, 0, 0), New Point3d(100, 100, 0))
+        newBlock.AppendEntity(line)
+        tr.AddNewlyCreatedDBObject(line, True)
+    
+        ' Insert a BlockReference in Model Space
+        Dim br As New BlockReference(New Point3d(0, 0, 0), newBlock.ObjectId)
+        modelSpace.AppendEntity(br)
+        tr.AddNewlyCreatedDBObject(br, True)
+    
+        ' Commit transaction
+        tr.Commit()
+    End Using
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Conversion Between Objects, ObjectId, and Handles</p>
+<p class="define_head_2">Core Concepts</p>
+<p class="define_text_2">Object (DBObject): An actual data instance in the database (e.g., Line, BlockReference).</p>
+<p class="define_text_2">ObjectId: A unique identifier for an object, valid only within the current session (e.g., from document open to close).</p>
+<p class="define_text_2">Handle: A globally unique identifier for an object, persisted across sessions (i.e., remains unchanged after reopening the document).</p>
+<p class="define_head_2">Conversion Methods</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    // Get ObjectId from Handle, where handle is a known Handle object
+    ObjectId id = db.GetObjectId(false, handle, 0);
+    
+    // Get Object from ObjectId, where id is a known ObjectId and tr is an active transaction
+    Line line = tr.GetObject(id, OpenMode.ForRead) as Line;
+
+    // Get Handle from Object, where obj is a known DBObject
+    Handle handle = obj.Handle;   
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    ' Get ObjectId from Handle, where handle is a known Handle object
+    Dim id As ObjectId = db.GetObjectId(False, handle, 0)
+    
+    ' Get Object from ObjectId, where id is a known ObjectId and tr is an active transaction
+    Dim line As Line = TryCast(tr.GetObject(id, OpenMode.ForRead), Line)
+    
+    ' Get Handle from Object, where obj is a known DBObject
+    Dim handle As Handle = obj.Handle
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Named Object Dictionary</p>
+<p class="define_head_2">The Named Object Dictionary is the root container for user-defined data, manipulated via the DBDictionary class. Key features include:</p>
+<p class="define_text_2">Can store other sub-dictionaries or extension records (XRecord).</p>
+<p class="define_text_2">Commonly used to store global configurations or user-specific data.</p>
+<p class="define_head_2">Operation Example</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    using (Transaction tr = db.TransactionManager.StartTransaction()) {
+        // Get Named Object Dictionary
+        DBDictionary nod = tr.GetObject(db.NamedObjectsDictionaryId, OpenMode.ForWrite) as DBDictionary;
+
+        // Create a sub-dictionary
+        DBDictionary myDict = new DBDictionary();
+        nod.SetAt("MyAppData", myDict);
+        tr.AddNewlyCreatedDBObject(myDict, true);
+
+        // Store XRecord
+        XRecord xrec = new XRecord();
+        myDict.SetAt("Config", xrec);
+        // Set XRecord data using ResultBuffer and TypedValue
+        xrec.Data = new ResultBuffer(new TypedValue(1001, "MyApp"), new TypedValue(40, 3.14));
+
+        tr.Commit();
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    Using tr As Transaction = db.TransactionManager.StartTransaction()
+        ' Get the named dictionary object
+        Dim nod As DBDictionary = TryCast(tr.GetObject(db.NamedObjectsDictionaryId, OpenMode.ForWrite), DBDictionary)
+
+        ' Create a sub-dictionary
+        Dim myDict As New DBDictionary()
+        nod.SetAt("MyAppData", myDict)
+        tr.AddNewlyCreatedDBObject(myDict, True)
+
+        ' Store XRecord
+        Dim xrec As New XRecord()
+        myDict.SetAt("Config", xrec)
+        ' Set XRecord data using ResultBuffer and TypedValue
+        xrec.Data = New ResultBuffer(New TypedValue(1001, "MyApp"), New TypedValue(40, 3.14))
+
+        ' Commit the transaction
+        tr.Commit()
+    End Using
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Extended Data (XData) and Extension Dictionary (XRecord)</p>
+<p class="define_head_2">Extended Data (XData)</p>
+<p class="define_text_2">Custom data attached to an object, accessed through the object's XData property:</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    using (Transaction tr = doc.TransactionManager.StartTransaction())
+    {
+        // Retrieve the specified entity object from the database in write mode
+        // id is the ObjectId of a previously acquired entity
+        Entity entity = (Entity)tr.GetObject(id, OpenMode.ForWrite);
+    
+        // Get the RegAppTable (Registration Application Table) in write mode
+        // This table stores application-related extended data
+        RegAppTable regTable = (RegAppTable)tr.GetObject(db.RegAppTableId, OpenMode.ForWrite);
+    
+        // Define the registered application name to find or create
+        String strAppName = "MyApp";
+    
+        // Check if the registered application name already exists in the table
+        if (!regTable.Has(strAppName))
+        {
+            // If not, create a new RegAppTableRecord
+            RegAppTableRecord regAppTableRecord = new RegAppTableRecord();
+            // Set the registered application name
+            regAppTableRecord.Name = strAppName;
+            regTable.Add(regAppTableRecord);
+            tr.AddNewlyCreatedDBObject(regAppTableRecord, true);
+        }
+    
+        // Set extended data (XData) for the entity object
+        // XData can contain custom application data
+        entity.XData = new ResultBuffer(
+            // The first TypedValue represents the registered application name
+            new TypedValue((int)DxfCode.ExtendedDataRegAppName, strAppName),
+            // The second TypedValue represents an ASCII string ("hello")
+            new TypedValue((int)DxfCode.ExtendedDataAsciiString, "hello"),
+            // The third TypedValue represents a 32-bit integer (2)
+            new TypedValue((int)DxfCode.ExtendedDataInteger32, 2),
+            // The fourth TypedValue represents a real number (3.14)
+            new TypedValue((int)DxfCode.ExtendedDataReal, 3.14)
+        );
+    
+        tr.Commit();
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    Using tr As Transaction = doc.TransactionManager.StartTransaction()
+        ' Retrieve the specified entity object from the database in write mode
+        ' id is the ObjectId of a previously acquired entity
+        Dim entity As Entity = CType(tr.GetObject(id, OpenMode.ForWrite), Entity)
+    
+        ' Get the RegAppTable (Registration Application Table) in write mode
+        ' This table stores application-related extended data
+        Dim regTable As RegAppTable = CType(tr.GetObject(db.RegAppTableId, OpenMode.ForWrite), RegAppTable)
+    
+        ' Define the registered application name to find or create
+        Dim strAppName As String = "MyApp"
+    
+        ' Check if the registered application name already exists in the table
+        If Not regTable.Has(strAppName) Then
+            ' If not, create a new RegAppTableRecord
+            Dim regAppTableRecord As New RegAppTableRecord()
+            ' Set the registered application name
+            regAppTableRecord.Name = strAppName
+            regTable.Add(regAppTableRecord)
+            tr.AddNewlyCreatedDBObject(regAppTableRecord, True)
+        End If
+    
+        ' Set extended data (XData) for the entity object
+        ' XData can contain custom application data
+        entity.XData = New ResultBuffer( _
+            ' The first TypedValue represents the registered application name
+            New TypedValue(CInt(DxfCode.ExtendedDataRegAppName), strAppName), _
+            ' The second TypedValue represents an ASCII string ("hello")
+            New TypedValue(CInt(DxfCode.ExtendedDataAsciiString), "hello"), _
+            ' The third TypedValue represents a 32-bit integer (2)
+            New TypedValue(CInt(DxfCode.ExtendedDataInteger32), 2), _
+            ' The fourth TypedValue represents a real number (3.14)
+            New TypedValue(CInt(DxfCode.ExtendedDataReal), 3.14) _
+        )
+    
+        ' Commit the transaction
+        tr.Commit()
+    End Using
+</pre>
+<p class="define_head_2">Extension Dictionary (ExtensionDictionary)</p>
+<p class="define_text_2">Different from named dictionaries, the extension dictionary is attached to the object and can be accessed via the object's ExtensionDictionary property. Other operations are consistent with regular dictionary objects:</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    using (Transaction tr = doc.TransactionManager.StartTransaction())
+    {
+        // Retrieve the specified entity object from the database in write mode
+        // id is the ObjectId of a previously acquired object
+        Entity entity = (Entity)tr.GetObject(id, OpenMode.ForWrite);
+    
+        // Check if the object has an extension dictionary; create one if not
+        if (entity.ExtensionDictionary == ObjectId.Null)
+        {
+            entity.CreateExtensionDictionary();
+        }
+    
+        ObjectId objId = entity.ExtensionDictionary;   
+        // Open the extension dictionary in write mode
+        DBDictionary dict = (DBDictionary)tr.GetObject(objId, OpenMode.ForWrite);
+    
+        // Check if the extension dictionary contains an entry named "MyRec"
+        if (!dict.Contains("MyRec"))
+        {
+            // If not, create a new Xrecord object
+            Xrecord xr = new Xrecord();
+    
+            // Create a ResultBuffer to store data for the Xrecord
+[file name]: 3-1-Database Overview.htm
+[file content begin]
+            // Contains a string "hello", a 32-bit integer 2, and a real number 3.14
+            ResultBuffer rb = new ResultBuffer(
+                new TypedValue((int)DxfCode.Text, "hello"), // String data
+                new TypedValue((int)DxfCode.Int32, 2),      // 32-bit integer data
+                new TypedValue((int)DxfCode.Real, 3.14)     // Real number data
+            );
+    
+            // Set the ResultBuffer as the Xrecord's data
+            xr.Data = rb;
+    
+            // Add the Xrecord to the extension dictionary with the key "MyRec"
+            dict.SetAt("MyRec", xr);
+    
+            tr.AddNewlyCreatedDBObject(xr, true);
+        }
+    
+        tr.Commit();
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    Using tr As Transaction = doc.TransactionManager.StartTransaction()
+    ' Retrieve the specified entity object from the database, opened in write mode
+    ' id is the ObjectId of a previously obtained object
+    Dim entity As Entity = CType(tr.GetObject(id, OpenMode.ForWrite), Entity)
+
+    ' Check if the object has an extension dictionary; create one if not
+    If entity.ExtensionDictionary = ObjectId.Null Then
+        entity.CreateExtensionDictionary()
+    End If
+
+    Dim objId As ObjectId = entity.ExtensionDictionary
+    ' Open the extension dictionary in write mode
+    Dim dict As DBDictionary = CType(tr.GetObject(objId, OpenMode.ForWrite), DBDictionary)
+
+    ' Check if the extension dictionary already contains an entry named "MyRec"
+    If Not dict.Contains("MyRec") Then
+        ' If not, create a new Xrecord object
+        Dim xr As New Xrecord()
+
+        ' Create a ResultBuffer to store data for the Xrecord
+        ' Contains a string "hello", a 32-bit integer 2, and a real number 3.14
+        Dim rb As New ResultBuffer(New TypedValue() {(CInt(DxfCode.Text), "hello"), (CInt(DxfCode.Int32), 2), (CInt(DxfCode.Real), 3.14)})
+
+        ' Set the ResultBuffer as the Xrecord's data
+        xr.Data = rb
+
+        ' Add the Xrecord to the extension dictionary with the key "MyRec"
+        dict.SetAt("MyRec", xr)
+
+        ' Add the newly created Xrecord object to the transaction for database persistence
+        tr.AddNewlyCreatedDBObject(xr, True)
+    End If
+
+    tr.Commit()
+End Using
+</pre>
+
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>
+[file content end]

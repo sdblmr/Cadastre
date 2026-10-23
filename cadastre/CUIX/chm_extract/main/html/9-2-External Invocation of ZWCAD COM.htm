@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>External Program Invocation of ZWCAD COM Interface</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+
+
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+    <div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+    <div class="hear_text">ZWCAD 2026 .NET Development Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">External Program Invocation of ZWCAD COM Interface</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+    <div class="content_resize">
+    <div class="article">
+    <div class="clr"></div>
+
+
+<p class="define_head_1">Description</p>
+<p class="dev_body_text">In the previous chapter, we introduced some common class libraries and usage of ZWCAD COM components. This chapter will demonstrate a typical example: how an external program can drive ZWCAD through its COM components to automate specific tasks.</p>
+<hr algin="left" >
+<p class="define_head_1">Example Function Overview:</p>
+<p class="define_text_1">This chapter explains how to create a dialog application that invokes ZWCAD COM components to launch a ZWCAD.exe instance, open a DWG file, draw entities within the DWG, print these entities to a PDF file, and finally close the DWG file and exit ZWCAD.exe.</p>
+<p class="define_head_1">Create a Dialog Project:</p>
+<p class="define_text_1">
+Create a Windows Forms Application using Visual Studio Wizard, add buttons to the form, and implement event handlers for these buttons. This part is not the focus and will not be elaborated here.</p>
+
+<p class="figure"><img class="pics" src="../pics/9-2-New%20WinfromProject.png"></p>
+
+<p class="define_head_1">Reference ZWCAD COM Components:</p>
+<p class="define_text_1">
+1. Right-click "References" in the Solution Explorer, browse to the local SDK, and add "ZwSoft.ZwCAD.Interop.dll" and "ZwSoft.ZwCAD.Interop.Common.dll". Then add <code>using ZwSoft.ZwCAD.Interop;</code>.</p>
+<p class="figure"><img class="pics" src="../pics/9-2-Referencing%20COM%20components.png"></p>
+<p class="define_text_1">2. Right-click "References" in the Solution Explorer, browse to the ZWCAD installation directory, and add "zwcad.exe". Then add <code>using ZWCAD;</code>.
+  </p>
+  <p class="define_text_1">3. Right-click "References", select the COM tab, and add "ZWCAD 2025 Type Library". Then add <code>using ZWCAD;</code>.
+  </p>
+<p class="figure"><img class="pics" src="../pics/9-2-ZWCAD%202025%20Type%20Library.png"></p>
+
+  <p class="define_text_1">Note: Choose only one of the above three methods to reference COM components. This example uses the first method.</p>
+<p class="define_head_1">Connect to or Launch ZWCAD:</p>
+<p class="define_text_1">Define global variables <code>ZcadApplication</code> and <code>ZcadDocument</code> in the <code>Form1</code> class to control the ZWCAD instance and the opened DWG document.</p>
+<pre class="code_sample">
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using ZwSoft.ZwCAD.Interop;
+namespace COM_Components
+{
+    public partial class Form1 : Form
+    {
+        ZcadApplication zcadApp = null;
+        ZcadDocument Doc = null;
+        public Form1()
+        {
+            InitializeComponent();
+        }
+</pre>
+<p class="define_text_1">
+Add the following code to the <code>Start_ZWCAD_Click</code> button event handler:</p>
+<pre class="code_sample">
+private void Start_ZWCAD_Click(object sender, EventArgs e)
+{
+   
+    const string strProgId = "ZWCAD.Application.2026";
+    try
+    {
+        zcadApp = (ZcadApplication)Marshal.GetActiveObject("ZWCAD.Application.2026");
+    }
+    catch
+    {
+        if (zcadApp == null)
+        {
+            try
+            {
+                // Create a new instance of ZWCAD
+                zcadApp = Activator.CreateInstance(Type.GetTypeFromProgID(strProgId)) as ZcadApplication; 
+            }
+            catch 
+            {
+                System.Windows.Forms.MessageBox.Show("Instance of 'ZWCAD.Application.2026" +
+                                                        " could not be created.");
+                return;
+            }
+        }
+    }
+
+    if (zcadApp != null)
+    {
+        zcadApp.Visible = true; // Control ZWCAD UI visibility
+    }
+}</pre>
+
+<p class="define_head_1">Key Function Explanation:</p>
+<p class="define_text_1">1. First, use <code>Marshal.GetActiveObject("ZWCAD.Application.2026");</code> to retrieve an existing ZWCAD 2026 instance.</p>
+<p class="define_text_1">2. If the above step fails, create a new <code>ZcadApplication</code> instance via <code>Activator.CreateInstance</code>, which launches a new ZWCAD 2026 process.</p>
+<p class="define_text_1">3. <code>zcadApp.Visible = true;</code> controls the visibility of the ZWCAD 2026 UI. Setting it to <code>false</code> runs ZWCAD in silent mode (useful for automation scenarios).</p>
+<p class="define_head_1">Select DWG File:</p>
+<p class="define_text_1">Add the following code to the <code>Select_File_Click</code> button event handler:</p>
+
+<pre class="code_sample">
+private void Select_File_Click(object sender, EventArgs e)
+{
+    OpenFileDialog dialog = new OpenFileDialog();
+    dialog.Multiselect = false;
+    dialog.Title = "select dwg file";
+    dialog.Filter = "dwg file(*.dwg)|*.dwg";
+    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+    {
+        string file = dialog.FileName;
+        this.DwgFilePath.Text = file;
+    }
+}</pre>
+<p class="define_head_1">Key Function Explanation:</p>
+<p class="define_text_1">This example uses <code>OpenFileDialog</code> to select a DWG file path for demonstration. For fully automated workflows, use non-dialog methods to avoid interrupting the process.</p>
+
+<p class="define_head_1">Open DWG Document:</p>
+<p class="define_text_1">Add the following code to the <code>opendwg_Click</code> button event handler:</p>
+
+<pre class="code_sample">
+private void opendwg_Click(object sender, EventArgs e)
+{
+    Object ReadOnly = false;
+    Object Password = Type.Missing;
+    Doc = zcadApp.Documents.Open(this.DwgFilePath.Text, ReadOnly, Password);
+}</pre>
+<p class="define_head_1">Key Function Explanation:</p>
+<p class="define_text_1">Set the object ReadOnly parameter in the Open function to false because this example will add entities to the dwg file, so it needs to be opened for writing. If you only need to read data without adding entities, set ReadOnly = true. Some drawings may have passwords; use Password to enter the password. If there is no password, assign Type.Missing.</p>
+<p class="define_head_1">Add Entities:</p>
+<p class="define_text_1">Add the following code to the button function Draw_Entities_Click in the "Draw Entities" dialog:</p>
+<pre class="code_sample">
+private void Draw_Entities_Click(object sender, EventArgs e)
+{
+    ZcadModelSpace ms = Doc.ModelSpace;
+    ms.AddCircle(new double[] { 0, 0, 0 },10);
+    ms.AddText("Hello World", new double[] { 0, 0, 0 }, 2.5);
+}</pre>
+<p class="define_head_1">Key Function Description:</p>
+<p class="define_text_1">In the previous chapter, we introduced how to use Doc.ModelSpace to obtain the model space instance. The "Add" methods provided by Doc.ModelSpace allow adding common entities (refer to VBA documentation for more methods to add different types of entities). This example demonstrates adding a circle with center coordinates at (0,0) and radius 10, and text with a height of 2.5 and content "Hello World".</p>
+<hr algin="left" >
+<p class="define_head_1">Print PDF File:</p>
+<p class="define_text_1">Add the following code to the button function Plot_to_Pdf_Click in the "Plot to Pdf" dialog:</p>
+<pre class="code_sample">
+private void Plot_to_Pdf_Click(object sender, EventArgs e)
+{
+    ZcadLayout Layout;
+    if (zcadApp.ActiveDocument.ActiveSpace == 0)
+        Layout = Doc.PaperSpace.Layout;
+    else
+        Layout = Doc.ModelSpace.Layout;
+
+    String MediaName = "ISO_A1_(594.00_x_841.00_MM)";
+    try
+    {
+        ZcadPlotConfiguration oplot = Doc.PlotConfigurations.Add("PDF", Layout.ModelType);
+
+        oplot.PaperUnits = ZcPlotPaperUnits.zcMillimeters;
+
+        oplot.StyleSheet = "monochrome.ctb";
+
+        oplot.PlotWithPlotStyles = true;
+
+        oplot.ConfigName = "DWG To PDF.pc5";
+
+        oplot.UseStandardScale = true;
+
+        oplot.StandardScale = ZcPlotScale.zcScaleToFit;
+
+        double[] dMinPoint, dMaxPoint;
+
+        ZcPlotRotation acPlotRotation;
+
+        FrameExtents(Doc, out dMinPoint, out dMaxPoint, out acPlotRotation);
+
+        double[] dMinPointDCS, dMaxPointDCS;
+
+        dMinPointDCS = Doc.Utility.TranslateCoordinates(dMinPoint, ZcCoordinateSystem.zcUCS, ZcCoordinateSystem.zcDisplayDCS, 0, new double[] { 0.0, 0.0, 0.0 });
+
+        dMaxPointDCS = Doc.Utility.TranslateCoordinates(dMaxPoint, ZcCoordinateSystem.zcUCS, ZcCoordinateSystem.zcDisplayDCS, 0, new double[] { 0.0, 0.0, 0.0 });
+
+        oplot.SetWindowToPlot(new double[] { dMinPointDCS[0], dMinPointDCS[1] }, new double[] { dMaxPointDCS[0], dMaxPointDCS[1] });
+
+        oplot.PlotRotation = acPlotRotation;
+
+        oplot.PlotType = ZcPlotType.zcWindow;
+
+        oplot.CenterPlot = true;
+
+        oplot.CanonicalMediaName = MediaName;
+
+        Layout.CopyFrom(oplot);
+
+        Layout.RefreshPlotDeviceInfo();
+
+        Object nBACKGROUNDPLOT = 0, nFILEDIA = 0, nCMDDIA = 0;
+
+        nBACKGROUNDPLOT = Doc.GetVariable("BACKGROUNDPLOT");
+        nFILEDIA = Doc.GetVariable("FILEDIA");
+        nCMDDIA = Doc.GetVariable("CMDDIA");
+
+        Object xNull = 0;
+        Doc.SetVariable("BACKGROUNDPLOT", xNull);
+        Doc.SetVariable("FILEDIA", xNull);
+        Doc.SetVariable("CMDDIA", xNull);
+
+        Doc.Plot.QuietErrorMode = true;
+
+        Doc.Plot.PlotToFile("d:/ZWCAD.pdf");
+
+        Doc.SetVariable("BACKGROUNDPLOT", nBACKGROUNDPLOT);
+        Doc.SetVariable("FILEDIA", nFILEDIA);
+        Doc.SetVariable("CMDDIA", nCMDDIA);
+
+        oplot.Delete();
+
+        oplot = null;
+
+        MessageBox.Show("plot succeed.");
+
+
+    }
+    catch (System.Exception es)
+    {
+        System.Windows.Forms.MessageBox.Show(es.ToString());
+
+    }
+
+}</pre>
+<p class="define_head_1">Key Function Description:</p>
+<p class="define_text_1">The COM printing function is similar to the .NET printing chapter and will not be elaborated here. Note that this example uses the window plotting mode SetWindowToPlot for more precise printing. It also uses the Doc.Utility class library mentioned in the previous section, specifically the TranslateCoordinates function to convert UCS coordinates to DCS coordinates. This ensures accurate printing even if UCS and WCS coordinates differ. FrameExtents is a custom function to obtain the extents of all entities in the model space. The code is as follows:</p>
+<pre class="code_sample">
+private void FrameExtents(ZcadDocument Doc, out double[] outMinPoint, out double[] outMaxPoint, out ZcPlotRotation zcPlotRotation)
+{
+    outMinPoint = new double[] { 0.0, 0.0, 0.0 };
+    outMaxPoint = new double[] { 0.0, 0.0, 0.0 };
+    zcPlotRotation = ZcPlotRotation.zc0degrees; 
+    double dAreaTemp = 0;
+
+    var ss = Doc.SelectionSets.Add("plot");
+
+    ss.Select(ZcSelect.zcSelectionSetAll, null, null, null, null);
+    if (ss.Count > 0)
+    {
+        for (var i = 0; i < ss.Count; i++)
+        {
+            var entity = ss.Item(i);
+
+            object MinPoint, MaxPoint;
+
+            try
+            {
+                entity.GetBoundingBox(out MinPoint, out MaxPoint);
+            }
+            catch
+            {
+                continue; // Skip entities that cannot retrieve extents
+            }
+
+            double[] dMinPoint, dMaxPoint;
+
+            dMinPoint = (double[])MinPoint;
+            dMaxPoint = (double[])MaxPoint;
+
+            // Determine the largest area as the plotting extent
+            double dArea = (dMaxPoint[1] - dMinPoint[1]) * (dMaxPoint[0] - dMinPoint[0]);
+            // Filter out entities with excessively large extents to avoid plotting errors
+            if (dArea < 1000000000.0 && dArea > dAreaTemp)
+            {
+                dAreaTemp = dArea;
+                outMinPoint = dMinPoint;
+                outMaxPoint = dMaxPoint;
+
+            }
+
+        }
+
+    }
+    ss.Delete();
+
+    if (outMaxPoint[1] - outMinPoint[1] < outMaxPoint[0] - outMinPoint[0])
+    {
+        zcPlotRotation = ZcPlotRotation.zc90degrees;
+    }
+}</pre>
+
+<p class="define_head_1">Close DWG File:</p>
+
+<p class="define_text_1">Add the following code to the button function Close_Save_Click in the "Close Save" dialog:</p>
+<pre class="code_sample">
+private void Close_Save_Click(object sender, EventArgs e)
+{
+    Doc.Save();
+    Doc.Close();
+}</pre>
+
+<p class="define_head_1">Close ZWCAD:</p>
+
+<p class="define_text_1">Add the following code to the button function Quit_Click in the "Quit" dialog:</p>
+<pre class="code_sample">
+private void Quit_Click(object sender, EventArgs e)
+{
+    zcadApp.Quit();
+}</pre>
+
+    </div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

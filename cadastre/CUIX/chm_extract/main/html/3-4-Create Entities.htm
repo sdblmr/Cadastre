@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Creation and Editing of Common Entities</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+<div class="hear_text">ZWCAD 2026 .NET API Developer Guide</div>
+</div>
+</div>
+</div>
+
+<div class="clr"></div>
+<div class="Tophead"><span class="Tophead_text">Creation and Editing of Common Entities</span></div> 
+<div class="clr"></div>
+
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="define_head_1">Methods for Creating and Editing Common Entities</p>
+<p class="define_text_1">This chapter introduces the creation methods for common entities such as <a href="#line">Line</a>, <a href="#circle">Circle</a> (<a href="#arc">Arc</a>), <a href="#ellipse">Ellipse (Arc)</a>, <a href="#pline">Polyline</a>, <a href="#text">Text</a>, <a href="#hatch">Hatch</a>, <a href="#table">Table</a>, <a href="#dim">Dimension</a>, etc.</p>
+
+<hr algin="left" >
+<p class="define_head_1" id="line">Line</p>
+<p class="define_head_1">The following table lists common interfaces for creating and editing lines:</p>
+<table class="table-desc">
+    <TR>
+    <TH>Interface</TH>
+    <TH>Function</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">public Line(
+            Point3d pointer1, 
+            Point3d pointer2
+        );
+        </td>
+        <td class="table-item-odd">Constructs a line using start and end points</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">StartPoint</td>
+        <td class="table-item-odd">Reads/writes the start point of the line</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">EndPoint</td>
+        <td class="table-item-odd">Reads/writes the end point of the line</td>
+    </TR>
+</TABLE>
+
+<p class="define_head_1">Code Examples</p>
+<p class="define_head_2">1. Create a Line</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("DrawLine", CommandFlags.Modal)]
+    public void DrawLine()
+    {
+        Document objDoc = Application.DocumentManager.MdiActiveDocument;
+        Database objDB = objDoc.Database;
+        
+        Transaction trans = objDoc.TransactionManager.StartTransaction();
+        BlockTable zcBLT = (BlockTable)trans.GetObject(objDB.BlockTableId, OpenMode.ForRead);
+        BlockTableRecord zcBLTR = (BlockTableRecord)trans.GetObject(zcBLT[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+        
+        using (trans)
+        {
+            Point3d ptStart = new Point3d(0, 0, 0);    // Define start point coordinates
+            Point3d ptEnd = new Point3d(100, 100, 0);  // Define end point coordinates
+            Line objLine = new Line(ptStart, ptEnd);   // Create line object
+            
+            zcBLTR.AppendEntity(objLine);
+            trans.AddNewlyCreatedDBObject(objLine, true);
+            trans.Commit();
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("DrawLine", CommandFlags.Modal)&gt;
+    Public Sub DrawLine()
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim objDB As Database = objDoc.Database
+
+        Dim trans As Transaction = objDoc.TransactionManager.StartTransaction()
+        Dim zcBLT As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+        Dim zcBLTR As BlockTableRecord = CType(trans.GetObject(zcBLT(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+
+        Using trans
+            Dim ptStart As New Point3d(0, 0, 0) ' Define start point coordinates
+            Dim ptEnd As New Point3d(100, 100, 0) ' Define end point coordinates
+            Dim objLine As New Line(ptStart, ptEnd) ' Create line object
+
+            zcBLTR.AppendEntity(objLine)
+            trans.AddNewlyCreatedDBObject(objLine, True)
+            trans.Commit()
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Result:</p>
+<p class="define_text_1">A line is created in the model space.</p>
+
+<p class="define_head_2">2. Edit a Line</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("ModLine", CommandFlags.Modal)]
+    public void ModLine()
+    {
+        Document objDoc = Application.DocumentManager.MdiActiveDocument;
+        Database objDB = objDoc.Database;
+        using (Transaction trans = objDoc.TransactionManager.StartTransaction())
+        {
+            BlockTable zcBLT = (BlockTable)trans.GetObject(objDB.BlockTableId, OpenMode.ForRead);
+            BlockTableRecord zcBlkTblRec = (BlockTableRecord)trans.GetObject(zcBLT[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+            foreach (ObjectId entOid in zcBlkTblRec) // Traverse all entities in model space
+            {
+                Entity ent = trans.GetObject(entOid, OpenMode.ForWrite) as Entity;
+                if (ent != null && ent.GetType() == typeof(Line)) // Filter line objects
+                {
+                    Line line = ent as Line;
+                    if (line.ColorIndex == 1) // Check line color
+                    {
+                        Point3d startPoint = new Point3d(0, 100, 0);
+                        Point3d endPoint = new Point3d(100, 0, 0);
+                        line.StartPoint = startPoint; // Modify start point
+                        line.EndPoint = endPoint;     // Modify end point
+                    }
+                    else
+                    {
+                        line.Erase(); // Delete the line
+                    }
+                }
+            }
+            trans.Commit();
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("ModLine", CommandFlags.Modal)&gt;
+    Public Sub ModLine()
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim objDB As Database = objDoc.Database
+    
+        Using trans As Transaction = objDoc.TransactionManager.StartTransaction()
+            Dim zcBLT As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim zcBlkTblRec As BlockTableRecord = CType(trans.GetObject(zcBLT(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+    
+            For Each entOid As ObjectId In zcBlkTblRec ' Traverse all entities in model space
+                Dim ent As Entity = CType(trans.GetObject(entOid, OpenMode.ForWrite), Entity)
+                If ent IsNot Nothing AndAlso ent.GetType() Is GetType(Line) Then ' Filter line objects
+                    Dim li As Line = CType(ent, Line)
+                    If line.ColorIndex = 1 Then ' Check line color
+                        Dim startPoint As New Point3d(0, 100, 0)
+                        Dim endPoint As New Point3d(100, 0, 0)
+                        li.StartPoint = startPoint ' Modify start point coordinates
+                        li.EndPoint = endPoint   ' Modify end point coordinates
+                    Else
+                    li.Erase() ' Delete line
+                    End If
+                End If
+            Next
+    
+            trans.Commit()
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Traverse all lines in model space. Modify start/end coordinates if the line is red; otherwise delete it.</p>
+
+<hr algin="left" >
+<p class="define_head_1" id="circle">Circle</p>
+<p class="define_head_1">The following table lists common interfaces for creating and editing circles:</p>
+<table class="table-desc">
+    <TR>
+    <TH>Interface</TH>
+    <TH>Purpose</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">public Circle(
+            Point3d center, 
+            Vector3d normal, 
+            double radius
+        );        
+        </td>
+        <td class="table-item-odd">Construct a circle using center, normal vector, and radius</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Center</td>
+        <td class="table-item-odd">Read/write center point</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Radius</td>
+        <td class="table-item-odd">Read/write radius</td>
+    </TR>
+</TABLE>
+
+<p class="define_head_1">Code Samples</p>
+<p class="define_head_2">1. Create Circle</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("DrawCircle", CommandFlags.Modal)]
+    public void DrawCircle()
+    {
+        Document objDoc = Application.DocumentManager.MdiActiveDocument;
+        Database objDB = objDoc.Database;
+        
+        Transaction trans = objDoc.TransactionManager.StartTransaction();
+        BlockTable zcBLT = (BlockTable)trans.GetObject(objDB.BlockTableId, OpenMode.ForRead);
+        BlockTableRecord zcBLTR = (BlockTableRecord)trans.GetObject(zcBLT[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+        
+        using (trans)
+        {
+            Point3d center = new Point3d(0, 0, 0);    // Define center point
+            double radius = 50.0;  // Define radius
+            Circle objCircle = new Circle(center, Vector3d.ZAxis, radius);   // Create circle object
+            
+            zcBLTR.AppendEntity(objCircle);
+            trans.AddNewlyCreatedDBObject(objCircle, true);
+            trans.Commit();
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("DrawCircle", CommandFlags.Modal)&gt;
+    Public Sub DrawCircle()
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim objDB As Database = objDoc.Database
+    
+        Dim trans As Transaction = objDoc.TransactionManager.StartTransaction()
+        Dim zcBLT As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+        Dim zcBLTR As BlockTableRecord = CType(trans.GetObject(zcBLT(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+    
+        Using trans
+            Dim center As New Point3d(0, 0, 0) ' Define center point
+            Dim radius As Double = 50.0 ' Define radius
+            Dim objCircle As New Circle(center, Vector3d.ZAxis, radius) ' Create circle object
+    
+            zcBLTR.AppendEntity(objCircle)
+            trans.AddNewlyCreatedDBObject(objCircle, True)
+            trans.Commit()
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Create a circle in model space.</p>
+
+<p class="define_head_2">2. Edit Circle</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("ModCircle", CommandFlags.Modal)]
+    public void ModCircle()
+    {
+        Document objDoc = Application.DocumentManager.MdiActiveDocument;
+        Database objDB = objDoc.Database;
+        using (Transaction trans = objDoc.TransactionManager.StartTransaction())
+        {
+            BlockTable zcBLT = (BlockTable)trans.GetObject(objDB.BlockTableId, OpenMode.ForRead);
+            BlockTableRecord zcBlkTblRec = (BlockTableRecord)trans.GetObject(zcBLT[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+            foreach (ObjectId entOid in zcBlkTblRec) // Traverse all entities in model space
+            {
+                Entity ent = trans.GetObject(entOid, OpenMode.ForWrite) as Entity;
+                if (ent != null && ent.GetType() == typeof(Circle)) // Filter circle objects
+                {
+                    Circle cir = ent as Circle;
+                    if (cir.ColorIndex == 1) // Check circle color
+                    {
+                        Point3d center = new Point3d(0, 100, 0);
+                        double radius = 100.0;
+                        cir.Center = center; // Modify center coordinates
+                        cir.Radius = radius; // Modify radius
+                    }
+                    else
+                    {
+                        cir.Erase(); // Delete circle
+                    }
+                }
+            }
+            trans.Commit();
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("ModCircle", CommandFlags.Modal)&gt;
+    Public Sub ModCircle()
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim objDB As Database = objDoc.Database
+
+        Using trans As Transaction = objDoc.TransactionManager.StartTransaction()
+            Dim zcBLT As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim zcBlkTblRec As BlockTableRecord = CType(trans.GetObject(zcBLT(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+
+            For Each entOid As ObjectId In zcBlkTblRec ' Traverse all entities in model space
+                Dim ent As Entity = CType(trans.GetObject(entOid, OpenMode.ForWrite), Entity)
+                If ent IsNot Nothing AndAlso ent.GetType() Is GetType(Circle) Then ' Filter circle objects
+                    Dim cir As Circle = CType(ent, Circle)
+                    If cir.ColorIndex = 1 Then ' Check circle color
+                        Dim center As New Point3d(0, 100, 0)
+                        Dim radius As Double = 100.0
+                        cir.Center = center ' Modify center coordinates
+                        cir.Radius = radius ' Modify radius
+                    Else
+                        cir.Erase() ' Delete circle
+                    End If
+                End If
+            Next
+            trans.Commit()
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Iterate through all circles in model space. If a circle is red, modify its center and radius; otherwise, delete it.</p>
+
+<hr align="left">
+<p class="define_head_1" id="arc">Arc</p>
+<p class="define_head_1">The following table lists common interfaces for creating and editing arcs:</p>
+<table class="table-desc">
+    <TR>
+    <TH>Interface</TH>
+    <TH>Function</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">public Arc(
+            Point3d center, 
+            double radius, 
+            double startAngle, 
+            double endAngle
+        );
+        </td>
+        <td class="table-item-odd">Constructs an arc using center point, radius, start angle, and end angle</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">public Arc(
+            Point3d center, 
+            normal As Vector3d,
+            double radius, 
+            double startAngle, 
+            double endAngle
+        );
+        </td>
+        <td class="table-item-odd">Constructs an arc using center point, normal vector, radius, start angle, and end angle</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Center</td>
+        <td class="table-item-odd">Read/Write center point</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Radius</td>
+        <td class="table-item-odd">Read/Write radius</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">StartAngle</td>
+        <td class="table-item-odd">Read/Write start angle</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">EndAngle</td>
+        <td class="table-item-odd">Read/Write end angle</td>
+    </TR>
+</table>
+
+<p class="define_head_1">Code Samples</p>
+<p class="define_head_2">1. Create an Arc</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("DrawArc", CommandFlags.Modal)]
+    public void DrawArc()
+    {
+        Document objDoc = Application.DocumentManager.MdiActiveDocument;
+        Database objDB = objDoc.Database;
+        
+        Transaction trans = objDoc.TransactionManager.StartTransaction();
+        BlockTable zcBLT = (BlockTable)trans.GetObject(objDB.BlockTableId, OpenMode.ForRead);
+        BlockTableRecord zcBLTR = (BlockTableRecord)trans.GetObject(zcBLT[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+        
+        using (trans)
+        {
+            // Create arc parameters
+            Point3d center = new Point3d(0, 0, 0);   // Center coordinates
+            double radius = 100.0;                   // Radius
+            double startAngle = 0.0;                 // Start angle
+            double endAngle = Math.PI;               // End angle
+            // Create arc object
+            Arc arc = new Arc(center, Vector3d.ZAxis, radius, startAngle, endAngle);
+            
+            zcBLTR.AppendEntity(arc);
+            trans.AddNewlyCreatedDBObject(arc, true);
+            trans.Commit();
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("DrawArc", CommandFlags.Modal)&gt;
+    Public Sub DrawArc()
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim objDB As Database = objDoc.Database
+
+        Dim trans As Transaction = objDoc.TransactionManager.StartTransaction()
+        Dim zcBLT As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+        Dim zcBLTR As BlockTableRecord = CType(trans.GetObject(zcBLT(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+
+        Using trans
+            ' Create arc parameters
+            Dim center As New Point3d(0, 0, 0) ' Center coordinates
+            Dim radius As Double = 100.0 ' Radius
+            Dim startAngle As Double = 0.0 ' Start angle
+            Dim endAngle As Double = Math.PI ' End angle
+
+            ' Create arc object
+            Dim arcEnt As New Arc(center, Vector3d.ZAxis, radius, startAngle, endAngle)
+
+            zcBLTR.AppendEntity(arcEnt)
+            trans.AddNewlyCreatedDBObject(arcEnt, True)
+            trans.Commit()
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Create an arc in model space</p>
+
+<p class="define_head_2">2. Edit an Arc</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("ModArc", CommandFlags.Modal)]
+    public void ModArc()
+    {
+        Document objDoc = Application.DocumentManager.MdiActiveDocument;
+        Database objDB = objDoc.Database;
+        using (Transaction trans = objDoc.TransactionManager.StartTransaction())
+        {
+            BlockTable zcBLT = (BlockTable)trans.GetObject(objDB.BlockTableId, OpenMode.ForRead);
+            BlockTableRecord zcBlkTblRec = (BlockTableRecord)trans.GetObject(zcBLT[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+            foreach (ObjectId entOid in zcBlkTblRec) // Iterate through all entities in model space
+            {
+                Entity ent = trans.GetObject(entOid, OpenMode.ForWrite) as Entity;
+                if (ent != null && ent.GetType() == typeof(Arc)) // Filter arc objects
+                {
+                    Arc arcEnt = ent as Arc;
+                    if (arcEnt.ColorIndex == 1) // Check arc color
+                    {
+                        Point3d center = new Point3d(0, 100, 0);
+                        double radius = 50.0;
+                        double startAngle = Math.PI / 2;
+                        double endAngle = Math.PI * 3 / 2;
+                        arcEnt.Center = center; // Modify center
+                        arcEnt.Radius = radius; // Modify radius
+                        arcEnt.StartAngle = startAngle; // Modify start angle
+                        arcEnt.EndAngle = endAngle; // Modify end angle
+                    }
+                    else
+                    {
+                        arcEnt.Erase(); // Delete arc
+                    }
+                }
+            }
+            trans.Commit();
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("ModArc", CommandFlags.Modal)&gt;
+    Public Sub ModArc()
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim objDB As Database = objDoc.Database
+
+        Using trans As Transaction = objDoc.TransactionManager.StartTransaction()
+            Dim zcBLT As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim zcBlkTblRec As BlockTableRecord = CType(trans.GetObject(zcBLT(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+[file name]: 3-4-Create Entities.htm
+[file content begin]
+            For Each entOid As ObjectId In zcBlkTblRec ' Iterate through all entities in model space
+                Dim ent As Entity = CType(trans.GetObject(entOid, OpenMode.ForWrite), Entity)
+                If ent IsNot Nothing AndAlso ent.GetType() Is GetType(Arc) Then ' Filter arc objects
+                    Dim arcEnt As Arc = CType(ent, Arc)
+                    If arcEnt.ColorIndex = 1 Then ' Check arc color
+                        Dim center As New Point3d(0, 100, 0)
+                        Dim radius As Double = 50.0
+                        Dim startAngle As Double = Math.PI / 2
+                        Dim endAngle As Double = Math.PI * 3 / 2
+
+                        arcEnt.Center = center ' Modify center coordinates
+                        arcEnt.Radius = radius ' Modify radius
+                        arcEnt.StartAngle = startAngle ' Modify start angle
+                        arcEnt.EndAngle = endAngle ' Modify end angle
+                    Else
+                        arcEnt.Erase() ' Delete the arc
+                    End If
+                End If
+            Next
+
+            trans.Commit()
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Result:</p>
+<p class="define_text_1">Iterate through all arcs in model space; if the arc is red, modify its center, radius, start angle, and end angle; if not red, delete it.</p>
+
+<hr algin="left" >
+<p class="define_head_1" id="ellipse">Ellipse (Arc)</p>
+<p class="define_head_1">The following table lists common interfaces for creating and editing elliptical arcs:</p>
+<table class="table-desc">
+    <TR>
+    <TH>Interface</TH>
+    <TH>Purpose</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">public Ellipse(
+            Point3d center, 
+            Vector3d unitNormal, 
+            Vector3d majorAxis, 
+            double radiusRatio, 
+            double startAngle, 
+            double endAngle
+        );        
+        </td>
+        <td class="table-item-odd">Construct an elliptical arc using center point, normal vector, major axis vector, radius ratio, start angle, and end angle.</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Center</td>
+        <td class="table-item-odd">Read/write center point</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">MajorAxis</td>
+        <td class="table-item-odd">Read/write major axis vector</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">RadiusRatio</td>
+        <td class="table-item-odd">Read/write radius ratio</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">StartAngle</td>
+        <td class="table-item-odd">Read/write start angle</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">EndAngle</td>
+        <td class="table-item-odd">Read/write end angle</td>
+    </TR>
+</TABLE>
+
+<p class="define_head_1">Code Examples</p>
+<p class="define_head_2">1. Create Ellipse</p> 
+<p class="define_head_3">C#</p> 
+<pre class="code_sample"> 
+    [CommandMethod("DrawEllipse", CommandFlags.Modal)] 
+    public void DrawEllipse() 
+    { 
+        Document objDoc = Application.DocumentManager.MdiActiveDocument; 
+        Database objDB = objDoc.Database;
+        using (Transaction trans = objDoc.TransactionManager.StartTransaction())
+        {
+            // Get block table and model space
+            BlockTable blockTable = trans.GetObject(objDB.BlockTableId, OpenMode.ForRead) as BlockTable;
+            BlockTableRecord modelSpace = trans.GetObject(
+                blockTable[BlockTableRecord.ModelSpace], 
+                OpenMode.ForWrite) as BlockTableRecord;
+        
+            // Define ellipse parameters
+            Point3d center = new Point3d(0, 0, 0);      // Ellipse center point
+            Vector3d majorAxis = Vector3d.XAxis * 100;   // Major axis direction and length (X-axis, length 100)
+            double radiusRatio = 0.5;                     // Minor-to-major axis ratio (0.5 means minor axis is 50)
+            double startAngle = 0.0;                      // Start angle (radians)
+            double endAngle = 2 * Math.PI;                // End angle (full ellipse)
+        
+            // Create ellipse object
+            Ellipse ellipse = new Ellipse(center, Vector3d.ZAxis, majorAxis, radiusRatio, startAngle, endAngle);
+            ellipse.ColorIndex = 2;                       // Set to yellow
+        
+            // Add to model space
+            modelSpace.AppendEntity(ellipse);
+            trans.AddNewlyCreatedDBObject(ellipse, true);
+            trans.Commit();
+        }
+    }
+    </pre>
+    
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("DrawEllipse", CommandFlags.Modal)&gt; 
+    Public Sub DrawEllipse() 
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument 
+        Dim objDB As Database = objDoc.Database
+        Using trans As Transaction = objDoc.TransactionManager.StartTransaction()
+            ' Get block table and model space
+            Dim blockTable As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim modelSpace As BlockTableRecord = CType(trans.GetObject(blockTable(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+        
+            ' Define ellipse parameters
+            Dim center As New Point3d(0, 0, 0)           ' Ellipse center point
+            Dim majorAxis As Vector3d = Vector3d.XAxis * 100 ' Major axis direction and length
+            Dim radiusRatio As Double = 0.5               ' Minor axis ratio
+            Dim startAngle As Double = 0.0                ' Start angle
+            Dim endAngle As Double = 2 * Math.PI          ' End angle
+        
+            ' Create ellipse object
+            Dim ellipse As New Ellipse(center, Vector3d.ZAxis, majorAxis, radiusRatio, startAngle, endAngle)
+            ellipse.ColorIndex = 2                        ' Set to yellow
+        
+            ' Add to model space
+            modelSpace.AppendEntity(ellipse)
+            trans.AddNewlyCreatedDBObject(ellipse, True)
+            trans.Commit()
+        End Using
+    End Sub
+    </pre>  
+    <p class="define_head_1">Result:</p> 
+    <p class="define_text_1">Create a full yellow ellipse in model space with horizontal major axis 100 and vertical minor axis 50.</p>
+
+    <p class="define_head_2">2. Modify Ellipse</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+    [CommandMethod("ModEllipse", CommandFlags.Modal)] 
+    public void ModEllipse() 
+    { 
+        Document objDoc = Application.DocumentManager.MdiActiveDocument; Database objDB = objDoc.Database;
+        using (Transaction trans = objDoc.TransactionManager.StartTransaction())
+        {
+            BlockTable blockTable = trans.GetObject(objDB.BlockTableId, OpenMode.ForRead) as BlockTable;
+            BlockTableRecord modelSpace = trans.GetObject(
+                blockTable[BlockTableRecord.ModelSpace], 
+                OpenMode.ForWrite) as BlockTableRecord;
+        
+            foreach (ObjectId entId in modelSpace)
+            {
+                Entity ent = trans.GetObject(entId, OpenMode.ForWrite) as Entity;
+                if (ent is Ellipse ellipse) // Filter ellipse objects
+                {
+                    // Modification condition: Ellipse with angle range less than 360 degrees
+                    if (ellipse.EndAngle - ellipse.StartAngle < 2 * Math.PI) 
+                    {
+                        // Modify to a full ellipse
+                        ellipse.EndAngle = ellipse.StartAngle + 2 * Math.PI; 
+                        ellipse.ColorIndex = 3; // Change to green
+                    }
+                    else 
+                    {
+                        // Modify shape parameters
+                        ellipse.RadiusRatio = 0.3;               // Adjust the ratio of major to minor axes
+                    }
+                }
+            }
+            trans.Commit();
+        }
+    }
+    </pre>
+    
+    <p class="define_head_3">VB</p> <pre class="code_sample"> 
+    &lt;CommandMethod("ModEllipse", CommandFlags.Modal)&gt; 
+    Public Sub ModEllipse() 
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument 
+        Dim objDB As Database = objDoc.Database
+        Using trans As Transaction = objDoc.TransactionManager.StartTransaction()
+            Dim blockTable As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim modelSpace As BlockTableRecord = CType(trans.GetObject(blockTable(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+        
+            For Each entId As ObjectId In modelSpace
+                Dim ent As Entity = CType(trans.GetObject(entId, OpenMode.ForWrite), Entity)
+                If TypeOf ent Is Ellipse Then
+                    Dim ellipse As Ellipse = CType(ent, Ellipse)
+                    ' Modify condition check
+                    If ellipse.EndAngle - ellipse.StartAngle < 2 * Math.PI Then
+                        ellipse.EndAngle = ellipse.StartAngle + 2 * Math.PI
+                        ellipse.ColorIndex = 3 ' Change to green
+                    Else
+                        ellipse.RadiusRatio = 0.3
+                    End If
+                End If
+            Next
+            trans.Commit()
+        End Using
+    End Sub
+    </pre>  
+    <p class="define_head_1">Result:</p> 
+    <p class="define_text_1">Iterate through all ellipses in the model space:<br> - Elliptical arcs (non-closed) will be modified to full ellipses and changed to green<br> - Full ellipses will be modified with a vertical major axis (length 80) and minor axis ratio 0.3 (minor axis 24)</p>
+
+    <hr algin="left" >
+    <p class="define_head_1" id="pline">Polyline</p>
+    <p class="define_head_1">The following table lists common interfaces for creating and editing polylines:</p>
+    <table class="table-desc">
+        <TR>
+        <TH>Interface</TH>
+        <TH>Function</TH>
+        </TR>
+        <TR>
+            <td class="table-item-odd">AddVertexAt</td>
+            <td class="table-item-odd">Add vertex:<br> (Index, Point2d coordinates, bulge, start width, end width)</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">SetPointAt</td>
+            <td class="table-item-odd">Modify coordinates of the vertex at the specified index</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">ConstantWidth</td>
+            <td class="table-item-odd">Global line width (uniform width for all segments)</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Closed</td>
+            <td class="table-item-odd">Closed property (true to automatically connect first and last vertices)</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">NumberOfVertices</td>
+            <td class="table-item-odd">Get the number of vertices</td>
+        </TR>
+    </TABLE>
+    
+    <p class="define_head_1">Code Example</p>
+    <p class="define_head_2">1. Create Polyline</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+        [CommandMethod("DrawPolyline", CommandFlags.Modal)] 
+        public void DrawPolyline() 
+        { 
+            Document objDoc = Application.DocumentManager.MdiActiveDocument; 
+            Database objDB = objDoc.Database;
+            using (Transaction trans = objDoc.TransactionManager.StartTransaction())
+            {
+                // Get block table and model space
+                BlockTable blockTable = trans.GetObject(objDB.BlockTableId, OpenMode.ForRead) as BlockTable;
+                BlockTableRecord modelSpace = trans.GetObject(
+                    blockTable[BlockTableRecord.ModelSpace], 
+                    OpenMode.ForWrite) as BlockTableRecord;
+            
+                // Create polyline object
+                Polyline polyline = new Polyline();
+                polyline.SetDatabaseDefaults(); // Inherit current database settings
+                
+                // Add vertices (quadrilateral coordinates)
+                polyline.AddVertexAt(0, new Point2d(0, 0), 0, 0, 0);    // Index 0
+                polyline.AddVertexAt(1, new Point2d(100, 0), 0, 0, 0);  // Index 1
+                polyline.AddVertexAt(2, new Point2d(100, 50), 0, 0, 0); // Index 2
+                polyline.AddVertexAt(3, new Point2d(0, 50), 0, 0, 0);  // Index 3
+                
+                // Set properties
+                polyline.Closed = true;               // Close the polyline
+                polyline.ColorIndex = 5;              // Set to blue
+                polyline.LineWeight = LineWeight.LineWeight050;
+                
+                // Add to model space
+                modelSpace.AppendEntity(polyline);
+                trans.AddNewlyCreatedDBObject(polyline, true);
+                trans.Commit();
+                
+                objDoc.Editor.WriteMessage("\nSuccessfully created quadrilateral polyline");
+            }
+        }
+    </pre>
+        
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("DrawPolyline", CommandFlags.Modal)&gt; 
+    Public Sub DrawPolyline() 
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument 
+        Dim objDB As Database = objDoc.Database
+        Using trans As Transaction = objDoc.TransactionManager.StartTransaction()
+            ' Get block table and model space
+            Dim blockTable As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim modelSpace As BlockTableRecord = CType(trans.GetObject(blockTable(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+            
+            ' Create polyline object
+            Dim polyline As New Polyline()
+            polyline.SetDatabaseDefaults()
+            
+            ' Add vertices
+            polyline.AddVertexAt(0, New Point2d(0, 0), 0, 0, 0)
+            polyline.AddVertexAt(1, New Point2d(100, 0), 0, 0, 0)
+            polyline.AddVertexAt(2, New Point2d(100, 50), 0, 0, 0)
+            polyline.AddVertexAt(3, New Point2d(0, 50), 0, 0, 0)
+            
+            ' Set properties
+            polyline.Closed = True
+            polyline.ColorIndex = 5
+            polyline.LineWeight = LineWeight.LineWeight050
+            
+            ' Add to model space
+            modelSpace.AppendEntity(polyline)
+            trans.AddNewlyCreatedDBObject(polyline, True)
+            trans.Commit()
+            
+            objDoc.Editor.WriteMessage(vbLf & "Successfully created quadrilateral polyline")
+        End Using
+    End Sub
+    </pre>    
+    <p class="define_head_1">Execution Result:</p> 
+    <p class="define_text_1">A closed blue quadrilateral polyline with a line weight of 0.50mm is created in the model space.</p>
+
+    <p class="define_head_2">2. Edit Polyline</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+    [CommandMethod("ModPolyline", CommandFlags.Modal)] 
+    public void ModPolyline() 
+    { 
+        Document objDoc = Application.DocumentManager.MdiActiveDocument; 
+        Database objDB = objDoc.Database;
+        using (Transaction trans = objDoc.TransactionManager.StartTransaction())
+        {
+            BlockTable blockTable = trans.GetObject(objDB.BlockTableId, OpenMode.ForRead) as BlockTable;
+            BlockTableRecord modelSpace = trans.GetObject(
+                blockTable[BlockTableRecord.ModelSpace], 
+                OpenMode.ForWrite) as BlockTableRecord;
+            
+            foreach (ObjectId entId in modelSpace)
+            {
+                Entity ent = trans.GetObject(entId, OpenMode.ForWrite) as Entity;
+                if (ent is Polyline polyline) 
+                {
+                    // Modification condition: Blue closed polyline
+                    if (polyline.ColorIndex == 5 && polyline.Closed) 
+                    {
+                        // Modify the second vertex coordinate (X:100?150)
+                        polyline.SetPointAt(1, new Point2d(150, 0));
+                            
+                        // Set global width
+                        polyline.ConstantWidth = 2.0; 
+                            
+                        // Add new vertex
+                        polyline.AddVertexAt(4, new Point2d(50, 75), 0, 0, 0);
+                    }
+                    else 
+                    {
+                        // Set to non-closed state
+                        polyline.Closed = false;
+                        polyline.ColorIndex = 1; // Change to red
+                    }
+                }
+            }
+            trans.Commit();
+        }
+    }
+    </pre>
+        
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("ModPolyline", CommandFlags.Modal)&gt; 
+    Public Sub ModPolyline() 
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument 
+        Dim objDB As Database = objDoc.Database
+        Using trans As Transaction = objDoc.TransactionManager.StartTransaction()
+            Dim blockTable As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim modelSpace As BlockTableRecord = CType(trans.GetObject(blockTable(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+            
+            For Each entId As ObjectId In modelSpace
+                Dim ent As Entity = CType(trans.GetObject(entId, OpenMode.ForWrite), Entity)
+                If TypeOf ent Is Polyline Then
+                    Dim polyline As Polyline = CType(ent, Polyline)
+                    ' Modification condition check
+                    If polyline.ColorIndex = 5 AndAlso polyline.Closed Then
+                        ' Modify the second vertex
+                        polyline.SetPointAt(1, New Point2d(150, 0))
+                        ' Set line width
+                        polyline.ConstantWidth = 2.0
+                        ' Add fifth vertex
+                        polyline.AddVertexAt(4, New Point2d(50, 75), 0, 0, 0)
+                    Else
+                        polyline.Closed = False
+                        polyline.ColorIndex = 1
+                    End If
+                End If
+            Next
+            trans.Commit()
+        End Using
+    End Sub
+    </pre>
+        
+    <p class="define_head_1">Execution Result:</p> 
+    <p class="define_text_1">Traverse all polylines in the model space:<br> - Blue closed polylines are modified: The X-coordinate of the second point is changed to 150, a fifth vertex (50,75) is added, and the line width is set to 2.0mm<br> - Other polylines are set to non-closed and changed to red</p>
+
+    <hr algin="left" >
+    <p class="define_head_1" id="text">Text</p>
+    <p class="define_head_1">Text is divided into single-line text (DBText) and multi-line text (MText). The following table lists common interfaces for creating and editing text:</p>
+    <p class="define_head_2">Single-Line Text</p>
+    <table class="table-desc">
+        <TR>
+        <TH>Interface</TH>
+        <TH>Function</TH>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Position</td>
+            <td class="table-item-odd">Position point of the text. Controls the text position when the vertical alignment is TextBase and the horizontal alignment is TextLeft, TextAlign, or TextFit.</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">AlignmentPoint</td>
+            <td class="table-item-odd">Alignment point of the text. Controls the text position when vertical/horizontal alignment modes do not fall under the Position point.</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Height</td>
+            <td class="table-item-odd">Text height</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Rotation</td>
+            <td class="table-item-odd">Rotation angle</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">TextString</td>
+            <td class="table-item-odd">Text content</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">HorizontalMode</td>
+            <td class="table-item-odd">Horizontal alignment mode</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">VerticalMode</td>
+            <td class="table-item-odd">Vertical alignment mode</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">TextStyleName</td>
+            <td class="table-item-odd">Text style name</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">TextStyleId</td>
+            <td class="table-item-odd">Text style ID</td>
+        </TR>
+    </TABLE>
+    <p class="define_head_2">Multi-Line Text</p>
+    <table class="table-desc">
+<TR>
+        <TH>Interface</TH>
+        <TH>Purpose</TH>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Location</td>
+            <td class="table-item-odd">Text insertion point</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">TextHeight</td>
+            <td class="table-item-odd">Text height</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Rotation</td>
+            <td class="table-item-odd">Rotation angle</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Contents</td>
+            <td class="table-item-odd">Text content</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Attachment</td>
+            <td class="table-item-odd">Alignment</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Height</td>
+            <td class="table-item-odd">Overall height of multiline text</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">Width</td>
+            <td class="table-item-odd">Overall width of multiline text</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">TextStyleName</td>
+            <td class="table-item-odd">Text style name</td>
+        </TR>
+        <TR>
+            <td class="table-item-odd">TextStyleId</td>
+            <td class="table-item-odd">Text style ID</td>
+        </TR>
+    </TABLE>
+
+    <p class="define_head_2">1. Create Single-Line Text</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+        [CommandMethod("TextSample")]
+        public void TextSample()
+        {
+            Database db = HostApplicationServices.WorkingDatabase;
+            Document doc = Application.DocumentManager.GetDocument(db);
+        
+            using (Transaction zcTrans = db.TransactionManager.StartTransaction())
+            {
+                // Get the text style table and check if "Standard" style exists
+                TextStyleTable zcTxtStyTbl = zcTrans.GetObject(db.TextStyleTableId, OpenMode.ForWrite) as TextStyleTable;
+                string styleName = "Standard";
+                ObjectId objId = new ObjectId();
+                
+                // Iterate to find the Standard text style
+                if (zcTxtStyTbl.Has(styleName))
+                {
+                    foreach (ObjectId id in zcTxtStyTbl)
+                    {
+                        TextStyleTableRecord strrec = (TextStyleTableRecord)zcTrans.GetObject(id, OpenMode.ForRead);
+                        if (strrec.Name == "Standard")
+                        {
+                            objId = id;  // Get the standard style ID
+                            break;
+                        }
+                    }
+                }
+                else return;  // Terminate if it does not exist
+        
+                BlockTable zcBlkTbl = zcTrans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                BlockTableRecord zcBlkTblRec = zcTrans.GetObject(zcBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+        
+                // Create the text object and set properties
+                DBText txt = new DBText();
+                txt.Position = Point3d.Origin;       // Text insertion point
+                txt.Height = 50;                     // Text height 50 units
+                txt.Rotation = 0;                    // Rotation angle 0 degrees
+                txt.TextString = "TextSample";       // Text content
+                txt.HorizontalMode = TextHorizontalMode.TextLeft;  // Left alignment
+                txt.VerticalMode = TextVerticalMode.TextTop;        // Top alignment
+                txt.TextStyle = objId;               // Apply text style
+        
+                zcBlkTblRec.AppendEntity(txt);
+                zcTrans.AddNewlyCreatedDBObject(txt, true);
+                zcTrans.Commit();
+            }
+        }
+    </pre>       
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("TextSample", CommandFlags.Modal)&gt; 
+    Public Sub TextSample()
+        Dim db As Database = HostApplicationServices.WorkingDatabase
+        Dim doc As Document = Application.DocumentManager.GetDocument(db)
+
+        Using zcTrans As Transaction = db.TransactionManager.StartTransaction()
+            ' Get the text style table and check if "Standard" style exists
+            Dim zcTxtStyTbl As TextStyleTable = CType(zcTrans.GetObject(db.TextStyleTableId, OpenMode.ForWrite), TextStyleTable)
+            Dim styleName As String = "Standard"
+            Dim objId As ObjectId = New ObjectId()
+
+            ' Iterate to find the Standard text style
+            If zcTxtStyTbl.Has(styleName) Then
+                For Each id As ObjectId In zcTxtStyTbl
+                    Dim strrec As TextStyleTableRecord = CType(zcTrans.GetObject(id, OpenMode.ForRead), TextStyleTableRecord)
+                    If strrec.Name = "Standard" Then
+                        objId = id  ' Get the standard style ID
+                        Exit For
+                    End If
+                Next
+            Else
+                Return  ' Terminate if it does not exist
+            End If
+
+            Dim zcBlkTbl As BlockTable = CType(zcTrans.GetObject(db.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim zcBlkTblRec As BlockTableRecord = CType(zcTrans.GetObject(zcBlkTbl(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+
+            ' Create the text object and set properties
+            Dim txt As DBText = New DBText()
+            txt.Position = Point3d.Origin   ' Text insertion point
+            txt.Height = 50                ' Text height 50 units
+            txt.Rotation = 0               ' Rotation angle 0 degrees
+            txt.TextString = "TextSample"  ' Text content
+            txt.HorizontalMode = TextHorizontalMode.TextLeft   ' Left alignment
+            txt.VerticalMode = TextVerticalMode.TextTop        ' Top alignment
+            txt.TextStyle = objId          ' Apply text style
+
+            zcBlkTblRec.AppendEntity(txt)
+            zcTrans.AddNewlyCreatedDBObject(txt, True)
+            zcTrans.Commit()
+        End Using
+    End Sub
+    </pre>       
+    <p class="define_head_1">Result:</p> 
+    <p class="define_text_1">Creates a single-line text in model space</p>
+    
+    <p class="define_head_2">2. Create Multiline Text</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+        [CommandMethod("MTextSample")]
+        public void MTextSample()
+        {
+            Database db = HostApplicationServices.WorkingDatabase;
+            Document doc = Application.DocumentManager.GetDocument(db);
+        
+            using (Transaction zcTrans = db.TransactionManager.StartTransaction())
+            {
+                // Get the text style table and check if "Standard" style
+                TextStyleTable zcTxtStyTbl = zcTrans.GetObject(db.TextStyleTableId, OpenMode.ForWrite) as TextStyleTable;
+                string styleName = "Standard";
+                ObjectId objId = new ObjectId();
+                
+                // Iterate to find the standard text style ID
+                if (zcTxtStyTbl.Has(styleName))
+                {
+                    foreach (ObjectId id in zcTxtStyTbl)
+                    {
+                        TextStyleTableRecord strrec = (TextStyleTableRecord)zcTrans.GetObject(id, OpenMode.ForRead);
+                        if (strrec.Name == "Standard")
+                        {
+                            objId = id;  // Get the standard style object ID
+                            break;
+                        }
+                    }
+                }
+                else return;  // Terminate if the style does not exist
+        
+                // Get the model space block table record
+                BlockTable zcBlkTbl = zcTrans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                BlockTableRecord zcBlkTblRec = zcTrans.GetObject(zcBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+        
+                // Create MText object and set properties
+                MText mText = new MText();
+                mText.Contents = "MTEXTSAMPLE";      // Text content
+                mText.Location = new Point3d(0, 100, 0); // Insertion point coordinates
+                mText.TextHeight = 50;               // Text height
+                mText.Rotation = 0;                  // Rotation angle
+                mText.Attachment = AttachmentPoint.MiddleLeft; // Middle-left alignment
+                mText.Height = 100;                  // Text box height
+                mText.Width = 200;                   // Text box width
+                mText.TextStyleId = objId;            // Apply text style
+        
+                zcBlkTblRec.AppendEntity(mText);
+                zcTrans.AddNewlyCreatedDBObject(mText, true);
+                zcTrans.Commit();
+            }
+        }
+    </pre>       
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("MTextSample", CommandFlags.Modal)&gt; 
+    Public Sub MTextSample()
+        Dim db As Database = HostApplicationServices.WorkingDatabase
+        Dim doc As Document = Application.DocumentManager.GetDocument(db)
+
+        Using zcTrans As Transaction = db.TransactionManager.StartTransaction()
+            ' Get the text style table and check the "Standard" style
+            Dim zcTxtStyTbl As TextStyleTable = CType(zcTrans.GetObject(db.TextStyleTableId, OpenMode.ForWrite), TextStyleTable)
+            Dim styleName As String = "Standard"
+            Dim objId As ObjectId = New ObjectId()
+
+            ' Iterate to find the standard text style ID
+            If zcTxtStyTbl.Has(styleName) Then
+                For Each id As ObjectId In zcTxtStyTbl
+                    Dim strrec As TextStyleTableRecord = CType(zcTrans.GetObject(id, OpenMode.ForRead), TextStyleTableRecord)
+                    If strrec.Name = "Standard" Then
+                        objId = id  ' Get the standard style object ID
+                        Exit For
+                    End If
+                Next
+            Else
+                Return  ' Terminate if the style does not exist
+            End If
+
+            ' Get the model space block table record
+            Dim zcBlkTbl As BlockTable = CType(zcTrans.GetObject(db.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim zcBlkTblRec As BlockTableRecord = CType(zcTrans.GetObject(zcBlkTbl(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+
+            ' Create MText object and set properties
+            Dim mText As MText = New MText()
+            mText.Contents = "MTEXTSAMPLE"   ' Text content
+            mText.Location = New Point3d(0, 100, 0) ' Insertion point coordinates
+            mText.TextHeight = 50             ' Text height
+            mText.Rotation = 0                ' Rotation angle
+            mText.Attachment = AttachmentPoint.MiddleLeft ' Middle-left alignment
+            mText.Height = 100                ' Text box height
+            mText.Width = 200                 ' Text box width
+            mText.TextStyleId = objId         ' Apply text style
+
+            zcBlkTblRec.AppendEntity(mText)
+            zcTrans.AddNewlyCreatedDBObject(mText, True)
+            zcTrans.Commit()
+        End Using
+    End Sub
+    </pre>       
+    <p class="define_head_1">Execution Result:</p> 
+    <p class="define_text_1">A multiline text is created in the model space.</p>
+
+    <p class="define_head_2">3. Create and Edit Text Styles</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+    [CommandMethod("TextStyleSample")]
+    public void TextStyleSample()
+    {
+        Database db = HostApplicationServices.WorkingDatabase;
+        Document doc = Application.DocumentManager.GetDocument(db);
+
+        using (Transaction trans = db.TransactionManager.StartTransaction())
+        {
+            // Get the text style table (opened in write mode)
+            TextStyleTable TST = (TextStyleTable)trans.GetObject(db.TextStyleTableId, OpenMode.ForWrite);
+
+            // Check if the text style "new TxtStyle" already exists
+            if (TST.Has("new TxtStyle")) // If exists, retrieve and modify the style
+            {
+                foreach (ObjectId id in TST)
+                {
+                    // Ensure the object is not erased
+                    if (!id.IsErased)
+                    {
+                        // Get the text style record (opened in write mode)
+                        TextStyleTableRecord textStyleTableRecord = (TextStyleTableRecord)trans.GetObject(id, OpenMode.ForWrite);
+
+                        // Match the specific text style name
+                        if (textStyleTableRecord.Name == "new TxtStyle")
+                        {
+                            // Modify text style properties
+                            textStyleTableRecord.Name = "Mod TxtStyle"; // Modify style name
+                            textStyleTableRecord.FileName = "simplex"; // Set font file
+                            textStyleTableRecord.BigFontFileName = null; // Clear big font file
+                            textStyleTableRecord.TextSize = 5; // Set text size
+                        }
+                    }
+                }
+            }
+            else // If not exists, create a new text style
+            {
+                // Create a new text style record
+                TextStyleTableRecord TSTR = new TextStyleTableRecord();
+                TSTR.Name = "new TxtStyle"; // Set style name
+                TSTR.FileName = "txt"; // Set font file
+                TSTR.BigFontFileName = "GBCBIG"; // Set big font file
+                TSTR.TextSize = 10; // Set default text size
+                // Add the new style to the text style sheet
+                TST.Add(TSTR);
+                trans.AddNewlyCreatedDBObject(TSTR, true);
+            }
+            trans.Commit();
+        }
+    }
+    </pre>       
+<p class="define_head_3">VB</p> 
+<pre class="code_sample"> 
+&lt;CommandMethod("TextStyleSample", CommandFlags.Modal)&gt; 
+Public Sub TextStyleSample()
+    Dim db As Database = HostApplicationServices.WorkingDatabase
+    Dim doc As Document = Application.DocumentManager.GetDocument(db)
+
+    Using trans As Transaction = db.TransactionManager.StartTransaction()
+        ' Get the text style table (opened in write mode)
+        Dim TST As TextStyleTable = CType(trans.GetObject(db.TextStyleTableId, OpenMode.ForWrite), TextStyleTable)
+
+        ' Check if the text style named "new TxtStyle" already exists
+        If TST.Has("new TxtStyle") Then ' If exists, retrieve and modify the style
+            For Each id As ObjectId In TST
+                ' Ensure the object is not erased
+                If Not id.IsErased Then
+                    ' Get the text style table record (opened in write mode)
+                    Dim textStyleTableRecord As TextStyleTableRecord = CType(trans.GetObject(id, OpenMode.ForWrite), TextStyleTableRecord)
+                    ' Match the specific text style name
+                    If textStyleTableRecord.Name = "new TxtStyle" Then
+                        ' Modify text style properties
+                        textStyleTableRecord.Name = "Mod TxtStyle" ' Change style name
+                        textStyleTableRecord.FileName = "simplex" ' Set font file
+                        textStyleTableRecord.BigFontFileName = Nothing ' Clear big font file
+                        textStyleTableRecord.TextSize = 5 ' Set text size
+                    End If
+                End If
+            Next
+        Else ' If not exists, create a new text style
+            ' Create a new text style table record
+            Dim TSTR As TextStyleTableRecord = New TextStyleTableRecord()
+            TSTR.Name = "new TxtStyle" ' Set style name
+            TSTR.FileName = "txt" ' Set font file
+            TSTR.BigFontFileName = "GBCBIG" ' Set big font file
+            TSTR.TextSize = 10 ' Set default text size
+            ' Add the new style to the text style table
+            TST.Add(TSTR)
+            trans.AddNewlyCreatedDBObject(TSTR, True)
+        End If
+
+        trans.Commit()
+    End Using
+End Sub
+</pre>       
+
+<p class="define_head_1">Execution Result:</p> 
+<p class="define_text_1">If the text style named "new TxtStyle" does not exist, create it; otherwise, edit the existing style.</p>
+
+<hr algin="left" >
+<p class="define_head_1" id="hatch">Hatch</p>
+<p class="define_head_1">The following table lists common interfaces for creating and editing hatches:</p>
+<table class="table-desc">
+    <TR>
+        <TH>Interface</TH>
+        <TH>Function</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">AppendLoop</td>
+        <td class="table-item-odd">Add hatch boundary</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">SetHatchPattern</td>
+        <td class="table-item-odd">Set hatch pattern</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">EvaluateHatch</td>
+        <td class="table-item-odd">Generate hatch graphics</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Elevation</td>
+        <td class="table-item-odd">Elevation</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Associative</td>
+        <td class="table-item-odd">Hatch associativity</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">HatchStyle</td>
+        <td class="table-item-odd">Hatch pattern style</td>
+    </TR>
+</table>
+
+<p class="define_head_2">1. Create Hatch</p> 
+<p class="define_head_3">C#</p> 
+<pre class="code_sample"> 
+    [CommandMethod("TestCreateHatch")]
+    public void TestCreateHatch()
+    {
+        Database db = HostApplicationServices.WorkingDatabase;
+        Document doc = Application.DocumentManager.GetDocument(db);
+        Editor ed = doc.Editor;
+    
+        using (Transaction trans = db.TransactionManager.StartTransaction())
+        {
+            // Get block table (opened in read mode)
+            BlockTable blkTbl = trans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+            // Get model space block table record (opened in write mode)
+            BlockTableRecord blkTblRec = trans.GetObject(blkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+    
+            // Prompt user to select objects
+            PromptSelectionResult selRes = ed.GetSelection();
+            if (selRes.Status != PromptStatus.OK)
+                return; // Exit if user cancels selection
+    
+            // Get selection set
+            SelectionSet sSet = selRes.Value;
+            // Get object IDs from the selection set
+            ObjectId[] objIds = sSet.GetObjectIds();
+    
+            // Create a dictionary to store entities and their areas
+            Dictionary&lt;ObjectId, double&gt; dic1 = new Dictionary&lt;ObjectId, double&gt;();
+            foreach (ObjectId id in objIds)
+            {
+                // Get entity object (opened in write mode)
+                Entity entity = (Entity)id.GetObject(OpenMode.ForWrite);
+                // Calculate entity area and store in dictionary
+                dic1.Add(id, ((Curve)entity).Area);
+            }
+    
+            // Sort the dictionary by area in ascending order
+            Dictionary&lt;ObjectId, double&gt; dic2 = dic1.OrderBy(o => o.Value).ToDictionary(k => k.Key, v => v.Value);
+    
+            // Create a new Hatch object
+            using (Hatch hatch = new Hatch())
+            {
+                // Add the hatch object to the model space block table record
+                blkTblRec.AppendEntity(hatch);
+                // Add the newly created DBObject to the transaction
+                trans.AddNewlyCreatedDBObject(hatch, true);
+    
+                // Set hatch properties
+                hatch.Normal = Vector3d.ZAxis; // Set hatch normal direction
+                hatch.Elevation = 0.0; // Set hatch elevation
+                    hatch.Associative = true; // Set hatch as associative
+                    hatch.SetHatchPattern(HatchPatternType.PreDefined, "SOLID"); // Set hatch pattern to SOLID
+        
+                    // Prompt the user to select the hatch style
+                    PromptKeywordOptions keyOpts = new PromptKeywordOptions("");
+                    keyOpts.Message = "Style type [Normal(N)/Outer(O)/Ignore(I)]:";
+                    keyOpts.Keywords.Add("N");
+                    keyOpts.Keywords.Add("O");
+                    keyOpts.Keywords.Add("I");
+                    keyOpts.AllowNone = false;
+                    PromptResult keyRes = doc.Editor.GetKeywords(keyOpts);
+        
+                    // Set the hatch style based on user input
+                    if (keyRes.StringResult == "N")
+                        hatch.HatchStyle = HatchStyle.Normal;
+                    else if (keyRes.StringResult == "O")
+                        hatch.HatchStyle = HatchStyle.Outer;
+                    else if (keyRes.StringResult == "I")
+                        hatch.HatchStyle = HatchStyle.Ignore;
+        
+                    // Add hatch boundaries (loops) based on the order in the dictionary
+                    int nDep = 0;
+                    foreach (KeyValuePair&lt;ObjectId, double&gt; item in dic2)
+                    {
+                        if (nDep == dic2.Count - 1)
+                        {
+                            // The last entity, added as an external loop
+                            ObjectIdCollection externalIdColl = new ObjectIdCollection();
+                            externalIdColl.Add(item.Key);
+                            hatch.AppendLoop(HatchLoopTypes.External, externalIdColl);
+                        }
+                        else if (nDep == dic2.Count - 2)
+                        {
+                            // The second-to-last entity, added as the outermost loop
+                            ObjectIdCollection outerMostIdColl = new ObjectIdCollection();
+                            outerMostIdColl.Add(item.Key);
+                            hatch.AppendLoop(HatchLoopTypes.Outermost, outerMostIdColl);
+                        }
+                        else
+                        {
+                            // Other entities, added as default loops
+                            ObjectIdCollection defaultIdColl = new ObjectIdCollection();
+                            defaultIdColl.Add(item.Key);
+                            hatch.AppendLoop(HatchLoopTypes.Default, defaultIdColl);
+                        }
+                        nDep++;
+                    }
+        
+                    // Generate the hatch graphics
+                    hatch.EvaluateHatch(true);
+                }
+                trans.Commit();
+            }
+        }
+    </pre>       
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("TestCreateHatch", CommandFlags.Modal)&gt; 
+    Public Sub TestCreateHatch()
+        Dim db As Database = HostApplicationServices.WorkingDatabase
+        Dim doc As Document = Application.DocumentManager.GetDocument(db)
+        Dim ed As Editor = doc.Editor
+
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+            ' Get the block table (opened in read-only mode)
+            Dim blkTbl As BlockTable = CType(trans.GetObject(db.BlockTableId, OpenMode.ForRead), BlockTable)
+            ' Get the model space block table record (opened in write mode)
+            Dim blkTblRec As BlockTableRecord = CType(trans.GetObject(blkTbl(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+
+            ' Prompt the user to select objects
+            Dim selRes As PromptSelectionResult = ed.GetSelection()
+            If selRes.Status <> PromptStatus.OK Then
+                Return ' Exit if the user cancels selection
+            End If
+
+            ' Get the selection set
+            Dim sSet As SelectionSet = selRes.Value
+            ' Get the array of object IDs in the selection set
+            Dim objIds As ObjectId() = sSet.GetObjectIds()
+
+            ' Create a dictionary to store entities and their areas
+            Dim dic1 As New Dictionary(Of ObjectId, Double)()
+            For Each id As ObjectId In objIds
+                ' Get the entity object (opened in write mode)
+                Dim entity As Entity = CType(id.GetObject(OpenMode.ForWrite), Entity)
+                ' Calculate the entity's area and store it in the dictionary
+                dic1.Add(id, CType(entity, Curve).Area)
+            Next
+
+            ' Sort the dictionary by area in ascending order
+            Dim dic2 As Dictionary(Of ObjectId, Double) = dic1.OrderBy(Function(o) o.Value).ToDictionary(Function(k) k.Key, Function(v) v.Value)
+
+            ' Create a new Hatch object
+            Using hatch As New Hatch()
+                ' Add the hatch to the model space block table record
+                blkTblRec.AppendEntity(hatch)
+                ' Add the newly created DBObject to the transaction
+                trans.AddNewlyCreatedDBObject(hatch, True)
+
+                ' Set hatch properties
+                hatch.Normal = Vector3d.ZAxis ' Set hatch normal direction
+                hatch.Elevation = 0.0 ' Set hatch elevation
+                hatch.Associative = True ' Set hatch as associative
+                hatch.SetHatchPattern(HatchPatternType.PreDefined, "SOLID") ' Set hatch pattern to SOLID
+
+                ' Prompt the user to select the hatch style
+                Dim keyOpts As New PromptKeywordOptions("")
+                keyOpts.Message = "Style type [Normal(N)/Outer(O)/Ignore(I)]:"
+                keyOpts.Keywords.Add("N")
+                keyOpts.Keywords.Add("O")
+                keyOpts.Keywords.Add("I")
+                keyOpts.AllowNone = False
+                Dim keyRes As PromptResult = doc.Editor.GetKeywords(keyOpts)
+
+                ' Set the hatch style based on user input
+                If keyRes.StringResult = "N" Then
+                    hatch.HatchStyle = HatchStyle.Normal
+                ElseIf keyRes.StringResult = "O" Then
+                    hatch.HatchStyle = HatchStyle.Outer
+                ElseIf keyRes.StringResult = "I" Then
+                    hatch.HatchStyle = HatchStyle.Ignore
+                End If
+
+                ' Add hatch boundaries (loops) based on the order in the dictionary
+                Dim nDep As Integer = 0
+                For Each item As KeyValuePair(Of ObjectId, Double) In dic2
+                    If nDep = dic2.Count - 1 Then
+                        ' The last entity, added as an external loop
+                        Dim externalIdColl As New ObjectIdCollection()
+                        externalIdColl.Add(item.Key)
+                        hatch.AppendLoop(HatchLoopTypes.External, externalIdColl)
+                    ElseIf nDep = dic2.Count - 2 Then
+                        ' The second-to-last entity, added as the outermost loop
+                        Dim outerMostIdColl As New ObjectIdCollection()
+                        outerMostIdColl.Add(item.Key)
+                        hatch.AppendLoop(HatchLoopTypes.Outermost, outerMostIdColl)
+                    Else
+                        ' Other entities, added as default loops
+                        Dim defaultIdColl As New ObjectIdCollection()
+                        defaultIdColl.Add(item.Key)
+                        hatch.AppendLoop(HatchLoopTypes.Default, defaultIdColl)
+                    End If
+                    nDep += 1
+                Next
+
+                ' Generate the hatch pattern
+                hatch.EvaluateHatch(True)
+            End Using
+
+            trans.Commit()
+        End Using
+    End Sub
+    </pre>       
+    <p class="define_head_1">Execution Result:</p> 
+    <p class="define_text_1">Create three concentric circles in model space and apply hatch.</p>
+
+    <hr algin="left" >
+    <p class="define_head_1" id="table">Table</p>
+    <p class="define_head_1">The table below lists common interfaces for creating and editing tables:</p>
+    <table class="table-desc"> 
+        <tr> 
+            <th>Method/Property</th> 
+            <th>Description</th> 
+        </tr> 
+        <tr> 
+            <td>SetSize</td> 
+            <td>Initialize the number of rows and columns (including header row)</td> 
+        </tr> 
+        <tr> 
+            <td>SetTextString</td> 
+            <td>Set cell content (row and column indices start from 0)</td> 
+        </tr> 
+        <tr> 
+            <td>MergeCells</td> 
+            <td>Merge a range of cells</td> 
+        </tr> 
+        <tr> 
+            <td>InsertRows</td> 
+            <td>Insert new rows</td> 
+        </tr> 
+        <tr> 
+            <td>InsertColumns</td> 
+            <td>Insert new columns</td> 
+        </tr> 
+        <tr> 
+            <td>Cells</td> 
+            <td>Access the collection of cells for direct read/write operations</td> 
+        </tr> 
+    </table>    
+
+    <p class="define_head_1">Code Samples</p>
+    <p class="define_head_2">1. Create Table</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+    [CommandMethod("CreateTable", CommandFlags.Modal)] 
+    public void CreateTable() 
+    { 
+        Database db = HostApplicationServices.WorkingDatabase; 
+        Document doc = Application.DocumentManager.GetDocument(db);
+        using (Transaction trans = db.TransactionManager.StartTransaction())
+        {
+            // Get model space
+            BlockTable blockTable = trans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+            BlockTableRecord modelSpace = trans.GetObject(
+                blockTable[BlockTableRecord.ModelSpace], 
+                OpenMode.ForWrite) as BlockTableRecord;
+        
+            // Create table object (5 rows, 4 columns)
+            Table table = new Table();
+            table.SetSize(5, 4);  // Rows, columns
+            table.Position = new Point3d(0, 0, 0); // Insertion point
+        
+            // Set table style
+            table.TableStyle = db.Tablestyle;  // Use current table style
+            table.SetRowHeight(15);           // Row height 15 units
+            table.SetColumnWidth(50);         // Column width 50 units
+        
+            // Fill header row
+            table.SetTextString(0, 0, "No.");
+            table.SetTextString(0, 1, "Part Name");
+            table.SetTextString(0, 2, "Quantity");
+            table.SetTextString(0, 3, "Remarks");
+        
+            // Fill data rows
+            for (int row = 1; row < 5; row++)
+            {
+                table.SetTextString(row, 0, row.ToString());
+                table.SetTextString(row, 1, $"Part-{row}");
+                table.SetTextString(row, 2, (row * 2).ToString());
+            }
+        
+            // Set header row style
+            table.SetAlignment(0, 0, CellAlignment.MiddleCenter); // Center alignment
+            table.SetBackgroundColor(0, 0, Colors.Color.FromColorIndex(Colors.ColorMethod.ByAci, 1)); // Red background
+        
+            modelSpace.AppendEntity(table);
+            trans.AddNewlyCreatedDBObject(table, true);
+            trans.Commit();
+        }
+    }
+    </pre>              
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("CreateTable", CommandFlags.Modal)&gt; 
+    Public Sub CreateTable() 
+        Dim db As Database = HostApplicationServices.WorkingDatabase 
+        Dim doc As Document = Application.DocumentManager.GetDocument(db)
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+            ' Get model space
+            Dim blockTable As BlockTable = CType(trans.GetObject(db.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim modelSpace As BlockTableRecord = CType(trans.GetObject(blockTable(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+        
+            ' Create table
+            Dim table As New Table()
+            table.SetSize(5, 4)
+            table.Position = New Point3d(0, 0, 0)
+        
+            ' Set table parameters
+            table.TableStyle = db.Tablestyle
+            table.SetRowHeight(15)
+            table.SetColumnWidth(50)
+        
+            ' Fill data
+            table.SetTextString(0, 0, "No.")
+            table.SetTextString(0, 1, "Part Name")
+            table.SetTextString(0, 2, "Quantity")
+            table.SetTextString(0, 3, "Remarks")
+        
+            For row As Integer = 1 To 4
+                table.SetTextString(row, 0, row.ToString())
+                table.SetTextString(row, 1, $"Part-{row}")
+                table.SetTextString(row, 2, (row * 2).ToString())
+            Next
+        
+            ' Set header style
+            table.SetAlignment(0, 0, CellAlignment.MiddleCenter)
+            table.SetBackgroundColor(0, 0, Colors.Color.FromColorIndex(Colors.ColorMethod.ByAci, 1))
+        
+            modelSpace.AppendEntity(table)
+            trans.AddNewlyCreatedDBObject(table, True)
+            trans.Commit()
+        End Using
+    End Sub
+    </pre>       
+        
+    <p class="define_head_1">Execution Result:</p> 
+    <p class="define_text_1">A 5x4 table is created in model space with a red-background header row and sample data.</p>
+
+    <p class="define_head_2">2. Edit Table</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+    [CommandMethod("ModifyTable", CommandFlags.Modal)] 
+    public void ModifyTable() 
+    { 
+        Database db = HostApplicationServices.WorkingDatabase; 
+        Document doc = Application.DocumentManager.GetDocument(db);
+        using (Transaction trans = db.TransactionManager.StartTransaction())
+        {
+            BlockTable blockTable = trans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+            BlockTableRecord modelSpace = trans.GetObject(
+                blockTable[BlockTableRecord.ModelSpace], 
+                OpenMode.ForWrite) as BlockTableRecord;
+        
+            foreach (ObjectId entId in modelSpace)
+            {
+                Entity ent = trans.GetObject(entId, OpenMode.ForWrite) as Entity;
+                if (ent is Table table)
+                {
+                    // Find the table containing the header "Part Name"
+                    if (table.GetTextString(0, 1, 0) == "????")
+                    {
+                        // Adjust column width
+                        table.SetColumnWidth(1, 80); // Widen the second column to 80 units
+        
+                        // Insert new row
+                        table.InsertRows(5, 10, 1); // Insert 1 row at row 5 with height 10
+        
+                        // Merge cells
+                        table.MergeCells(CellRange.Create(table, 5, 0, 5, 3)); // Merge all columns in the new row
+    
+                        // Set merged cell content
+                        table.SetTextString(5, 0, "Total Quantity: 20");
+                        table.SetAlignment(5, 0, CellAlignment.MiddleCenter);
+                    }
+                }
+            }
+            trans.Commit();
+        }
+    }
+    </pre>                
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("ModifyTable", CommandFlags.Modal)&gt; 
+    Public Sub ModifyTable() 
+        Dim db As Database = HostApplicationServices.WorkingDatabase 
+        Dim doc As Document = Application.DocumentManager.GetDocument(db)
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+            Dim blockTable As BlockTable = CType(trans.GetObject(db.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim modelSpace As BlockTableRecord = CType(trans.GetObject(blockTable(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+        
+            For Each entId As ObjectId In modelSpace
+                Dim ent As Entity = CType(trans.GetObject(entId, OpenMode.ForWrite), Entity)
+                If TypeOf ent Is Table Then
+                    Dim table As Table = CType(ent, Table)
+                    If table.GetTextString(0, 1, 0) = "????" Then
+                        ' Adjust column width
+                        table.SetColumnWidth(1, 80)
+
+                        ' Insert new row
+                        table.InsertRows(5, 10, 1)
+
+                        ' Merge cells
+                        table.MergeCells(CellRange.Create(table, 5, 0, 5, 3))
+
+                        ' Set merged cell content
+                        table.SetTextString(5, 0, "Total Quantity: 20")
+                        table.SetAlignment(5, 0, CellAlignment.MiddleCenter)
+                    End If
+                End If
+            Next
+            trans.Commit()
+        End Using
+    End Sub
+    </pre>
+        
+    <p class="define_head_1">Execution Result:</p> 
+    <p class="define_text_1">Modified qualifying tables:<br> - Widened the second column to 80 units<br> - Inserted a new row at row 5 and merged all cells<br> - Displayed center-aligned total information in the merged cell</p>
+
+    <hr algin="left" >
+    <p class="define_head_1" id="dim">Dimensions</p>
+    <p class="define_head_1">The following table lists common interfaces for creating and editing dimension/leader entities:</p>
+    <table class="table-desc"> 
+        <tr> 
+            <th>Dimension Type</th> 
+            <th>Common Interfaces</th> 
+        </tr> 
+        <tr> 
+            <td><a href="#AlignedDimension">AlignedDimension</a></td> 
+            <td>XLine1Point/XLine2Point: Dimension line origins<br>DimLinePoint: Dimension line position</td> 
+        </tr> 
+        <tr> 
+            <td><a href="#RadialDimension">RadialDimension</a></td> 
+            <td>Center/ChordPoint: Circle center and chord point<br>LeaderLength: Leader line length</td> 
+        </tr> 
+        <tr> 
+            <td><a href="#Point3AngularDimension">Point3AngularDimension</a></td> 
+            <td>CenterPoint: Vertex of the angle (intersection of two edges)<br>XLine1Point/XLine2Point: Endpoints of the two edges defining the angle<br>ArcPoint: Position of dimension text</td> 
+        </tr> 
+        <tr> 
+            <td><a href="#MLeader">MLeader</a></td> 
+            <td>AddLeaderLine(): Add leader line branch<br>MText: Leader text<br>LandingGap: Set landing gap</td> 
+        </tr> 
+        <tr> 
+            <td>Common Properties</td> 
+            <td>DimensionText: Display text<br>TextPosition: Text position<br>DimensionStyle: ID of dimension style<br>Dimscale: Global scale</td> 
+        </tr> 
+    </table>
+
+    <p class="define_head_1">Code Examples</p>
+    <!-- Aligned Dimension -->
+     <p class="define_head_2" id="AlignedDimension">1. Create Aligned Dimension</p> 
+     <p class="define_head_3">C#</p> 
+     <pre class="code_sample"> 
+    [CommandMethod("CreateAlignedDim")] 
+    public void CreateAlignedDim() 
+    { 
+        Database db = HostApplicationServices.WorkingDatabase; 
+        using(Transaction trans = db.TransactionManager.StartTransaction()) 
+        { 
+            BlockTableRecord modelSpace = trans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite) as BlockTableRecord;
+            // Create aligned dimension (diagonal dimension)
+            AlignedDimension dim = new AlignedDimension(
+                new Point3d(0,0,0),    // First definition point
+                new Point3d(100,50,0), // Second definition point
+                new Point3d(50,30,0),  // Text position
+                "Actual Length",       // Dimension text
+                db.Dimstyle);          // Dimension style
+            
+            modelSpace.AppendEntity(dim);
+            trans.AddNewlyCreatedDBObject(dim, true);
+            trans.Commit();
+        }
+    }
+    </pre>        
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("CreateAlignedDim", CommandFlags.Modal)&gt; 
+    Public Sub CreateAlignedDim()
+        Dim db As Database = HostApplicationServices.WorkingDatabase
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+            Dim modelSpace As BlockTableRecord = CType(trans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite), BlockTableRecord)
+
+            ' Create aligned dimension (diagonal dimension)
+            Dim dim As New AlignedDimension(
+                New Point3d(0, 0, 0),    ' First definition point
+                New Point3d(100, 50, 0), ' Second definition point
+                New Point3d(50, 30, 0),  ' Text position
+                "Actual Length",         ' Dimension text
+                db.Dimstyle              ' Dimension style
+            )
+
+            modelSpace.AppendEntity(dim)
+            trans.AddNewlyCreatedDBObject(dim, True)
+            trans.Commit()
+        End Using
+    End Sub
+    </pre>
+    <!-- Radial Dimension -->
+     <p class="define_head_2" id="RadialDimension">2. Create Radial Dimension</p> 
+     <p class="define_head_3">C#</p> 
+     <pre class="code_sample"> 
+    [CommandMethod("CreateRadialDim")] 
+    public void CreateRadialDim() 
+    { 
+        Database db = HostApplicationServices.WorkingDatabase; 
+        using(Transaction trans = db.TransactionManager.StartTransaction()) 
+        { 
+            BlockTableRecord modelSpace = trans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite) as BlockTableRecord;
+            // Create radial dimension
+            RadialDimension dim = new RadialDimension(
+                new Point3d(0,0,0),    // Circle center
+                new Point3d(50,0,0),     // Chord point
+                20,                     // Leader length
+                "R-value",                  // Prefix
+                db.Dimstyle);
+            
+            modelSpace.AppendEntity(dim);
+            trans.AddNewlyCreatedDBObject(dim, true);
+            trans.Commit();
+        }
+    }
+    </pre>
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("CreateRadialDim", CommandFlags.Modal)&gt; 
+    Public Sub CreateRadialDim()
+        Dim db As Database = HostApplicationServices.WorkingDatabase
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+            Dim modelSpace As BlockTableRecord = CType(trans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite), BlockTableRecord)
+
+            ' Create radial dimension
+            Dim dim As New RadialDimension(
+                New Point3d(0, 0, 0),   ' Circle center
+                New Point3d(50, 0, 0),  ' Chord point
+                20,                     ' Leader length
+                "R-value",                  ' Prefix
+                db.Dimstyle
+            )
+
+            modelSpace.AppendEntity(dim)
+            trans.AddNewlyCreatedDBObject(dim, True)
+            trans.Commit()
+        End Using
+    End Sub
+    </pre>
+
+    <p class="define_head_2" id="Point3AngularDimension">3. Create Angular Dimension</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+    [CommandMethod("CreateAngularDim")] 
+    public void CreateAngularDim() 
+    { 
+        Database db = HostApplicationServices.WorkingDatabase; 
+        using (Transaction trans = db.TransactionManager.StartTransaction()) 
+        { 
+            BlockTableRecord modelSpace = trans.GetObject( SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite) as BlockTableRecord;
+            // Define angular dimension parameters
+            Point3d center = new Point3d(0, 0, 0);       // Angular vertex
+            Point3d xLine1End = new Point3d(100, 0, 0);  // First edge endpoint
+            Point3d xLine2End = new Point3d(0, 100, 0);  // Second edge endpoint
+            Point3d dimPos = new Point3d(50, 50, 0);     // Dimension text position
+        
+            // Create angular dimension
+            Point3AngularDimension angularDim = new Point3AngularDimension(
+                center,          // Angular vertex
+                xLine1End,       // First edge endpoint
+                xLine2End,       // Second edge endpoint
+                dimPos,          // Dimension text position
+                "Angle value",        // Dimension text
+                db.Dimstyle);    // Dimension style
+        
+            modelSpace.AppendEntity(angularDim);
+            trans.AddNewlyCreatedDBObject(angularDim, true);
+            trans.Commit();
+        }
+    }
+    </pre>
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("CreateAngularDim", CommandFlags.Modal)&gt;
+    Public Sub CreateAngularDim()
+        Dim db As Database = HostApplicationServices.WorkingDatabase
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+            Dim modelSpace As BlockTableRecord = CType(trans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite), BlockTableRecord)
+
+            ' Define angular dimension parameters
+            Dim center As Point3d = New Point3d(0, 0, 0)        ' Angular vertex
+            Dim xLine1End As Point3d = New Point3d(100, 0, 0)   ' First edge endpoint
+            Dim xLine2End As Point3d = New Point3d(0, 100, 0)   ' Second edge endpoint
+            Dim dimPos As Point3d = New Point3d(50, 50, 0)      ' Dimension text position
+
+            ' Create angular dimension
+            Dim angularDim As New Point3AngularDimension(
+                center,        ' Angular vertex
+                xLine1End,     ' First edge endpoint
+                xLine2End,     ' Second edge endpoint
+                dimPos,        ' Dimension text position
+                "Angle value",      ' Dimension text
+                db.Dimstyle    ' Dimension style
+            )
+
+            modelSpace.AppendEntity(angularDim)
+            trans.AddNewlyCreatedDBObject(angularDim, True)
+            trans.Commit()
+        End Using
+    End Sub    
+    </pre>
+
+    <!-- Multiple Leader -->
+    <p class="define_head_2" id="MLeader">4. Create Multiple Leader</p> 
+    <p class="define_head_3">C#</p> 
+    <pre class="code_sample"> 
+    [CommandMethod("CreateMLeader")] 
+    public void CreateMLeader() 
+    { 
+        Database db = HostApplicationServices.WorkingDatabase; 
+        using(Transaction trans = db.TransactionManager.StartTransaction()) 
+        { 
+            BlockTableRecord modelSpace = trans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite) as BlockTableRecord;
+            MLeader mLeader = new MLeader();
+            mLeader.ContentType = ContentType.MTextContent;
+            
+            // Add leader node
+            mLeader.AddLeaderLine(new Point3d(100,50,0));
+            mLeader.AddFirstVertex(0, new Point3d(120,70,0));
+            
+            // Set text content
+            MText txt = new MText();
+            txt.Contents = "Leader note\nSecond line";
+            mLeader.MText = txt;
+            mLeader.TextHeight = 15;
+            
+            modelSpace.AppendEntity(mLeader);
+            trans.AddNewlyCreatedDBObject(mLeader, true);
+            trans.Commit();
+        }
+    }
+    </pre>
+    <p class="define_head_3">VB</p> 
+    <pre class="code_sample"> 
+    &lt;CommandMethod("CreateMLeader", CommandFlags.Modal)&gt; 
+    Public Sub CreateMLeader()
+        Dim db As Database = HostApplicationServices.WorkingDatabase
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+        Dim modelSpace As BlockTableRecord = CType(trans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite), BlockTableRecord)
+        
+        Dim mLeader As New MLeader()
+        mLeader.ContentType = ContentType.MTextContent
+
+        ' Add leader nodes
+        mLeader.AddLeaderLine(New Point3d(100, 50, 0))
+        mLeader.AddFirstVertex(0, New Point3d(120, 70, 0))
+
+        ' Set text content
+        Dim txt As New MText()
+        txt.Contents = "Leader Note" & vbCrLf & "Second Line"
+        mLeader.MText = txt
+        mLeader.TextHeight = 15
+        mLeader.LandingGap = 5
+
+        modelSpace.AppendEntity(mLeader)
+        trans.AddNewlyCreatedDBObject(mLeader, True)
+        trans.Commit()
+    End Using
+End Sub
+</pre>
+    
+<!-- Edit Annotations -->
+<p class="define_head_2">5. Edit Annotations</p> 
+<p class="define_head_3">C#</p> 
+<pre class="code_sample"> 
+[CommandMethod("ModifyDims")] 
+public void ModifyDims() 
+{ 
+    Database db = HostApplicationServices.WorkingDatabase; 
+    using(Transaction trans = db.TransactionManager.StartTransaction()) 
+    { 
+        BlockTableRecord modelSpace = trans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite) as BlockTableRecord;
+        foreach(ObjectId id in modelSpace)
+        {
+            Entity ent = trans.GetObject(id, OpenMode.ForWrite) as Entity;
+            if(ent is Dimension dim)
+            {
+                // Uniformly modify dimension colors
+                dim.ColorIndex = 2; // Change to yellow
+                
+                // Modify text prefix
+                if(dim is RadialDimension radial)
+                    radial.DimensionText = "Radius " + radial.Measurement;
+            }
+            else if(ent is MLeader leader)
+            {
+                leader.TextHeight *= 1.5; // Enlarge text by 150%
+            }
+        }
+        trans.Commit();
+    }
+}
+</pre>
+<p class="define_head_3">VB</p> 
+<pre class="code_sample"> 
+&lt;CommandMethod("ModifyDims", CommandFlags.Modal)&gt; 
+Public Sub ModifyDims()
+    Dim db As Database = HostApplicationServices.WorkingDatabase
+    Using trans As Transaction = db.TransactionManager.StartTransaction()
+        Dim modelSpace As BlockTableRecord = CType(trans.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite), BlockTableRecord)
+        For Each id As ObjectId In modelSpace
+            Dim ent As Entity = CType(trans.GetObject(id, OpenMode.ForWrite), Entity)
+            If TypeOf ent Is Dimension Then
+                Dim dim As Dimension = CType(ent, Dimension)
+                ' Uniformly modify dimension colors
+                dim.ColorIndex = 2 ' Change to yellow
+
+                ' Modify text prefix
+                If TypeOf dim Is RadialDimension Then
+                    Dim radial As RadialDimension = CType(dim, RadialDimension)
+                    radial.DimensionText = "Radius " & radial.Measurement
+                End If
+            ElseIf TypeOf ent Is MLeader Then
+                Dim leader As MLeader = CType(ent, MLeader)
+                leader.TextHeight *= 1.5 ' Enlarge text by 150%
+            End If
+        Next
+        trans.Commit()
+    End Using
+End Sub
+</pre>
+
+
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

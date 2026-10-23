@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Context Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Developer's Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Context Menu</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="dev_body_text">
+    Context menus are commonly used in practical applications. This chapter explains how to add a context menu.
+</p>
+
+<hr algin="left" >
+<p class="define_head_1">Preparation</p>
+<p class="define_text_1">First, add references to ZcWindows.dll and ZdWindows.dll in the project. Then include the following code:</p>
+<pre class="code_sample">
+    using ZwSoft.ZwCAD.Windows;
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Implementation Steps:</p>
+<p class="define_text_1">Define a ContextMenuExtension variable, add submenu items, and finally add it to the default context menu group via Application.AddDefaultContextMenuExtension.</p>
+<p class="define_head_2">Implement the AppContextMenu Class Library</p>
+<pre class="code_sample">
+public class AppContextMenu
+    {
+        static ContextMenuExtension m_appMenu = null;
+
+        public static void
+        AddContextMenu()
+        {
+            m_appMenu = new ContextMenuExtension();
+            m_appMenu.Title = "MgdDbg";
+
+            m_appMenu.MenuItems.Add(new AppContextMenuItem("test1", "test1"));
+            m_appMenu.MenuItems.Add(new AppContextMenuItem("test2", "test2"));
+            m_appMenu.MenuItems.Add(new AppContextMenuItem("test3", "test3"));
+            m_appMenu.MenuItems.Add(new AppContextMenuItem("test4", "test4"));
+            m_appMenu.MenuItems.Add(new AppContextMenuItem("test5", "test5"));
+            m_appMenu.MenuItems.Add(new MenuItem(""));    // separator
+            m_appMenu.MenuItems.Add(new AppContextMenuItem("test6", "test6"));
+            m_appMenu.MenuItems.Add(new MenuItem(""));    // separator
+            m_appMenu.MenuItems.Add(new AppContextMenuItem("test7", "test7"));
+
+            foreach (MenuItem mnuItem in m_appMenu.MenuItems)
+            {
+                AppContextMenuItem appContextMnuItem = mnuItem as AppContextMenuItem;
+                if (appContextMnuItem != null)
+                    appContextMnuItem.Click += new EventHandler(ExecuteCommand);
+            }
+
+            Application.AddDefaultContextMenuExtension(m_appMenu);
+        }</pre>
+<p class="define_head_2">Implement the AppContextMenuItem Class Library</p>
+<pre class="code_sample">
+    public class AppContextMenuItem : ZwSoft.ZwCAD.Windows.MenuItem
+    {
+        private string m_cmdName;
+
+        public
+        AppContextMenuItem(string title, string cmdName)
+        : base(title)
+        {
+            m_cmdName = cmdName;
+        }
+
+        public string
+        CommandName
+        {
+            get { return m_cmdName; }
+            set { m_cmdName = value; }
+        }
+    }
+</pre>
+<p class="define_head_2">Implement the ExecuteCommand Function</p>
+<pre class="code_sample">
+        private static void
+        ExecuteCommand(Object o, EventArgs e)
+        {
+            AppContextMenuItem mnuItem = (AppContextMenuItem)o;
+
+            string fullCmdLine = string.Format("_{0}\n", mnuItem.CommandName);
+            Application.DocumentManager.MdiActiveDocument.SendStringToExecute(fullCmdLine, false, false, true);
+        }</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Register Command to Load the Context Menu</p>
+
+<pre class="code_sample">
+    [CommandMethod("AddContextMenu")]
+    static public void AddContextMenu()
+    {
+        AppContextMenu.AddContextMenu();
+    }</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Register Command to Unload the Context Menu</p>
+<pre class="code_sample">
+        [CommandMethod("RemoveContextMenu")]
+        static public void RemoveContextMenu()
+        {
+            AppContextMenu.RemoveContextMenu();
+        }</pre>
+        
+        <hr algin="left" >
+<p class="define_head_1">Final Effect</p>
+<p class="define_text_1">After executing the AddContextMenu command, right-click in the ZWCAD interface to see the newly added menu items.</p>
+<p class="figure"><img class="pics" src="../images/ContextMenu.png"></p>
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

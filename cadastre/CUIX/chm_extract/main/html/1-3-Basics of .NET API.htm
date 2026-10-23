@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>API Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+<div class="hear_text">ZWCAD 2026 .NET Secondary Development Guide</div>
+</div>
+</div>
+</div>
+
+<div class="clr"></div>
+<div class="Tophead"><span class="Tophead_text">Overview of ZWCAD .NET Interfaces</span></div> 
+<div class="clr"></div>
+
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="dev_body_text">To efficiently develop .NET secondary applications for ZWCAD, you should familiarize yourself with the ZWCAD .NET entities, objects, and functionalities relevant to your application. Below is a comprehensive explanation of the ZWCAD .NET interface class hierarchy, covering core modules such as Application, Document, Database, and Interaction:</p>
+
+<p class="define_head_1">Application</p>
+<p class="dev_body_text">Most ZWCAD .NET interfaces are rooted in the Application object, which represents the entire ZWCAD application instance. Through the ZwSoft.ZwCAD.ApplicationServices.Application class, developers can globally control application behaviors, including:</p>
+<p class="define_text_1">1. Document Management: Access all open drawing files (Document object collections) via DocumentManager and retrieve the current active document (ActiveDocument).</p>
+<p class="define_text_1">2. System Services: Access system variables, registry settings, user interfaces (e.g., command line, status bar), and global events (e.g., document open/close events).</p>
+
+<hr algin="left" >
+<p class="define_head_1">Document</p>
+<p class="dev_body_text">Each open drawing file is represented by a Document object under the ZwSoft.ZwCAD.ApplicationServices.Document namespace. Core functionalities include:</p>
+<p class="define_text_1">1. Graphics Database Access: Obtain the underlying database object via the Document.Database property. All graphical data (e.g., entities, layers, blocks) are stored here.</p>
+<p class="define_text_1">2. Transaction Management: Use Document.TransactionManager to initiate transactions (Transaction), ensuring atomicity and rollback capabilities for database operations (add, delete, modify).</p>
+
+<hr algin="left" >
+<p class="define_head_1">Database Layer</p>
+<p class="dev_body_text">The Database object (ZwSoft.ZwCAD.DatabaseServices.Database) is the core container for ZWCAD graphical data. Its structure includes:</p>
+<p class="define_text_1">1. Symbol Tables, such as Block Table, Layer Table, etc.</p>
+<p class="define_text_1">2. Graphical Entities, such as Line, Circle, Polyline, Text, BlockReference, etc. These provide geometric creation and editing methods (e.g., TransformBy for coordinate transformations) and are stored in BlockTableRecords.</p>
+<p class="define_text_1">3. Dictionaries: Store custom data (e.g., user-defined configurations) and support key-value pair persistence.</p>
+
+<hr algin="left" >
+<p class="define_head_1">User Interaction (Editor)</p>
+<p class="dev_body_text">The Editor class (ZwSoft.ZwCAD.EditorServices.Editor) enables dynamic interaction with users. Core functionalities include:</p>
+<p class="define_text_1">1. Input and Selection: Use methods like GetPoint(), GetKeyword() to capture user inputs (coordinates or keywords), and SelectAll(), SelectFence() for entity selection. Handle selection sets via PromptSelectionResult.</p>
+<p class="define_text_1">2. Command Execution: Execute built-in or custom ZWCAD commands directly using ExecuteCommand().</p>
+<p class="define_text_1">3. Message Feedback: Output prompt messages to the command line via WriteMessage().</p>
+
+<hr algin="left" >
+<p class="define_head_1">Hierarchy Diagram</p>
+<p class="dev_body_text">These objects are organized hierarchically, with the ZWCAD Application object at the root. This hierarchy is commonly referred to as the Object Model. The diagram below illustrates the basic relationship between the Application object and entities in BlockTableRecords (e.g., Model Space). Additional objects in the ZWCAD .NET interfaces are not shown here.</p>
+<p class="figure"><img class="pics" src="../pics/1-3-Hierarchy.png"></p>
+
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

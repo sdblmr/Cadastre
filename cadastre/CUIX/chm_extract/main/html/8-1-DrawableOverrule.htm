@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Display Redefinition</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+    <div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+    <div class="hear_text">ZWCAD 2026 .NET Developer Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Display Redefinition</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="dev_body_text">The DrawableOverrule class allows overriding the display of existing base entity objects to render them in different shapes.</p>
+<hr algin="left" >
+<p class="define_head_1">Creating a Custom DrawableOverrule</p>
+<p class="define_text_1">Create a new class file named "MyEntOverrule" in the project, modify the code to inherit from the DrawableOverrule class, and override the WorldDraw virtual method.</p>
+<pre class="code_sample">
+    class MyEntOverrule : DrawableOverrule
+    {
+        public override bool WorldDraw(Drawable drawable, WorldDraw wd) 
+        {
+            ...
+        }
+    }
+</pre>
+<table class="table-desc">
+    <TR>
+        <TH>Interface Parameters</TH>
+        <TH>Overview</TH>
+    </TR>
+    <TR>
+        <td >drawable</td>
+        <td >The object to be overridden, i.e., the original entity to which the overrule is applied.</td>
+    </TR>
+    <TR>
+        <td >wd</td>
+        <td >Used to render the final display graphics, which will not be added to the model space.</td>
+    </TR>
+</table>
+
+<hr algin="left" >
+<p class="define_head_1">Rendering Implementation</p>
+<p class="define_text_1">After obtaining the original object to be overridden, create custom graphics based on the object's stored data and render them via the WorldDraw object.</p>
+<p class="define_text_1">In this example, we use data stored in the entity's XData along with the circle's center and radius to draw inner and outer circles.</p>
+<pre class="code_sample">
+    public override bool WorldDraw(Drawable drawable, WorldDraw wd)
+    {
+        // Check if it's a Circle
+        if (drawable is Circle myCircle)
+        {
+            // Retrieve XData from the circle. Commands.m_xdata is a constant
+            ResultBuffer rb = myCircle.GetXDataForApplication(Commands.m_xdata);
+            TypedValue[] values = rb.AsArray();
+            int spacing = (int)values[1].Value;
+
+            double radius = myCircle.Radius;
+            Point3d center = myCircle.Center;
+
+            // Set the color of subsequent graphics to red. To set different colors, call this interface multiple times before rendering.
+            wd.SubEntityTraits.Color = 1;
+            wd.Geometry.Circle(center, radius - spacing / 2, Vector3d.ZAxis);
+
+            wd.SubEntityTraits.Color = 2;
+            // For shapes not supported by Geometry, use the entity's WorldDraw method
+            Circle cir = new Circle(center, Vector3d.ZAxis, radius + spacing / 2);
+            cir.WorldDraw(wd);
+
+            // Return true to render only the custom graphics. To render the original entity, use base.WorldDraw
+            return true;
+        }
+        return base.WorldDraw(drawable, wd);
+    }
+</pre>
+<hr algin="left" >
+<p class="define_head_1">Adding and Removing Overrules</p>
+<p class="define_text_1">Use Overrule.AddOverrule to apply the overrule to a specific entity type. Use SetXDataFilter to ensure the overrule applies only to entities with matching XData.</p>
+<p class="define_head_2">Adding the Overrule</p>
+<pre class="code_sample">
+    public const string m_xdata = "MY_XDATA";
+    static MyEntOverrule drawableOverride;
+
+    [CommandMethod("AddOverrule")]
+    static public void AddDrawableOverrule()
+    {
+        Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+
+        if (drawableOverride == null)
+        {
+            drawableOverride = new MyEntOverrule();
+            // Add overrule to Circle type
+            Overrule.AddOverrule(RXObject.GetClass(typeof(Circle)), drawableOverride, false);
+            // Add XData filter to apply only to entities with this XData
+            drawableOverride.SetXDataFilter(m_xdata);
+        }
+
+        Overrule.Overruling = true;
+        ed.Regen();
+
+        ed.WriteMessage("\nOverrule Added!");
+    }
+</pre>
+<p class="define_head_2">Removing the Overrule</p>
+<pre class="code_sample">
+    [CommandMethod("RemoveOverrule")]
+    static public void RemoveDrawableOverrule()
+    {
+        Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+
+        if (drawableOverride != null)
+        {
+            Overrule.RemoveOverrule(RXObject.GetClass(typeof(Circle)), drawableOverride);
+            drawableOverride = null;
+        }
+
+        Overrule.Overruling = false;
+        ed.Regen();
+
+        ed.WriteMessage("\nOverrule Removed!");
+    }
+</pre>
+<hr algin="left" >
+<p class="define_head_1">Adding XData to Entities</p>
+<p class="define_text_1">Since the overrule uses an XData filter, you must first add XData with the specified name to target entities and store user input values in the XData.</p>
+<pre class="code_sample">
+    [CommandMethod("AddData")]
+    static public void AddData()
+    {
+        Document doc = Application.DocumentManager.MdiActiveDocument;
+        Database db = doc.Database;
+        Editor ed = doc.Editor;
+
+        // Select a Circle
+        PromptEntityOptions opt = new PromptEntityOptions("\nSelect a Circle:");
+        opt.SetRejectMessage("\nPlease select a Circle!");
+        opt.AddAllowedClass(typeof(Circle), true);
+
+        PromptEntityResult optRes = ed.GetEntity(opt);
+        if (optRes.Status != PromptStatus.OK)
+            return;
+
+        // Get user input
+        PromptIntegerOptions intOpt = new PromptIntegerOptions("\nEnter the spacing:");
+        // Minimum input value is 0
+        intOpt.LowerLimit = 0;
+
+        using (var tr = doc.TransactionManager.StartTransaction())
+        {
+            Circle ent = tr.GetObject(optRes.ObjectId, OpenMode.ForWrite) as Circle;
+            // Ensure spacing does not exceed twice the radius to avoid negative inner radius
+            intOpt.UpperLimit = (int)ent.Radius * 2;
+
+            RegAppTable regTable = tr.GetObject(db.RegAppTableId, OpenMode.ForWrite) as RegAppTable;
+            // Check if the XData name is already registered
+            if (!regTable.Has(m_xdata))
+            {
+                RegAppTableRecord regRec = new RegAppTableRecord();
+                regRec.Name = m_xdata;
+                regTable.Add(regRec);
+                tr.AddNewlyCreatedDBObject(regRec, true);
+                intOpt.DefaultValue = 10;
+            }
+            else
+            {
+                ResultBuffer rb = ent.GetXDataForApplication(m_xdata);
+                intOpt.DefaultValue = (int)rb.AsArray()[1].Value;
+            }
+
+            PromptIntegerResult intRes = ed.GetInteger(intOpt);
+            int spacing = intOpt.DefaultValue;
+            if (intRes.Status == PromptStatus.OK)
+            {
+                spacing = intRes.Value;
+            }
+            // Write XData
+            ent.XData = new ResultBuffer(
+                new TypedValue((int)DxfCode.ExtendedDataRegAppName, m_xdata),
+                new TypedValue((int)DxfCode.ExtendedDataInteger32, spacing));
+
+            tr.Commit();
+        }
+        ed.Regen();
+    }
+</pre>
+<hr algin="left" >
+<p class="define_head_1">Implementation Effect</p>
+<p class="define_text_1"><img src="../images/DrawableOverrule.gif"></p>
+<p class="define_text_1">Note: The execution of AddOverrule and AddData commands does not need to distinguish the order.</p>
+<hr algin="left" >
+<p class="define_head_1">Implementation Code</p>
+<p class="define_text_1">Please refer to the .Net sample project code: ZwDotNetGuide/OverruleSample/MyEntOverrule</p>
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Interaction in the Drawing Area</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Developer's Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">User Interaction in the Drawing Area</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+    <div class="content_resize">
+    <div class="article">
+    <div class="clr"></div>
+
+
+<p class="define_head_1">Description</p>
+<p class="dev_body_text">This chapter introduces how to use command-line input prompts to interact with users in the drawing area for obtaining graphical information, such as point coordinates, angles, distances, etc.</p>
+<hr algin="left" >
+<p class="define_head_1">User Interaction Functions</p>
+<p class="define_text_1">The table below lists common drawing area interaction functions. Subsequent sections will demonstrate their usage.</p>
+<table class="table-desc">
+    <TR>
+    <TH>Function Name</TH>
+    <TH>Purpose</TH>
+    <TH>Prompt Options Class</TH>
+    <TH>Prompt Result Class</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#GetAngle">GetAngle()</td>
+        <td class="table-item-odd">Prompts the user to input an angle</td>
+        <td class="table-item-odd">PromptAngleOptions</td>
+        <td class="table-item-odd">PromptDoubleResult</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#GetCorner">GetCorner()</td>
+        <td class="table-item-odd">Prompts the user to pick a rectangular corner</td>
+        <td class="table-item-odd">PromptCornerOptions</td>
+        <td class="table-item-odd">PromptPointResult</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#GetDistance">GetDistance()</td>
+        <td class="table-item-odd">Prompts the user to input a distance</td>
+                <td class="table-item-odd">PromptDistanceOptions</td>
+        <td class="table-item-odd">PromptDoubleResult</td>
+    </TR>
+     <TR>
+        <td class="table-item-odd"><a href="#GetPoint">GetPoint()</td>
+        <td class="table-item-odd">Prompts the user to input a point</td>
+                <td class="table-item-odd">PromptPointOptions</td>
+        <td class="table-item-odd">PromptPointResult</td>
+    </TR>
+        <TR>
+        <td class="table-item-odd"><a href="#GetEntity">GetEntity()</td>
+        <td class="table-item-odd">Prompts the user to select an entity</td>
+                <td class="table-item-odd">PromptEntityOptions</td>
+        <td class="table-item-odd">PromptEntityResult</td>
+    </TR>
+     <TR>
+        <td class="table-item-odd"><a href="#GetNestedEntity">GetNestedEntity()</td>
+        <td class="table-item-odd">Prompts the user to select a nested entity</td>
+                <td class="table-item-odd">PromptNestedEntityOptions</td>
+        <td class="table-item-odd">PromptNestedEntityResult</td>
+    </TR>
+</TABLE>
+
+<hr algin="left" >
+<p class="define_head_1" id="GetAngle">GetAngle()</p>
+<pre class="code_sample">
+[CommandMethod("TestGetAngle")]
+public void TestGetAngle()
+{
+    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+    PromptAngleOptions angOpts = new PromptAngleOptions("Pick the first point");
+    angOpts.AllowNone = false;
+    angOpts.UseDashedLine = true;
+    PromptDoubleResult dblRes = ed.GetAngle(angOpts);
+
+    if (dblRes.Status == PromptStatus.OK)
+    {
+        ed.WriteMessage("\nThe angle is {0}", dblRes.Value);
+    }
+    else if (dblRes.Status == PromptStatus.Cancel)
+    {
+        ed.WriteMessage("\nYou have cancelled!");
+    }
+    else
+    {
+        ed.WriteMessage("\nOther status: " + dblRes.Status.ToString());
+    }
+}
+</pre>
+<p class="define_head_1">Result:</p>
+<p class="define_text_1">Executing the TestGetAngle command prompts the user to select a point in the drawing area: "Pick the first point:". Assuming the user selects the point (0,0), the system then prompts for a second point. If the user selects (100,100), the command line outputs: "The angle is 0.785398163397448".</p>
+<p class="define_text_1">Note: The angle is calculated between the line from (0,0) to (100,100) and the X-axis, returned in radians.</p>
+<hr algin="left" >
+<p class="define_head_1" id="GetCorner">GetCorner()</p>
+<pre class="code_sample">
+[CommandMethod("TestGetCorner")]
+public void TestGetCorner()
+{
+    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+
+    Point3d ptBase = new Point3d(0, 0, 0);
+    PromptCornerOptions corOpts = new PromptCornerOptions("Pick the corner:", ptBase);
+
+    PromptPointResult ptRes = ed.GetCorner(corOpts);
+    if (ptRes.Status == PromptStatus.OK)
+    {
+        ed.WriteMessage("\nThe Corner Point is ({0}, {1}, {2})", ptRes.Value.X, ptRes.Value.Y, ptRes.Value.Z);
+    }
+    else if (ptRes.Status == PromptStatus.Cancel)
+    {
+        ed.WriteMessage("\nYou have cancelled!");
+    }
+    else
+    {
+        ed.WriteMessage("\nOther status: " + ptRes.Status.ToString());
+    }
+}
+</pre>
+<p class="define_head_1">Result:</p>
+<p class="define_text_1">Executing the TestGetCorner command prompts the user to select a point in the drawing area: "Pick the corner: ". If the user selects (100,100), the command line outputs: "The Corner Point is (100, 100, 0)".</p>
+
+<hr algin="left" >
+<p class="define_head_1" id="GetDistance">GetDistance()</p>
+<pre class="code_sample">
+[CommandMethod("TestGetDistance")]
+public void TestGetDistance()
+{
+    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+    PromptDistanceOptions DistOpts = new PromptDistanceOptions("Pick First Point");
+
+    DistOpts.AllowNegative = false;
+    DistOpts.AllowZero = false;
+    DistOpts.AllowNone = false;
+    DistOpts.UseDashedLine = true;
+
+    PromptDoubleResult dblRes = ed.GetDistance(DistOpts);
+
+    if (dblRes.Status == PromptStatus.OK)
+    {
+        ed.WriteMessage("\nThe distance is {0}", dblRes.Value);
+    }
+    else if (dblRes.Status == PromptStatus.Cancel)
+    {
+        ed.WriteMessage("\nYou have cancelled!");
+    }
+    else
+    {
+        ed.WriteMessage("\nOther status: " + dblRes.Status.ToString());
+    }
+}
+</pre>
+<p class="define_head_1">Result:</p>
+<p class="define_text_1">When executing the TestGetDistance command, the system prompts the user to select a point in the drawing area: "Pick First Point: ". Suppose the user selects point 0,0. Subsequently, the system prompts to select the second point, and the user selects 100,0. The command line finally outputs: "The distance is 100".</p>
+<hr align="left">
+<p class="define_head_1" id="GetPoint">Get a Point <span class="table-item-odd">GetPoint</span>()</p>
+<pre class="code_sample">
+[CommandMethod("TestGetPoint")]
+public void TestGetPoint()
+{
+    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+
+    PromptPointOptions ptOpts = new PromptPointOptions("Select a Point");
+    ptOpts.BasePoint = new Point3d(0, 0, 0);
+    ptOpts.UseDashedLine = true;
+    //ptOpts.Message = "Select a Point";
+
+    PromptPointResult ptRes = ed.GetPoint(ptOpts);
+    Point3d pt = ptRes.Value;
+
+    if (ptRes.Status == PromptStatus.OK)
+    {
+        ed.WriteMessage("\nThe Point is ({0}, {1}, {2})", pt.X, pt.Y, pt.Z);
+    }
+    else if (ptRes.Status == PromptStatus.Cancel)
+    {
+        ed.WriteMessage("\nYou have cancelled!");
+    }
+    else
+    {
+        ed.WriteMessage("\nOther status: " + ptRes.Status.ToString());
+    }
+}
+</pre>
+        <p class="define_head_1">Execution Result:</p>
+        <p class="define_text_1">When executing the TestGetPoint command, the system prompts the user to select a point in the drawing area: "Select a Point: ". Suppose the user selects point 100,1000. The command line outputs: "The Point is (100, 100, 0)".</p>
+
+        <hr align="left">
+        <p class="define_head_1" id="GetEntity">Select an Entity <span class="table-item-odd">GetEntity</span>()</p>
+        <pre class="code_sample">
+[CommandMethod("EntSelTest")]
+static public void EntSelTest()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    ZwSoft.ZwCAD.EditorInput.Editor ed = doc.Editor;
+
+    PromptEntityOptions entOpts = new PromptEntityOptions("Select an Entity");
+    PromptEntityResult entRes = entRes = ed.GetEntity(entOpts);
+
+    if (entRes.Status == PromptStatus.OK)
+    {
+        ObjectId objId = entRes.ObjectId;
+        ZwSoft.ZwCAD.DatabaseServices.TransactionManager trManager = db.TransactionManager;
+        using (Transaction trans = trManager.StartTransaction())
+        {
+            Entity entity = (Entity)trans.GetObject(objId, OpenMode.ForRead, true);
+            ed.WriteMessage("\nThe Entity you selected is " + entity.GetType().FullName);
+            trans.Commit();
+        }
+    }
+}
+</pre>
+        <p class="define_head_1">Execution Result:</p>
+        <p class="define_text_1">Draw a circle in the drawing area. Execute the EntSelTest command and select an entity with the prompt "Select an Entity: ". After selecting the circle, the command line outputs: "The Entity you selected is ZwSoft.ZwCAD.DatabaseServices.Circle".</p>
+
+        <hr align="left">
+        <p class="define_head_1" id="GetNestedEntity">Select a Nested Entity <span class="table-item-odd">GetNestedEntity</span>()</p>
+        <pre class="code_sample">
+public void testGetNestedEntity()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    ZwSoft.ZwCAD.EditorInput.Editor ed = doc.Editor;
+    PromptNestedEntityOptions entOpts = new PromptNestedEntityOptions("Select a Nested Entity");
+    PromptNestedEntityResult result = ed.GetNestedEntity(entOpts);
+    if (result.Status == PromptStatus.OK)
+    {
+        ed.WriteMessage("\nEntity {0}\nPoint {1}\nTransform {2}",
+            result.ObjectId.ObjectClass.DxfName,
+            result.PickedPoint,
+            result.Transform);
+    }
+    else
+    {
+        ed.WriteMessage("\nThe Entity status is {0}", result.Status);
+    }
+}
+</pre>
+        <p class="define_head_1">Execution Result:</p>
+        <p class="define_text_1">Draw two circles in the drawing area. Use the block command to create a block reference from the two circles. Execute the testGetNestedEntity command and select a nested entity with the prompt "Select a Nested Entity: ". After selecting one of the circles, the command line outputs: "Select a Nested Entity: 
+Entity CIRCLE
+Point (99.082391061453,1.54417877094971,0)
+Transform ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1))".</p>
+    </div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

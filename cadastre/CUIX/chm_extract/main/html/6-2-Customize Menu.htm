@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Menu\Toolbar</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Development Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Menu\Toolbar</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="dev_body_text">.NET can create custom menus and toolbars by calling COM interfaces.</p>
+<p class="dev_body_text">
+    Menus created this way are temporary and only valid within the current ZWCAD process. They need to be recreated the next time ZWCAD is opened.
+    To create a permanently saved custom menu interface, consider using CUIX menu files. This method requires loading the CUIX file only once for the menu interface to persist.
+</p>
+<p class="dev_body_text">For code examples on creating CUIX files, refer to <A href="./6-6-Customize%20CUIX.htm">CUIX Interface</A>.</p>
+
+<hr algin="left" >
+<p class="define_head_1">Add References</p>
+<p class="define_text_1">Add ZWCAD 2025 Type Library to the project references.</p>
+<div class="define_text_1"><img src="../images/customMenu_1.png"></div>
+<p class="define_text_1">Add the following before the project code:</p>
+<pre class="code_sample">
+    using ZWCAD;
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Obtain Custom Menu Files</p>
+<p class="define_text_1">Custom menu files store customized interface elements such as menus, toolbars, and Ribbon bars. Use the CUI command in ZWCAD to view loaded menu file contents.</p>
+<p class="define_text_1">When modifying menu files via COM interfaces, first obtain a menu group object, then add or modify menus and toolbars. Changes made via COM interfaces are not saved to CUI files, so directly modify the "ZWCAD" main menu.</p>
+<pre class="code_sample">
+    // Get ZWCAD menu groups
+    ZcadMenuGroups menuGroups = (ZcadMenuGroups)Application.MenuGroups;
+    ZcadMenuGroup menuGroup = menuGroups.Item("ZWCAD");
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Customize Menu Bar</p>
+<div class="define_text_1"><img src="../images/customMenu_2.png"></div>
+<p class="define_head_2">Create Drop-Down Menu</p>
+<p class="define_text_2">To create a custom drop-down menu, add a new menu item to the Menus collection of the current MenuGroup, then add buttons or separators.</p>
+<pre class="code_sample">
+    // Create drop-down menu
+    ZcadPopupMenu popupMenu = menuGroup.Menus.Add("PopMenu C#");
+    popupMenu.AddMenuItem(popupMenu.Count, "MenuItem 1", "_about\n");
+    popupMenu.AddSeparator(popupMenu.Count);
+</pre>
+
+<p class="define_head_2">Create Submenu</p>
+<p class="define_text_2">Submenus group related buttons for easier access.</p>
+<pre class="code_sample">
+    // Add submenu
+    ZcadPopupMenu subMenu = popupMenu.AddSubMenu(popupMenu.Count, "SubMenu");
+    subMenu.AddMenuItem(subMenu.Count, "MenuItem 2", "vernum\n");
+    ZcadMenuBar menuBar = (ZcadMenuBar)Application.MenuBar;
+    popupMenu.InsertInMenuBar(menuBar.Count);
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Customize Toolbar</p>
+<div class="define_text_1"><img src="../images/customMenu_3.png"></div>
+<p class="define_head_2">Create Toolbar</p>
+<p class="define_text_2">Add a new Toolbar object to the current menu group, then add buttons to it.</p>
+<pre class="code_sample">
+    // Create toolbar
+    ZcadToolbar toolBar = menuGroup.Toolbars.Add("ToolBar C#");
+    // Add standard button
+    ZcadToolbarItem toolBarItem = toolBar.AddToolbarButton(toolBar.Count, "About", "Software informations.", "_about\n");
+    // Set button icons
+    string dllPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+    toolBarItem.SetBitmaps(dllPath + "\\..\\..\\images\\16x16.bmp", dllPath + "\\..\\..\\images\\32x32.bmp");
+</pre>
+
+<p class="define_head_2">Add Flyout Toolbar Button</p>
+<p class="define_text_2">A flyout toolbar links another toolbar. Create a new toolbar and attach it to the current toolbar using AttachToolbarToFlyout.</p>
+<pre class="code_sample">
+    // Add flyout button
+    ZcadToolbarItem flyoutButton = toolBar.AddToolbarButton(toolBar.Count, "Flyout Button", null, null, true);
+    // Create new toolbar
+    ZcadToolbar flyout = menuGroup.Toolbars.Add("Flyout Toolbar");
+    flyout.Visible = false; // Hide the new toolbar
+    ZcadToolbarItem item1 = flyout.AddToolbarButton(flyout.Count, "Version", "Version Number", "vernum\n");
+    item1.SetBitmaps(dllPath + "\\..\\..\\images\\a_16x16.bmp", dllPath + "\\..\\..\\images\\a_32x32.bmp");
+    ZcadToolbarItem item2 = flyout.AddToolbarButton(flyout.Count, "Line", "Draw a line", "_line\n");
+    item2.SetBitmaps(dllPath + "\\..\\..\\images\\b_16x16.bmp", dllPath + "\\..\\..\\images\\b_32x32.bmp");
+    // Attach the toolbar as a flyout
+    flyoutButton.AttachToolbarToFlyout(menuGroup.Name, "Flyout Toolbar");
+</pre>
+
+<p class="define_head_2">Toolbar Default Position</p>
+<p class="define_text_2">Use Dock to anchor toolbars or Float to set floating positions.</p>
+<pre class="code_sample">
+    // Set default dock position
+    toolBar.Dock(ZcToolbarDockStatus.zcToolbarDockLeft);
+    // Set floating position
+    // top: pixels from top, left: pixels from left, numberFloatFows: rows when horizontal
+    toolBar.Float(200, 200, 1);
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Sample Code</p>
+<p class="define_text_1">Refer to .NET sample project: ZwDotNetGuide/CustomMenu</p>
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

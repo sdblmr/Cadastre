@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Grip Overrule</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+    <div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+    <div class="hear_text">ZWCAD 2026 .NET Developer Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Grip Overrule</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="dev_body_text">GripOverrule allows redefining the grips of an object and controlling the graphical changes when grips are dragged.</p>
+<p class="dev_body_text">Note: This article extends the Display Overrule (DrawableOverrule). It is recommended to read <A href="./8-1-DrawableOverrule.htm">Display Overrule</A> first.</p>
+<hr algin="left" >
+<p class="define_head_1">Creating a Custom GripOverrule</p>
+<p class="define_text_1">Create a new class file named MyGripOverrule in your project. Modify the code to make MyGripOverrule inherit from the GripOverrule class, and override the two virtual methods from the parent class: GetGripPoints and MoveGripPoints.</p>
+<pre class="code_sample">
+    class MyGripOverrule : GripOverrule
+    {
+        public override void GetGripPoints(Entity entity, GripDataCollection grips,
+            double curViewUnitSize, int gripSize, Vector3d curViewDir, GetGripPointsFlags bitFlags)
+        {
+            ...
+        }
+
+        public override void MoveGripPointsAt(Entity entity, GripDataCollection grips,
+            Vector3d offset, MoveGripPointsFlags bitFlags)
+        {
+            ...
+        }
+    }
+</pre>
+<p class="define_head_2">GetGripPoints</p>
+<table class="table-desc">
+    <TR>
+        <TH>Parameters</TH>
+        <TH>Description</TH>
+    </TR>
+    <TR>
+        <td >entity</td>
+        <td >The original entity object to which the overrule is applied</td>
+    </TR>
+    <TR>
+        <td >grips</td>
+        <td >Grip data collection. The method receives the entity's default grip collection.</td>
+    </TR>
+    <TR>
+        <td >curViewUnitSize</td>
+        <td >Current view unit size in pixels</td>
+    </TR>
+    <TR>
+        <td >gripSize</td>
+        <td >Grip size in pixels</td>
+    </TR>
+    <TR>
+        <td >curViewDir</td>
+        <td >Current view direction</td>
+    </TR>
+    <TR>
+        <td >bitFlags</td>
+        <td >Flags for grip acquisition</td>
+    </TR>
+</table>
+<p class="define_head_2">MoveGripPointsAt</p>
+<table class="table-desc">
+    <TR>
+        <TH>Parameters</TH>
+        <TH>Description</TH>
+    </TR>
+    <TR>
+        <td >entity</td>
+        <td >The original entity object to which the overrule is applied</td>
+    </TR>
+    <TR>
+        <td >grips</td>
+        <td >Grip data collection. The method receives the entity's default grip collection.</td>
+    </TR>
+    <TR>
+        <td >offset</td>
+        <td >Grip offset vector</td>
+    </TR>
+    <TR>
+        <td >bigFlags</td>
+        <td >Flags for grip movement</td>
+    </TR>
+</table>
+
+<hr algin="left" >
+<p class="define_head_1">Creating Custom GripData</p>
+<p class="define_text_1">GripData can store custom grip information, such as grip movement methods and grip styles.</p>
+<pre class="code_sample">
+    public class MyGrip : GripData
+    {
+        // Define the transformation method for grip coordinates
+        public void Move(Vector3d vec)
+        {
+            GripPoint = GripPoint + vec;
+        }
+    }
+</pre>
+<hr algin="left" >
+<p class="define_head_1">Implementing Grip Overrule</p>
+<p class="define_head_2">Creating Custom Grips</p>
+<p class="define_text_1">The GetGripPoints function retrieves the existing grip data collection on the entity. By adding or removing grip data objects in the collection, you can control the final displayed grips. In this example, we add a grip to control the spacing between inner and outer circles.</p>
+<pre class="code_sample">
+    public override void GetGripPoints(Entity entity, GripDataCollection grips,
+            double curViewUnitSize, int gripSize, Vector3d curViewDir, GetGripPointsFlags bitFlags)
+    {
+        // Check if it is a circle
+        if (entity is Circle myCircle)
+        {
+            // Get the circle's extended data
+            ResultBuffer rb = entity.GetXDataForApplication(Commands.m_xdata);
+            int spacing = (int)rb.AsArray()[1].Value;
+
+            // Set the custom grip position at 45° on the outer circle
+            Point3d pt = myCircle.Center + new Vector3d(myCircle.Radius + spacing / 2, 0, 0);
+            pt = pt.RotateBy(System.Math.PI / 4, Vector3d.ZAxis, myCircle.Center);
+
+            // Create custom grip data
+            MyGrip grip = new MyGrip();
+            grip.GripPoint = pt;
+
+            // Add to the grip data collection
+            grips.Add(grip);
+        }
+
+        base.GetGripPoints(entity, grips, curViewUnitSize, gripSize, curViewDir, bitFlags);
+    }
+</pre>
+<p class="define_head_2">Custom Grip Movement Handling</p>
+<p class="define_text_1">The MoveGripPointsAt function defines how to handle offset data after each grip is dragged. This example restricts the grip offset range to prevent negative radii and records the offset between inner and outer circles into XData for redrawing.</p>
+<pre class="code_sample">
+    public override void MoveGripPointsAt(Entity entity, GripDataCollection grips,
+        Vector3d offset, MoveGripPointsFlags bitFlags)
+    {
+        if (entity.Id.IsValid && entity is Circle myCircle)
+        {
+            foreach (GripData g in grips)
+            {
+                // Find the custom grip data in the collection
+                if (g is MyGrip)
+                {
+                    MyGrip grip = (MyGrip)g;
+
+                    Vector3d dir = (grip.GripPoint - myCircle.Center).GetNormal();
+                    double offsetDist = dir.DotProduct(offset);
+                    double radius = myCircle.Radius;
+                    double curOffset = (grip.GripPoint - myCircle.Center).Length - radius;
+                    // Restrict offset to ensure spacing is greater than 0 and less than twice the radius
+                    if (offsetDist >= 0)
+                    {
+                        if (offsetDist > (radius - curOffset))
+                        {
+                            offsetDist = radius - curOffset;
+                        }
+                    }
+                    else
+                    {
+                        if (-offsetDist > curOffset)
+                        {
+                            offsetDist = -curOffset;
+                        }
+                    }
+                    dir = dir * (((int)(offsetDist * 2)) / 2);
+                    // Call the custom grip move function
+                    grip.Move(dir);
+
+                    // Write the offset inner and outer circle spacing back to XData
+                    ResultBuffer rb = myCircle.GetXDataForApplication(Commands.m_xdata);
+                    int spacing = (int)rb.AsArray()[1].Value;
+                    spacing = spacing + (int)(offsetDist * 2);
+                    ResultBuffer newRb = new ResultBuffer(
+                        new TypedValue(System.Convert.ToInt32(DxfCode.ExtendedDataRegAppName), Commands.m_xdata),
+                        new TypedValue(System.Convert.ToInt32(DxfCode.ExtendedDataInteger32), spacing));
+                    myCircle.XData = newRb;
+
+                    break;
+                }
+            }
+        }
+        // Remove custom grip data objects from the collection, then call the default MoveGripPointsAt method for remaining grips
+        for (int i = grips.Count - 1; i >= 0; --i)
+        {
+            if (grips[i] is MyGrip)
+                grips.Remove(grips[i]);
+        }
+        if (grips.Count > 0)
+        {
+            base.MoveGripPointsAt(entity, grips, offset, bitFlags);
+        }
+    }
+</pre>
+<hr align="left">
+<p class="define_head_1">Adding and Removing Grip Rules</p>
+<p class="define_text_1">Use the AddOverrule method of Overrule to apply redraw rules to specific entity types. Use SetXDataFilter to add a filter, ensuring the rule is only executed for entities with corresponding XData.</p>
+<p class="define_head_2">Adding Rules</p>
+<pre class="code_sample">
+    public const string m_xdata = "MY_XDATA";
+    static MyEntOverrule drawableOverride;
+    static MyGripOverrule gripOverride;
+
+    [CommandMethod("AddOverrule")]
+    static public void AddDrawableOverrule()
+    {
+        Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+
+        // ...
+        // drawableOverride
+        // ...
+
+        if (gripOverride == null)
+        {
+            gripOverride = new MyGripOverrule();
+            Overrule.AddOverrule(RXObject.GetClass(typeof(Circle)), gripOverride, false);
+            gripOverride.SetXDataFilter(m_xdata);
+        }
+        Overrule.Overruling = true;
+        ed.Regen();
+
+        ed.WriteMessage("\nOverrule Added!");
+    }
+</pre>
+<p class="define_head_2">Removing Rules</p>
+<pre class="code_sample">
+    [CommandMethod("RemoveOverrule")]
+    static public void RemoveDrawableOverrule()
+    {
+        Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
+
+        // ...
+        // drawableOverride
+        // ...
+
+        if (gripOverride != null)
+        {
+            Overrule.RemoveOverrule(RXObject.GetClass(typeof(Circle)), gripOverride);
+            gripOverride = null;
+        }
+
+        Overrule.Overruling = false;
+        ed.Regen();
+
+        ed.WriteMessage("\nOverrule Removed!");
+    }
+</pre>
+<hr align="left">
+<p class="define_head_1">Implementation Effect</p>
+<p class="define_text_1"><img src="../images/GripOverrule.gif"></p>
+<hr align="left">
+<p class="define_head_1">Implementation Code</p>
+<p class="define_text_1">Refer to the .Net sample project code: ZwDotNetGuide/OverruleSample/MyGripOverrule</p>
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

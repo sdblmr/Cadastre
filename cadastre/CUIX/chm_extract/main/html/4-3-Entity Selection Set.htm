@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Selection Set</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+
+
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Developer's Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Selection Set</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+    <div class="content_resize">
+    <div class="article">
+    <div class="clr"></div>
+
+
+<p class="define_head_1">Description</p>
+<p class="dev_body_text">A selection set is a collection of entities selected by the user or program, serving as a crucial means of interaction. It allows you to retrieve information from the drawing window through selected entities. You can either prompt the user to select entities or use filters for conditional screening. After selecting objects via a selection set, further processing can be performed. This section explains how to select entities under specific conditions using common selection set functions.</p>
+<hr algin="left" >
+<p class="define_head_1">Selection Set Functions Overview</p>
+<p class="define_text_1">The table below lists common selection set functions. Subsequent articles will demonstrate how to use these functions.</p>
+<table class="table-desc">
+    <TR>
+    <TH>Function Name</TH>
+    <TH>Purpose</TH>
+
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#get-GetSelection">GetSelection()</td>
+        <td class="table-item-odd">Select entities in the graphics window</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#get-SelectAll">SelectAll()</td>
+        <td class="table-item-odd">Select all entities</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#get-SelectCrossingWindow">SelectCrossingWindow()</td>
+        <td class="table-item-odd">Select entities within or intersecting the window boundaries</td>
+
+    </TR>
+     <TR>
+        <td class="table-item-odd"><a href="#get-SelectCrossingPolygon">SelectCrossingPolygon()</td>
+        <td class="table-item-odd">Select entities inside or intersecting a polygon</td>
+
+    </TR>
+         <TR>
+        <td class="table-item-odd"><a href="#get-SelectFence">SelectFence()</td>
+        <td class="table-item-odd">Select entities along a fence line</td>
+
+    </TR>
+         <TR>
+        <td class="table-item-odd"><a href="#get-SelectImplied">SelectImplied()</td>
+        <td class="table-item-odd">Select pre-selected entities in the current graphics window</td>
+
+    </TR>
+         <TR>
+        <td class="table-item-odd"><a href="#get-SelectLast">SelectLast()</td>
+        <td class="table-item-odd">Select the most recently created entity</td>
+
+    </TR>
+         <TR>
+        <td class="table-item-odd"><a href="#get-SelectPrevious">SelectPrevious()</td>
+        <td class="table-item-odd">Select the previous selection set</td>
+
+    </TR>
+             <TR>
+        <td class="table-item-odd"><a href="#get-SelectWindow">SelectWindow()</td>
+        <td class="table-item-odd">Select entities inside a rectangular window</td>
+
+    </TR>
+             <TR>
+        <td class="table-item-odd"><a href="#get-SelectWindowPolygon">SelectWindowPolygon()</a></td>
+        <td class="table-item-odd">Select entities inside a polygonal window</td>
+
+    </TR>
+</TABLE>
+
+<hr algin="left" >
+<p class="define_head_1" id="get-GetSelection">Select Entities Using GetSelection()</p>
+<pre class="code_sample">
+[CommandMethod("Select_GetSelection")]
+static public void GetSelectionTest()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptSelectionOptions selOpts = new PromptSelectionOptions();
+    selOpts.MessageForAdding = "Select some entities: ";
+
+    TypedValue[] values = { new TypedValue(0, "LINE"), new TypedValue(62, 1) };
+    SelectionFilter filter = new SelectionFilter(values);
+
+    PromptSelectionResult selRes = ed.GetSelection(selOpts, filter);
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+    ChangeColor(objIds);
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+}
+</pre>
+<p class="define_head_1">Result:</p>
+<p class="define_text_1">Draw entities such as circles, multiple lines (change one line's color to red), and polylines. Execute Select_GetSelection and select all entities. The command line outputs: "The selection set has 1 object". Only the red line turns blue.</p>
+
+<p class="define_head_1">SelectionFilter Introduction:</p>
+
+<p class="define_text_1">Filters can be applied to select entities meeting specific conditions. For example, in the code above: "TypedValue[] values = { new TypedValue(0, "LINE"), new TypedValue(62, 1) };" adds two conditions: "entity is a line" and "color is red".</p>
+    <p class="define_text_1">Common DXF Group Codes:</p>
+    <p class="define_text_1">1. 0(DxfCode.Start): Object type (string), e.g., "Line", "Arc". Note: Polyline uses "LWPOLYLINE", BlockReference uses "INSERT".</p>
+    <p class="define_text_1">2. 1(DxfCode.Text): Primary text value (string), e.g., text content or attribute string.</p>
+    <p class="define_text_1">3. 2(DxfCode.BlockName): Object name (string), e.g., attribute tag, block name.</p>
+    <p class="define_text_1">4. 8(DxfCode.LayerName): Layer name (string).</p>
+    <p class="define_text_1">5. 10(DxfCode.XCoordinate): Primary point (start point of a line, center of a circle, etc.), represented as a 3D coordinate array.</p>
+    <p class="define_text_1">6. 60(DxfCode.Visiblility): Visibility (integer), 0=visible, 1=invisible.</p>
+    <p class="define_text_1">7. 62(DxfCode.Color): Color index (integer), 0=ByBlock, 256=ByLayer.</p>
+	<p class="define_text_1">8. 1000(DxfCode.ExtendedDataASCIIString): Extended data ASCII string (up to 255 bytes).</p>
+	<p class="define_text_1">9. 1001(DxfCode.ExtendedDataRegAppName): Extended data registered application name (up to 31-byte ASCII string).</p>
+    
+
+<hr algin="left" >
+<p class="define_head_1" id="get-GetSelection">GetSelection() with Keywords</p>
+<pre class="code_sample">
+[CommandMethod("Keyword_GetSelection")]
+public void Keyword_GetSelection()
+{
+    var doc = Application.DocumentManager.MdiActiveDocument;
+    var db = doc.Database;
+    var ed = doc.Editor;
+
+    PromptSelectionOptions selOpts = new PromptSelectionOptions();
+    // Add branch option names. Uppercase letters in the string are keywords, allowing users to input only the keyword during command execution to trigger the corresponding branch.
+    selOpts.Keywords.Add("Atest");
+    selOpts.Keywords.Add("Btest");
+    // Display all branches in the prompt message using GetDisplayString
+    selOpts.MessageForAdding = "Select some entities: " + selOpts.Keywords.GetDisplayString(true);
+    // Add event handler for keyword input
+    selOpts.KeywordInput += SelOpts_KeywordInput;
+    var propRes = ed.GetSelection(selOpts);
+    ...
+}
+
+private void SelOpts_KeywordInput(object sender, SelectionTextInputEventArgs e)
+{
+    Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage(e.Input);
+}
+</pre>
+<p class="define_head_1">Running Results:</p>
+<p class="define_text_1">After executing the Keyword_GetSelection command, input keywords A or B in the command line. The command line will display the strings "Atest" or "Btest".</p>
+<hr algin="left" >
+<p class="define_head_1" id="get-SelectAll">Select All Entities SelectAll()</p>
+<pre class="code_sample">
+[CommandMethod("Select_All")]
+static public void SelectAll()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptSelectionResult selRes = ed.SelectAll();
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+}
+</pre>
+
+<p class="define_head_1">Running Results:</p>
+<p class="define_text_1">Draw some entities in the drawing area (e.g., circles, lines, polylines). Execute Select_All, and the command line will output the total number of all entities: "The selection set has 8 object".</p>
+
+<hr algin="left" >
+<p class="define_head_1" id="get-SelectCrossingWindow">Crossing Window Selection<span class="table-item-odd">SelectCrossingWindow</span>()</p>
+<pre class="code_sample">
+[CommandMethod("Select_CrossingWindow")]
+static public void SelectCrossingWindow()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptSelectionResult selRes = ed.SelectCrossingWindow(new Point3d(0, 0, 0), new Point3d(1000, 1000, 0));
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+    ChangeColor(objIds);
+}
+</pre>
+<p class="figure"><img class="pics" src="../pics/4-3-SelectCrossingWindow.png"></p>
+<p class="define_head_1">Running Results:</p>
+<p class="define_text_1">As shown in the figure: Entities inside or intersecting with the rectangular area formed by coordinates (0,0) and (1000,1000) are selected. The ChangeColor function turns them blue, and the command line outputs: "The selection set has 7 object".</p>
+<hr algin="left" >
+<p class="define_head_1" id="get-SelectCrossingPolygon">Crossing Polygon Selection<span class="table-item-odd">SelectCrossingPolygon</span>()</p>
+<pre class="code_sample">
+[CommandMethod("Select_CrossingPolygon")]
+static public void SelectCrossingPolygon()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    Point3d[] pt3dArr = new Point3d[5];
+    pt3dArr[0] = new Point3d(0, 0, 0);
+    pt3dArr[1] = new Point3d(1000, 0, 0);
+    pt3dArr[2] = new Point3d(1000, 1500, 0);
+    pt3dArr[3] = new Point3d(0, 1000, 0);
+    pt3dArr[4] = new Point3d(0, 0, 0);
+
+    Point3dCollection pt3dCol = new Point3dCollection(pt3dArr);
+
+    PromptSelectionResult selRes = ed.SelectCrossingPolygon(pt3dCol);
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+    ChangeColor(objIds);
+}
+
+</pre>
+<p class="figure"><img class="pics" src="../pics/4-3-SelectCrossingPolygon.png"></p>
+
+<p class="define_head_1">Running Results:</p>
+<p class="define_text_1">As shown in the figure: Entities inside or intersecting with the polygon formed by coordinates (0,0), (1000,0), (1000,1500), and (0,1000) are selected. The ChangeColor function turns them blue, and the command line outputs: "The selection set has 7 object".</p>
+
+<hr algin="left" >
+<p class="define_head_1" id="get-SelectFence">Fence Selection<span class="table-item-odd">SelectFence</span>()</p>
+<pre class="code_sample">
+[CommandMethod("Select_Fence")]
+static public void SelectFence()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    Point3d[] pt3dArr = new Point3d[5];
+    pt3dArr[0] = new Point3d(0, 0, 0);
+    pt3dArr[1] = new Point3d(1000, 0, 0);
+    pt3dArr[2] = new Point3d(1000, 1500, 0);
+    pt3dArr[3] = new Point3d(0, 1000, 0);
+    pt3dArr[4] = new Point3d(0, 0, 0);
+
+    Point3dCollection pt3dCol = new Point3dCollection(pt3dArr);
+
+    PromptSelectionResult selRes = ed.SelectFence(pt3dCol);
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+    ChangeColor(objIds);
+}
+</pre>
+<p class="figure"><img class="pics" src="../pics/4-3-SelectFence.png"></p>
+<p class="define_text_1">As shown in the figure: Entities crossing the fence formed by coordinates (0,0), (1000,0), (1000,1500), and (0,1000) are selected. The ChangeColor function turns them blue, and the command line outputs: "The selection set has 6 object". Note the difference from the SelectCrossingPolygon method.</p>
+<hr algin="left" >
+<p class="define_head_1" id="get-SelectImplied">Get Pre-Selected Entities SelectImplied</span>()</p>
+<pre class="code_sample">
+[CommandMethod("Select_Implied", CommandFlags.UsePickSet)]
+static public void SelectImplied()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptSelectionResult selRes = ed.SelectImplied();
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+    ChangeColor(objIds);
+}
+</pre>
+<p class="define_head_1">Running Result:</p>
+<p class="define_text_1">Draw entities such as circles, lines, polylines in the drawing area. After manually selecting some entities, enter "Select_Implied" in the command line. The command line returns the number of manually selected entities: "The selection set has 5 objects", and these five entities turn blue.</p>
+
+<hr algin="left">
+<p class="define_head_1" id="get-SelectLast"><span class="table-item-odd">Select the last created entity</span><span class="table-item-odd">SelectLast</span>()</p>
+<pre class="code_sample">
+[CommandMethod("Select_Last")]
+static public void SelectLast()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptSelectionResult selRes = ed.SelectLast();
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+    ChangeColor(objIds);
+}
+</pre>
+<p class="define_head_1">Running Result:</p>
+<p class="define_text_1">After drawing some entities in the drawing area, enter "Select_Implied" in the command line. The command line returns: "The selection set has 1 object", and the last drawn entity turns blue.</p>
+
+<hr algin="left">
+<p class="define_head_1" id="get-SelectPrevious">Get the previous selection set<span class="table-item-odd">SelectPrevious</span>()</p>
+<pre class="code_sample">
+[CommandMethod("Select_Previous")]
+static public void SelectPrevious()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptSelectionResult selRes = ed.SelectPrevious();
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+    ChangeColor(objIds);
+}
+</pre>
+
+<hr algin="left">
+<p class="define_head_1" id="get-SelectWindow">Polygon intersection selection<span class="table-item-odd">SelectWindow</span>()</p>
+<pre class="code_sample">
+[CommandMethod("Select_Window")]
+static public void SelectWindow()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    PromptSelectionResult selRes = ed.SelectWindow(new Point3d(0, 0, 0), new Point3d(1000, 1000, 0));
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+    ChangeColor(objIds);
+}
+</pre>
+<p class="figure"><img class="pics" src="../pics/4-3-SelectWindow.png"></p>
+<p class="define_head_1">Running Result:</p>
+<p class="define_text_1">As shown in the figure: Entities inside or intersecting with the rectangular frame formed by coordinates (0,0) and (1000,1000) are selected. These entities turn blue via the ChangeColor function, and the command line outputs: "The selection set has 2 objects".</p>
+
+<hr algin="left">
+<p class="define_head_1" id="get-SelectWindowPolygon">Polygonal window selection<span class="table-item-odd">SelectWindowPolygon</span>()</p>
+<pre class="code_sample">
+[CommandMethod("Select_WindowPolygon")]
+static public void SelectWindowPolygon()
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.GetDocument(db);
+    Editor ed = doc.Editor;
+
+    Point3d[] pt3dArr = new Point3d[5];
+    pt3dArr[0] = new Point3d(0, 0, 0);
+    pt3dArr[1] = new Point3d(1000, 0, 0);
+    pt3dArr[2] = new Point3d(1000, 1500, 0);
+    pt3dArr[3] = new Point3d(0, 1000, 0);
+    pt3dArr[4] = new Point3d(0, 0, 0);
+
+    Point3dCollection pt3dCol = new Point3dCollection(pt3dArr);
+
+    PromptSelectionResult selRes = ed.SelectWindowPolygon(pt3dCol);
+    if (selRes.Status != PromptStatus.OK)
+        return;
+
+    SelectionSet sSet = selRes.Value;
+    ObjectId[] objIds = sSet.GetObjectIds();
+
+    ed.WriteMessage("\nThe selection set has {0} object", objIds.Length);
+    ChangeColor(objIds);
+}
+</pre>
+
+<p class="figure"><img class="pics" src="../pics/4-3-SelectCrossingPolygon.png"></p>
+
+<p class="define_head_1">Running Result:</p>
+<p class="define_text_1">As shown in the figure: Entities inside the polygonal area formed by coordinates (0,0), (1000,0), (1000,1500), and (0,1000) are selected. These entities turn blue via the ChangeColor function, and the command line outputs: "The selection set has 1 object".</p>
+
+<hr algin="left">
+<p class="define_head_1">ChangeColor() Function</p>
+<pre class="code_sample">
+static public void ChangeColor(ObjectId[] objIds)
+{
+    Database db = HostApplicationServices.WorkingDatabase;
+    Document doc = Application.DocumentManager.MdiActiveDocument;
+    Editor ed = doc.Editor;
+
+    using (Transaction trans = db.TransactionManager.StartTransaction())
+    {
+        foreach (ObjectId objId in objIds)
+        {
+            Entity entity = (Entity)objId.GetObject(OpenMode.ForWrite);
+                entity.ColorIndex = 5;
+        }
+        trans.Commit();
+    }
+}
+</pre>
+    </div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CUIX Interface</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Developer Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">CUIX Interface</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="dev_body_text">
+    The CUIX file is a menu file used to store customized interface layouts. Starting from 2025, ZWCAD supports a series of APIs to manipulate CUIX files, allowing rapid customization of CUIX files.
+</p>
+
+<hr algin="left" >
+<p class="define_head_1">Preparation</p>
+<p class="define_text_1">First, add a reference to ZcCui.dll in your project and include the following in your code:</p>
+<pre class="code_sample">
+    using ZwSoft.ZwCAD.Customization;
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Loading and Unloading CUIX Files</p>
+<p class="define_text_1">A prepared CUIX file can be loaded as a partial customization file under the current main CUIX.</p>
+<p class="define_head_2">Load a CUIX File</p>
+<pre class="code_sample">
+    string dllPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+    string cuixFilePath = dllPath + "\\..\\..\\Sample25.cuix";
+    if (System.IO.File.Exists(cuixFilePath))
+    {
+        Application.LoadPartialMenu(cuixFilePath);
+    }
+</pre>
+<p class="define_head_2">Unload a CUIX File</p>
+<pre class="code_sample">
+    // Get the main CUIX object
+    string sMainCuiFile = (string)Application.GetSystemVariable("MENUNAME");
+    sMainCuiFile += ".cuix";
+    CustomizationSection mainMenu = new CustomizationSection(sMainCuiFile);
+
+    string unloadCuiName = "Sample25.cuix";
+    if (mainMenu.PartialCuiFiles.Contains(unloadCuiName))
+    {
+        Application.UnloadPartialMenu(unloadCuiName);
+    }
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Create a CUIX File</p>
+<p class="define_text_1">
+    In addition to loading existing CUIX files, you can dynamically generate new CUIX files through code. 
+    This reduces the number of files required in the plugin package and allows pre-checking for existing menu groups 
+    in CAD to avoid conflicts caused by loading duplicate files.
+</p>
+<pre class="code_sample">
+    static public void CreateCuixFile()
+    {
+        string menuGroupName = "MyCui";
+        string cuiFileName = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"\\{menuGroupName}.cuix";
+        CustomizationSection cs = AddCui(cuiFileName, menuGroupName);
+
+        EditCuixFile(cs);
+
+        string sMainCuiFile = (string)Application.GetSystemVariable("MENUNAME");
+        sMainCuiFile += ".cuix";
+        CustomizationSection mainMenu = new CustomizationSection(sMainCuiFile);
+
+        // Unload existing CUIX with the same name before reloading to ensure updates are displayed
+        if (mainMenu.PartialCuiFiles.Contains(cuiFileName))
+        {
+            Application.UnloadPartialMenu(cuiFileName);
+        }
+        Application.LoadPartialMenu(cuiFileName);
+    }
+        
+    // Create CUIX
+    static public CustomizationSection AddCui(string cuiFileName, string menuGroupName)
+    {
+        CustomizationSection cs;
+        if (!System.IO.File.Exists(cuiFileName))
+        {
+            cs = new CustomizationSection
+            {
+                MenuGroupName = menuGroupName,
+            };
+            cs.SaveAs(cuiFileName);
+        }
+        else
+        {
+            cs = new CustomizationSection(cuiFileName);
+        }
+        return cs;
+    }
+</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Edit CUIX File</p>
+<p class="define_text_1">After creating a CUIX file, you can add custom macros and link them to menu items like dropdown menus or toolbars.</p>
+<pre class="code_sample">
+    static public void EditCuixFile(CustomizationSection cs)
+    {
+        string dllPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        // Add command macro
+        cs.AddMacro("MyLine", "^C^C_Line", "ID_MyLine", "Create new Line: Line", dllPath + "\\..\\..\\Resources\\a_large.png");
+        StringCollection sc = new StringCollection() { "MyPopMenu" };
+        // Add dropdown menu
+        PopMenu popMenu = cs.MenuGroup.AddPopMenu("My Menu", sc, "ID_MyMenu");
+        popMenu.AddMenuItem(-1, "MyLine", "ID_MyLine");
+        // Save modified CUIX file
+        cs.Save();
+    }
+</pre>
+<p class="define_head_2">Add Macro Command</p>
+<p class="define_text_2">Encapsulate an AddMacro method to create a new macro in the specified macro group using CreateMenuMacro API:</p>
+<pre class="code_sample">
+    // name: Command name, command: Macro, tag: Element ID, helpString: Description, imagePath: Image
+    static public MenuMacro AddMacro(this CustomizationSection cs, string name, string command, string tag, string helpString, string imagePath)
+    {
+        MenuGroup menuGroup = cs.MenuGroup;
+        MacroGroup macroGroup = menuGroup.FindMacroGroup(menuGroup.Name);
+        if (macroGroup == null)
+        {
+            macroGroup = new MacroGroup(menuGroup.Name, menuGroup);
+        }
+
+        foreach (MenuMacro macro in macroGroup.MenuMacros)
+        {
+            if (macro.ElementID == tag)
+            {
+                return null;
+            }
+        }
+
+        MenuMacro menuMacro = macroGroup.CreateMenuMacro(name, command, tag);
+        menuMacro.macro.HelpString = helpString;
+        menuMacro.macro.LargeImage = menuMacro.macro.SmallImage = imagePath;
+        return menuMacro;
+    }
+</pre>
+
+<p class="define_head_2">Add Dropdown Menu and Link to Macro</p>
+<p class="define_text_2">Create a dropdown menu and bind it to the macro using the element ID (tag) created earlier.</p>
+<pre class="code_sample">
+    static public PopMenu AddPopMenu(this MenuGroup menuGroup, string name, StringCollection aliasList, string tag)
+    {
+        PopMenu pm = null;
+        if (menuGroup.PopMenus.IsNameFree(name))
+        {
+            pm = new PopMenu(name, aliasList, tag, menuGroup);
+        }
+        else
+        {
+            pm = menuGroup.PopMenus.FindPopWithName(name);
+        }
+        return pm;
+    }
+    static public PopMenuItem AddMenuItem(this PopMenu parentMenu, int index, string name, string macroId)
+    {
+        PopMenuItem menuItem = null;
+        foreach (PopMenuItem pmi in parentMenu.PopMenuItems)
+        {
+            if (pmi.Name == name) return menuItem;
+        }
+        menuItem = new PopMenuItem(parentMenu, index);
+        if (name != null)
+        {
+            menuItem.Name = name;
+        }
+        menuItem.MacroID = macroId;
+        return menuItem;
+    }
+</pre>
+<p class="define_head_2">Other Controls</p>
+<p class="define_text_2">The Cuix interface can also manipulate elements such as toolbars, Ribbon panels, etc. For specific details, please refer to the sample code project.</p>
+
+<hr algin="left" >
+<p class="define_head_1">Implementation Code</p>
+<p class="define_text_1">Please refer to the .NET sample project code: ZwDotNetGuide/CuixCustomization</p>
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

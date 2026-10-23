@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Assemblies</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+<div class="hear_text">ZWCAD 2026 .NET API Developer Guide</div>
+</div>
+</div>
+</div>
+
+<div class="clr"></div>
+<div class="Tophead"><span class="Tophead_text">Introduction to ZWCAD .NET Assemblies</span></div> 
+<div class="clr"></div>
+
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="define_head_1">Common Assemblies Introduction</p>
+<p class="define_text_1">ZWCAD .NET API assemblies are composed of various DLL files containing classes, structures, methods, and events that provide access to objects in drawing files or the application. Each DLL defines distinct namespaces to organize library components by functionality.</p>
+<p class="dev_body_text">Below are descriptions of commonly used assembly DLL files:</p>
+<p class="define_text_1">ZwDatabaseMgd.dll: Contains interfaces for DWG database-related operations.</p>
+<p class="define_text_1">ZwManaged.dll: Provides interfaces for application operations, user interaction, printing, command/Lisp function definitions, and more.</p>
+<p class="define_text_1">ZdWindows.dll/ZcWindows.dll/ZcCui.dll: Contains interfaces for user interface customization.</p>
+<p class="define_text_1"><a href="2-1-First%20.NET%20Program.htm#DLL-Reference">For assembly reference methods, click to view</a></p>
+<hr algin="left" >
+<p class="define_head_1">How to Locate Assembly Files</p>
+<p class="define_text_1">It is recommended to reference assembly DLL files from the ZRXSDK. These files can be found in the "inc" folder under the ZRXSDK installation directory.</p>
+<p class="define_text_1">ZRXSDK can be downloaded from the <A href="https://www.zwsoft.cn/support/zwcad-devdoc" target="_blank" rel="noopener noreferrer">ZWSOFT official website</A>.</p>
+<p class="dev_body_text">Note: While these assembly DLL files can also be found in the ZWCAD installation directory, they may have additional dependencies on other DLLs in the installation path and lack binary compatibility across versions. Therefore, using ZRXSDK assemblies is strongly recommended.</p>
+
+<hr algin="left" >
+<p class="define_head_1">Namespaces Introduction</p>
+<p class="define_text_1">After referencing the assembly DLLs in your project, you can utilize the ZWCAD .NET API. The interfaces are organized into different namespaces. Below are descriptions of commonly used namespaces:</p>
+<table class="table-desc">
+    <TR>
+    <TH>Namespace</TH>
+    <TH>Overview of Interface Functionality</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">ZwSoft.ZwCAD.ApplicationServices</td>
+        <td class="table-item-odd">Manages core functionalities such as application instances, documents, and user interaction.</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">ZwSoft.ZwCAD.DatabaseServices</td>
+        <td class="table-item-odd">Provides database object management, entity operations, transaction handling, and access to symbol tables (e.g., block tables).</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">ZwSoft.ZwCAD.Runtime</td>
+        <td class="table-item-odd">Supports command registration, extension loading, custom type handling, and interaction with ZWCAD runtime.</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">ZwSoft.ZwCAD.Geometry</td>
+        <td class="table-item-odd">Enables creation of geometric objects, coordinate transformations, mathematical calculations, and operations on points, vectors, and matrices.</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">ZwSoft.ZwCAD.PlottingServices</td>
+        <td class="table-item-odd">Manages print configurations, layout management, print output, page setups, and publishing operations.</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">ZwSoft.ZwCAD.GraphicsInterface</td>
+        <td class="table-item-odd">Handles graphics rendering, entity drawing, viewport control, and visual effects processing.</td>
+    </TR>
+</TABLE>
+
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

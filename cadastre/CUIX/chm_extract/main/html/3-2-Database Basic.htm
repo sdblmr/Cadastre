@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Basic Operations of DWG Database</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+<div class="hear_text">ZWCAD 2026 .NET Developer's Guide</div>
+</div>
+</div>
+</div>
+
+<div class="clr"></div>
+<div class="Tophead"><span class="Tophead_text">Basic Operations of DWG Database</span></div> 
+<div class="clr"></div>
+
+<div id="content" class="content">
+<div class="content_resize">
+<div class="article">
+<div class="clr"></div>
+
+<p class="define_head_1">Basic Operations of DWG Database</p>
+<p class="define_text_1">This chapter introduces basic operations of the DWG database, including creating and retrieving database objects, saving to DWG files, and editing operations on symbol tables and objects within the database.</p>
+
+<hr algin="left" >
+<p class="define_head_1">Creating, Retrieving, and Saving Database Objects</p>
+<p class="define_head_2">The table below lists common interfaces for creating, retrieving, and saving database objects:</p>
+<table class="table-desc">
+    <TR>
+    <TH>Interface</TH>
+    <TH>Function</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#sample1">Database.ReadDwgFile</a></td>
+        <td class="table-item-odd">Reads the content of a DWG file into a database object (does not open the DWG file as an active document)</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#sample2">Application.DocumentManager.MdiActiveDocument</a></td>
+        <td class="table-item-odd">Retrieves the database object of the current active document</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd"><a href="#sample3">Database.SaveAs</a></td>
+        <td class="table-item-odd">Saves the database object as a DWG file</td>
+    </TR>
+</TABLE>
+
+<p class="define_head_1">Code Examples</p>
+<p class="define_head_2" id="sample1">1. Read DWG File Content and List All Entity Types</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("ReadDwgFileTest")]
+    public void ReadDwgFileTest()
+    {
+        Document CurDoc = Application.DocumentManager.MdiActiveDocument;
+        Editor curEd = CurDoc.Editor;
+
+        // Create a temporary database (since reading an existing DWG file, do not initialize default objects)
+        Database db = new Database(false, true);
+        
+        // Define the file path to read
+        string dwgPath = System.Environment.GetFolderPath(
+            Environment.SpecialFolder.MyDocuments) + "\\testDrawing2.dwg";
+        
+        // Read DWG file into the database (open in shared mode)
+        db.ReadDwgFile(dwgPath, FileOpenMode.OpenForReadAndAllShare, false, "");
+
+        // Start transaction
+        using (Transaction trans = db.TransactionManager.StartTransaction())
+        {
+            // Get the model space block table record
+            BlockTable blockTable = trans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+            BlockTableRecord blockTableRecord = trans.GetObject(
+                blockTable[BlockTableRecord.ModelSpace], 
+                OpenMode.ForRead) as BlockTableRecord;
+
+            // Iterate through all entities in model space
+            Entity entity;
+            foreach (ObjectId id in blockTableRecord)
+            {
+                entity = trans.GetObject(id, OpenMode.ForRead) as Entity;
+                curEd.WriteMessage("\nClass name: {0}", entity.GetType());
+            }
+            trans.Commit(); // Commit transaction (read-only operation, but maintains integrity)
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("ReadDwgFileTest")&gt;
+    Public Sub ReadDwgFileTest()
+        Dim CurDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim curEd As Editor = CurDoc.Editor
+
+        ' Create a temporary database (since reading an existing DWG file, do not initialize default objects)
+        Dim db As New Database(False, True)
+        
+        ' Define the file path to read
+        Dim dwgPath As String = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) & "\testDrawing2.dwg"
+        
+        ' Read DWG file into the database (open in shared mode)
+        db.ReadDwgFile(dwgPath, FileOpenMode.OpenForReadAndAllShare, False, "")
+
+        ' Start transaction
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+            ' Get the model space block table record
+            Dim blockTable As BlockTable = CType(trans.GetObject(db.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim blockTableRecord As BlockTableRecord = CType(trans.GetObject(blockTable(BlockTableRecord.ModelSpace), OpenMode.ForRead), BlockTableRecord)
+
+            ' Iterate through all entities in model space
+            Dim entity As Entity
+            For Each id As ObjectId In blockTableRecord
+                entity = CType(trans.GetObject(id, OpenMode.ForRead), Entity)
+                curEd.WriteMessage(vbCrLf & "Class name: " & entity.GetType().ToString())
+            Next
+            trans.Commit() ' Commit transaction (read-only operation, but maintains integrity)
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Reads the file testDrawing2.dwg in the user's document directory and outputs the types of all entities in the model space.</p>
+
+<p class="define_head_2" id="sample2">2. Open a Specified DWG File and Retrieve Its Database Object</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("OpenDwgFileTest", CommandFlags.Session)] //Note: Requires Session mode registration due to document opening
+    public void OpenDwgFileTest()
+    {
+        string dwgPath = System.Environment.GetFolderPath(
+            Environment.SpecialFolder.MyDocuments) + "\\testDrawing2.dwg";
+        
+        // Get the document manager
+        DocumentCollection docMgr = Application.DocumentManager;
+        
+        // Open the specified drawing file
+        Document doc = docMgr.Open(dwgPath, false);
+        
+        // Set as the current active document
+        docMgr.MdiActiveDocument = doc;
+
+        // Retrieve the database object of document doc
+        Database db = doc.Database;
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("OpenDwgFileTest", CommandFlags.Session)&gt; 'Note: Requires Session mode registration due to document opening
+    Public Sub OpenDwgFileTest()
+        Dim dwgPath As String = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) & "\testDrawing2.dwg"
+            
+        ' Get the document manager object
+        Dim docMgr As DocumentCollection = Application.DocumentManager
+            
+        ' Open the specified drawing file
+        Dim doc As Document = docMgr.Open(dwgPath, False)
+            
+        ' Set as the current active document
+        docMgr.MdiActiveDocument = doc
+        
+        ' Get the database object corresponding to document doc
+        Dim db As Database = doc.Database
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Open the file testDrawing2.dwg under the documents directory in ZWCAD, and output the types of all entities in Model Space.</p>
+
+<p class="define_head_2" id="sample3">3. Create a Database Object and Save as a DWG File</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("CreateDwgTest")]
+    public void CreateDwgTest()
+    {
+        // Get the current active document and editor
+        Document CurDoc = Application.DocumentManager.MdiActiveDocument;
+        Editor curEd = CurDoc.Editor;
+
+        // Create a new database (initialize default objects)
+        Database db = new Database();
+        
+        // Perform database operations using a transaction
+        using (Transaction trans = db.TransactionManager.StartTransaction())
+        {
+            // Get the Block Table
+            BlockTable blockTable = trans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+            
+            // Get the Model Space BlockTableRecord
+            BlockTableRecord blockTableRecord = trans.GetObject(
+                blockTable[BlockTableRecord.ModelSpace], 
+                OpenMode.ForWrite) as BlockTableRecord;
+
+            // Create a Circle object (center at origin, radius 500)
+            Circle circle = new Circle(new Point3d(0, 0, 0), Vector3d.ZAxis, 500.0);
+            
+            // Add the circle to Model Space
+            blockTableRecord.AppendEntity(circle);
+            
+            // Register the new object with the transaction
+            trans.AddNewlyCreatedDBObject(circle, true);
+            
+            // Commit the transaction (confirm changes)
+            trans.Commit();
+        }
+
+        string dwgPath = System.Environment.GetFolderPath(
+            Environment.SpecialFolder.MyDocuments) + "\\testDrawing2.dwg";
+        
+        try
+        {
+            // Save the database as a DWG file (using the current version format)
+            db.SaveAs(dwgPath, DwgVersion.Current);
+        }
+        catch (System.Exception e)
+        {
+            curEd.WriteMessage("\nFailed to save! Exception: {0}", e.Message);
+            return;
+        }
+        curEd.WriteMessage("\nSave successfully!");
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("CreateDwgTest")&gt;
+    Public Sub CreateDwgTest()
+        ' Get the current active document and editor
+        Dim CurDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim curEd As Editor = CurDoc.Editor
+
+        ' Create a new database (initialize default objects)
+        Dim db As New Database()
+        
+        ' Perform database operations using a transaction
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+            ' Get the Block Table
+            Dim blockTable As BlockTable = CType(trans.GetObject(db.BlockTableId, OpenMode.ForRead), BlockTable)
+            
+            ' Get the Model Space BlockTableRecord
+            Dim blockTableRecord As BlockTableRecord = CType(trans.GetObject(blockTable(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+
+            ' Create a Circle object (center at origin, radius 500)
+            Dim circle As New Circle(New Point3d(0, 0, 0), Vector3d.ZAxis, 500.0)
+            
+            ' Add the circle to Model Space
+            blockTableRecord.AppendEntity(circle)
+            
+            ' Register the new object with the transaction
+            trans.AddNewlyCreatedDBObject(circle, True)
+            
+            ' Commit the transaction (confirm changes)
+            trans.Commit()
+        End Using
+
+        Dim dwgPath As String = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) & "\testDrawing2.dwg"
+        
+        Try
+            ' Save the database as a DWG file (using the current version format)
+            db.SaveAs(dwgPath, DwgVersion.Current)
+        Catch e As System.Exception
+            curEd.WriteMessage(vbCrLf & "Failed to save! Exception: " & e.Message)
+            Return
+        End Try
+        curEd.WriteMessage(vbCrLf & "Save successfully!")
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Create a new database object, add a circle to its Model Space, and save it as testDrawing2.dwg under the documents directory.</p>
+
+<hr algin="left" >
+<p class="define_head_1">Editing Symbol Tables and Objects in the Database</p>
+<p class="define_text_1">The ObjectIds of symbol tables are stored in the properties of the database object. For example, to get the Block Table's ObjectId, read the Database.BlockTableId property; to get the Layer Table's ObjectId, read the Database.LayerTableId property, and so on.</p>
+<p class="define_text_1">To edit objects in the database, you typically need to obtain their ObjectIds. There are two common ways to get ObjectIds: one is through user interaction interfaces (covered in later chapters), and the other is by traversing BlockTableRecords (such as Model Space, Paper Space, or ordinary block definitions) to retrieve the ObjectIds of contained objects.</p>
+<p class="define_head_1">Code Examples</p>
+<p class="define_head_2">1. Add a Line to Model Space</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("DrawLine", CommandFlags.Modal)]
+    public void DrawLine()
+    {
+        // Get the current document and database
+        Document objDoc = Application.DocumentManager.MdiActiveDocument;
+        Database objDB = objDoc.Database;
+        
+        // Start a transaction
+        Transaction trans = objDoc.TransactionManager.StartTransaction();
+        
+        // Get the Model Space BlockTableRecord, opened for write
+        BlockTable zcBLT = (BlockTable)trans.GetObject(objDB.BlockTableId, OpenMode.ForRead);
+        BlockTableRecord zcBLTR = (BlockTableRecord)trans.GetObject(zcBLT[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+    
+        using (trans)
+        {
+            // Create start and end points
+            Point3d ptStart = new Point3d(0, 0, 0);
+            Point3d ptEnd = new Point3d(100, 100, 0);
+            
+            // Create a Line object and set its coordinates
+            Line objLine = new Line();
+            objLine.StartPoint = ptStart;
+            objLine.EndPoint = ptEnd;
+            
+            // Add the line to the model space
+            zcBLTR.AppendEntity(objLine);
+            trans.AddNewlyCreatedDBObject(objLine, true); 
+            
+            trans.Commit(); // Commit the transaction (save changes)
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("DrawLine", CommandFlags.Modal)&gt;
+    Public Sub DrawLine()
+        ' Get the current document and database
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim objDB As Database = objDoc.Database
+        
+        ' Start transaction
+        Dim trans As Transaction = objDoc.TransactionManager.StartTransaction()
+        Using trans
+            ' Get the model space block table record in write mode
+            Dim zcBLT As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim zcBLTR As BlockTableRecord = CType(trans.GetObject(zcBLT(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+            
+            ' Create start and end coordinates
+            Dim ptStart As New Point3d(0, 0, 0)
+            Dim ptEnd As New Point3d(100, 100, 0)
+            
+            ' Create line object and set coordinates
+            Dim objLine As New Line()
+            objLine.StartPoint = ptStart
+            objLine.EndPoint = ptEnd
+            
+            ' Add the line to the model space
+            zcBLTR.AppendEntity(objLine)
+            trans.AddNewlyCreatedDBObject(objLine, True)
+            
+            ' Commit the transaction (save changes)
+            trans.Commit()
+        End Using
+End Sub
+</pre>
+<p class="define_head_1">Running Result:</p>
+<p class="define_text_1">Add a line to the current active document's database</p>
+
+<p class="define_head_2">2. Modify coordinates of all lines in model space</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("ModLine", CommandFlags.Modal)]
+    public void ModLine()
+    {
+        Document objDoc = Application.DocumentManager.MdiActiveDocument;
+        Database objDB = objDoc.Database;
+        
+        using (Transaction trans = objDoc.TransactionManager.StartTransaction())
+        {
+            // Get the model space block table record in write mode
+            BlockTable zcBLT = (BlockTable)trans.GetObject(objDB.BlockTableId, OpenMode.ForRead);
+            BlockTableRecord zcBlkTblRec = trans.GetObject(zcBLT[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+    
+            // Iterate all entities in model space, open entities in write mode
+            foreach (ObjectId entOid in zcBlkTblRec)
+            {
+                Entity ent = trans.GetObject(entOid, OpenMode.ForWrite) as Entity;
+                
+                // Process only Line objects
+                if (ent != null && ent.GetType() == typeof(Line))
+                {
+                    Line line = ent as Line;
+                    // Modify line start and end points
+                    Point3d startPoint = new Point3d(0, 100, 0);
+                    Point3d endPoint = new Point3d(100, 0, 0);
+                    line.StartPoint = startPoint;
+                    line.EndPoint = endPoint;
+                }
+            }
+            trans.Commit(); // Commit changes
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("ModLine", CommandFlags.Modal)&gt;
+    Public Sub ModLine()
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument
+        Dim objDB As Database = objDoc.Database
+        
+        Using trans As Transaction = objDoc.TransactionManager.StartTransaction()
+            ' Get the model space block table record in write mode
+            Dim zcBLT As BlockTable = CType(trans.GetObject(objDB.BlockTableId, OpenMode.ForRead), BlockTable)
+            Dim zcBlkTblRec As BlockTableRecord = CType(trans.GetObject(zcBLT(BlockTableRecord.ModelSpace), OpenMode.ForWrite), BlockTableRecord)
+            
+            ' Iterate all entities in model space, open entities in write mode
+            For Each entOid As ObjectId In zcBlkTblRec
+                Dim ent As Entity = CType(trans.GetObject(entOid, OpenMode.ForWrite), Entity)
+                
+                ' Process only Line objects
+                If ent IsNot Nothing AndAlso ent.GetType() Is GetType(Line) Then
+                    Dim line As Line = CType(ent, Line)
+                    ' Modify line start and end points
+                    Dim startPoint As New Point3d(0, 100, 0)
+                    Dim endPoint As New Point3d(100, 0, 0)
+                    line.StartPoint = startPoint
+                    line.EndPoint = endPoint
+                End If
+            Next
+            
+            ' Commit changes
+            trans.Commit()
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Running Result:</p>
+<p class="define_text_1">Modify the start point of all lines in the model space of the current active document's database to (0, 0, 0) and the end point to (100, 100, 0)</p>
+
+<p class="define_head_2">3. Delete user-selected lines</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("EraseLine", CommandFlags.Modal)]
+    public void EraseLine()
+    {
+        Document objDoc = Application.DocumentManager.MdiActiveDocument;
+        
+        // Prompt user to select a line to delete
+        PromptEntityResult result = objDoc.Editor.GetEntity("\nSelect a line");
+        if (result.Status != PromptStatus.OK)
+            return;
+    
+        // Start transaction
+        Transaction trans = objDoc.TransactionManager.StartTransaction();
+        using (trans)
+        {
+            // Get the selected entity in write mode
+            Entity entity = (Entity)trans.GetObject(result.ObjectId, OpenMode.ForWrite);
+            
+            // Confirm it is a line and delete
+            if (entity != null && entity.GetType() == typeof(Line))
+            {
+                Line line = entity as Line;
+                line.Erase(); // Perform deletion
+            }
+            trans.Commit(); // Commit deletion
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("EraseLine", CommandFlags.Modal)&gt;
+    Public Sub EraseLine()
+        Dim objDoc As Document = Application.DocumentManager.MdiActiveDocument
+        
+        ' Prompt user to select a line to delete
+        Dim result As PromptEntityResult = objDoc.Editor.GetEntity("\nSelect a line")
+        If result.Status <> PromptStatus.OK Then
+            Return
+        End If
+        
+        ' Start transaction
+        Using trans As Transaction = objDoc.TransactionManager.StartTransaction()
+            ' Get the selected entity and open it in write mode
+            Dim entity As Entity = CType(trans.GetObject(result.ObjectId, OpenMode.ForWrite), Entity)
+            
+            ' Confirm it is a line before deletion
+            If entity IsNot Nothing AndAlso entity.GetType() Is GetType(Line) Then
+                Dim line As Line = CType(entity, Line)
+                line.Erase() ' Perform deletion
+            End If
+            
+            ' Commit the deletion operation
+            trans.Commit()
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Running Result:</p>
+<p class="define_text_1">Let the user select a line and delete it</p>
+
+<p class="define_head_2">4. Create and Modify Layers</p>
+<p class="define_head_3">C#</p>
+<pre class="code_sample">
+    [CommandMethod("LayerSample")]
+    public void LayerSample()
+    {
+        // Get the current working database and its document object
+        Database db = HostApplicationServices.WorkingDatabase;
+        Document doc = Application.DocumentManager.GetDocument(db);
+    
+        // Start a database transaction
+        using (Transaction trans = db.TransactionManager.StartTransaction())
+        {
+            // Get the layer table
+            LayerTable lyrTbl = (LayerTable)trans.GetObject(db.LayerTableId, OpenMode.ForRead);
+    
+            // Check if "Layer 1" exists
+            if (lyrTbl.Has("Layer 1"))
+            {
+                // Iterate through all layers in the layer table
+                foreach (ObjectId id in lyrTbl)
+                {
+                    // Skip erased layers
+                    if (!id.IsErased)
+                    {
+                        LayerTableRecord lyrTblRec = (LayerTableRecord)trans.GetObject(id, OpenMode.ForWrite);
+                        
+                        // Modify the target layer
+                        if (lyrTblRec.Name == "Layer 1")
+                        {
+                            lyrTblRec.Name = "Layer 2";             // Rename the layer
+                            lyrTblRec.IsOff = false;                // Turn on the layer
+                            lyrTblRec.IsFrozen = false;             // Unfreeze the layer
+                            lyrTblRec.IsLocked = false;             // Unlock the layer
+    
+                            // Set layer color to green
+                            Color color = new Color();
+                            color.SetRgb(0, 255, 0);
+                            lyrTblRec.Color = color;
+    
+                            lyrTblRec.ViewportVisibilityDefault = false;  // Hide in viewport by default
+                            
+                            // Set transparency (127 means ~50% opacity)
+                            Byte trParByte = 127;
+                            Transparency transparency = new Transparency(trParByte);
+                            lyrTblRec.Transparency = transparency;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Create a new layer record
+                LayerTableRecord lyrTblRec = new LayerTableRecord();
+                lyrTblRec.Name = "Layer 1";                 // Set layer name
+                lyrTblRec.IsOff = true;                     // Turn off the layer
+                lyrTblRec.IsFrozen = true;                  // Freeze the layer
+                lyrTblRec.IsLocked = true;                  // Lock the layer
+    
+                // Set layer color to red
+                Color color = new Color();
+                color.SetRgb(255, 0, 0);
+                lyrTblRec.Color = color;
+    
+                lyrTblRec.ViewportVisibilityDefault = true; // Show in viewport by default
+                
+                // Set transparency to ByLayer
+                Transparency transparency = new Transparency(TransparencyMethod.ByLayer);
+                lyrTblRec.Transparency = transparency;
+    
+                // Add the new layer to the layer table
+                lyrTbl.UpgradeOpen();                      // Switch layer table to write mode
+                lyrTbl.Add(lyrTblRec);                     // Add the new layer to the table
+                trans.AddNewlyCreatedDBObject(lyrTblRec, true);  // Register the new object
+            }
+            
+            trans.Commit();  // Commit the transaction (save changes)
+        }
+    }
+</pre>
+<p class="define_head_3">VB</p>
+<pre class="code_sample">
+    &lt;CommandMethod("LayerSample", CommandFlags.Modal)&gt;
+    Public Sub LayerSample()
+        ' Get the current working database and its document object
+        Dim db As Database = HostApplicationServices.WorkingDatabase
+        Dim doc As Document = Application.DocumentManager.GetDocument(db)
+
+        ' Start a database transaction
+        Using trans As Transaction = db.TransactionManager.StartTransaction()
+            ' Get the layer table
+            Dim lyrTbl As LayerTable = CType(trans.GetObject(db.LayerTableId, OpenMode.ForRead), LayerTable)
+
+            ' Check if "Layer 1" exists
+            If lyrTbl.Has("Layer 1") Then
+                ' Iterate through all layers in the layer table
+                For Each id As ObjectId In lyrTbl
+                    ' Skip erased layers
+                    If Not id.IsErased Then
+                        Dim lyrTblRec As LayerTableRecord = CType(trans.GetObject(id, OpenMode.ForWrite), LayerTableRecord)
+
+                        ' Modify the target layer
+                        If lyrTblRec.Name = "Layer 1" Then
+                            lyrTblRec.Name = "Layer 2" ' Rename the layer
+                            lyrTblRec.IsOff = False    ' Turn on the layer
+                            lyrTblRec.IsFrozen = False ' Unfreeze the layer
+                            lyrTblRec.IsLocked = False ' Unlock the layer
+
+                            ' Set layer color to green
+                            Dim color As New Color()
+                            color.SetRgb(0, 255, 0)
+                            lyrTblRec.Color = color
+
+                            lyrTblRec.ViewportVisibilityDefault = False ' Hide in viewport by default
+
+                            ' Set transparency (127 means ~50% opacity)
+                            Dim trParByte As Byte = 127
+                            Dim transparency As New Transparency(trParByte)
+                            lyrTblRec.Transparency = transparency
+                        End If
+                    End If
+                Next
+            Else
+                ' Create a new layer record
+                Dim lyrTblRec As New LayerTableRecord()
+                lyrTblRec.Name = "Layer 1" ' Set layer name
+                lyrTblRec.IsOff = True     ' Turn off the layer
+                lyrTblRec.IsFrozen = True ' Freeze the layer
+                lyrTblRec.IsLocked = True ' Lock the layer
+
+                ' Set layer color to red
+                Dim color As New Color()
+                color.SetRgb(255, 0, 0)
+                lyrTblRec.Color = color
+
+                lyrTblRec.ViewportVisibilityDefault = True ' Default display in viewport
+
+                ' Set transparency to ByLayer
+                Dim transparency As New Transparency(TransparencyMethod.ByLayer)
+                lyrTblRec.Transparency = transparency
+
+                ' Add the new layer to the layer table
+                lyrTbl.UpgradeOpen() ' Elevate layer table to write mode
+                lyrTbl.Add(lyrTblRec) ' Add new layer to layer table
+                trans.AddNewlyCreatedDBObject(lyrTblRec, True) ' Register new object to the database
+            End If
+
+            trans.Commit() ' Commit transaction (save all changes)
+        End Using
+    End Sub
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">If a layer named Layer 1 does not exist, create it; if it already exists, rename it to Layer 2 and modify its properties</p>
+
+</div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>

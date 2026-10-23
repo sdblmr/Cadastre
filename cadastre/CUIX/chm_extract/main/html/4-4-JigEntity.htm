@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Jig Drag Interaction</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+
+
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Secondary Development Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Jig Drag Interaction</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+    <div class="content_resize">
+    <div class="article">
+    <div class="clr"></div>
+
+
+<p class="define_head_1">Description</p>
+<p class="dev_body_text">In ZWCAD operations, the dynamic update of entities on the screen as the mouse moves provides a more intuitive experience for the operator. The dynamic drag effect allows precise previewing of drawing results. JIG is a critical interactive feature, and this chapter explains its usage.</p>
+<hr algin="left" >
+<p class="define_head_1">Using the EntityJig Class for Dragging</p>
+<p class="define_text_1">The steps to create a graphical object using a derived class of EntityJig are as follows:</p>
+<p class="define_text_1">(1) Instantiate a derived class of EntityJig.</p>
+<p class="define_text_1">(2) Call the Drag function of the Editor class to start dragging. During the drag loop, sequentially call the Sampler function and Update function of the EntityJig base class until the user ends the loop. When calling Sampler, the program detects user input and displays prompt messages in the command line during dragging. When calling Update, the program dynamically updates the graphical object to create the drag effect.</p>
+<p class="define_text_1">(3) Check the return status of the Drag function to determine modifications during dragging. If the user cancels or terminates the drag, perform appropriate cleanup. Otherwise, add the derived class entity to the drawing database to complete the creation.</p>
+
+
+<p class="define_text_1">The following code demonstrates a line dragging process using the EntityJig class:</p>
+<pre class="code_sample">
+[CommandMethod("MyEntityJig")]
+public void MyEntityJig()
+{
+    Document doc = Application.DocumentManager.MdiActiveDocument;
+    Database db = doc.Database;
+    Editor ed = doc.Editor;
+
+    using (Transaction Trans = doc.TransactionManager.StartTransaction())
+    {
+        // Open model space
+        BlockTable BlkTbl = Trans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+        BlockTableRecord BlkTblRec = Trans.GetObject(BlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+        PromptPointOptions ptOpts = new PromptPointOptions("");
+        ptOpts.Message = "Set start point:";
+        PromptPointResult ptRes = ed.GetPoint(ptOpts);
+        Point3d ptStart = ptRes.Value;
+
+        if (PromptStatus.OK == ptRes.Status)
+        {
+            Polyline tmpLine = new Polyline();
+            tmpLine.AddVertexAt(0, new Point2d(ptStart.X, ptStart.Y), 0, 0, 0);
+            tmpLine.AddVertexAt(1, new Point2d(ptStart.X, ptStart.Y), 0, 0, 0);
+            tmpLine.AddVertexAt(2, new Point2d(ptStart.X + 6, ptStart.Y + 6), 0, 0, 0);
+
+            BlkTblRec.AppendEntity(tmpLine);
+            Trans.AddNewlyCreatedDBObject(tmpLine, true);
+
+            bool is_cancel = false;
+            MyEntityJig myEntJig = new MyEntityJig(ref tmpLine, 6, is_cancel);
+            PromptResult pSignRes = ed.Drag(myEntJig);
+
+            if (myEntJig.isCancel)
+            {
+                is_cancel = myEntJig.isCancel;
+                myEntJig = new MyEntityJig(ref tmpLine, 6, is_cancel);
+                ed.Drag(myEntJig);
+            }
+            Trans.Commit();
+        }
+    }
+}
+class MyEntityJig : EntityJig
+{
+    public bool isCancel = false;
+    public Point3d mEndPt, mIntPt;
+    Double labelLineLength = 0;
+    Polyline pline;
+
+    public MyEntityJig( ref Polyline pline, double labelLineLength, bool isCancel) : base(pline)
+    {
+        this.pline = pline;
+        this.labelLineLength = labelLineLength;
+        this.isCancel = isCancel;
+    }
+
+    protected override SamplerStatus Sampler(JigPrompts prompts)
+    {
+        JigPromptPointOptions jigOpts = new JigPromptPointOptions();
+        jigOpts.UserInputControls = (UserInputControls.Accept3dCoordinates | UserInputControls.NullResponseAccepted);
+        jigOpts.Message = "\nPick the Placement Point:";
+        PromptPointResult res = prompts.AcquirePoint(jigOpts);
+
+        if (res.Status == PromptStatus.Cancel | res.Status == PromptStatus.Keyword)
+            isCancel = true;
+        mEndPt = res.Value;
+        return SamplerStatus.OK;
+    }
+
+    protected override bool Update()
+    {
+        try
+        {
+            if (mEndPt.X > pline.GetPoint2dAt(0).X)
+            {
+                pline.SetPointAt(1, new Point2d(mEndPt.X, mEndPt.Y));
+                pline.SetPointAt(2, new Point2d(mEndPt.X + labelLineLength, mEndPt.Y));
+            }
+            else
+            {
+                pline.SetPointAt(1, new Point2d(mEndPt.X, mEndPt.Y));
+                pline.SetPointAt(2, new Point2d(mEndPt.X - labelLineLength, mEndPt.Y));
+            }
+        }
+        catch (System.Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+}
+</pre>
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">After executing the MyEntityJig command, the user is prompted to select a starting point ("Set start point:"). Dragging the mouse displays a red line following the cursor. The line is finalized when the user selects the second point.</p>
+
+<p class="define_head_1">Key Parameter Explanation:</p>
+<p class="define_text_1">In the Sampler function, interactive operations are initiated by instantiating a prompt options class (e.g., JigPromptXXXOptions) to detect user input. Use functions like AcquireXXX from the JigPrompts class (a parameter of Sampler) to obtain user input (PromptXXXResult class). The table below lists common classes and functions related to Jig interactions.</p>
+<table class="table-desc">
+    <TR>
+    <TH>Function Name</TH>
+    <TH>Purpose</TH>
+    <TH>Prompt Options Class</TH>
+    <TH>Prompt Result Class</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">AcquireAngle</td>
+        <td class="table-item-odd">Prompt user to input an angle</td>
+                <td class="table-item-odd">JigPromptAngleOptions</td>
+        <td class="table-item-odd">PromptDoubleResult</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">AcquireDistance</td>
+        <td class="table-item-odd">Prompt user to input a distance</td>
+                <td class="table-item-odd">JigPromptDistanceOptions</td>
+        <td class="table-item-odd">PromptDoubleResult</td>
+    </TR>
+        <TR>
+        <td class="table-item-odd">AcquirePoint</td>
+        <td class="table-item-odd">Prompt user to enter a point</td>
+                <td class="table-item-odd">JigPromptPointOptions</td>
+        <td class="table-item-odd">PromptPointResult</td>
+          <TR>
+    </TR>
+    
+</TABLE>
+<p class="define_text_1">When calling the Sampler function, the cursor type can be set through the cursor property. The return value of the CursorType property is enumerated in the following table as CursorType:</p>
+<table class="table-desc">
+    <TR>
+    <TH>Enum Value</TH>
+    <TH>Function</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">NoSpecialCursor</td>
+        <td class="table-item-odd">Similar to the default cursor, a rubber band line (straight line) is displayed between the base point and the cursor center</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Crosshair</td>
+        <td class="table-item-odd">Default cursor (crosshair)</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">RectangularCursor</td>
+        <td class="table-item-odd">Rectangular window cursor aligned with the view UCS direction</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">RubberBand</td>
+        <td class="table-item-odd">Similar to the default cursor, a rubber band line (straight line) is displayed between the base point and the cursor center</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">NotRotated</td>
+        <td class="table-item-odd">Crosshair cursor aligned with the view UCS direction</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">TargetBox</td>
+        <td class="table-item-odd">OSNAP cursor, similar to the EntitySelect cursor in form, with its size controlled by the system variable APERTURE</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">RotatedCrosshair</td>
+        <td class="table-item-odd">Crosshair cursor aligned with the current UCS direction</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">CrosshairNoRotate</td>
+        <td class="table-item-odd">Crosshair cursor aligned with the current UCS direction, with a rubber band line (straight line) displayed between the base point and the cursor center</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Invisible</td>
+        <td class="table-item-odd">No cursor displayed</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">EntitySelect</td>
+        <td class="table-item-odd">Cursor in the form of an entity selection box</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Parallelogram</td>
+        <td class="table-item-odd">Rectangular window cursor aligned with the current UCS direction (may appear as a parallelogram)</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">EntitySelectNoPerspective</td>
+        <td class="table-item-odd">Cursor form similar to EntitySelect but supports perspective view, used when determining a precise point on the selected entity</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">PickfirstOrGrips</td>
+        <td class="table-item-odd">Similar to the default cursor</td>
+    </TR>
+</table>
+
+<p class="define_text_1">To restrict user input, use the <strong>UserInputControls</strong> property of the <strong>JigPromptXXXOptions</strong> class. The return value of this property is the <strong>UserInputControls</strong> enumeration, as shown below:</p>
+<table class="table-desc">
+    <TR>
+    <TH>Enum Value</TH>
+    <TH>Function</TH>
+    </TR>
+    <TR>
+        <td class="table-item-odd">GovernedByOrthoMode</td>
+        <td class="table-item-odd">No setup required</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">NullResponseAccepted</td>
+        <td class="table-item-odd">Disallow empty input</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">DoNotEchoCancelForCtrlC</td>
+        <td class="table-item-odd">Suppress the display of "*Cancel*" when cancelling an operation</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">DoNotUpdateLastPoint</td>
+        <td class="table-item-odd">Disable updating the last point</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">NoDwgLimitsChecking</td>
+        <td class="table-item-odd">Disable drawing limits checking</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">NoZeroResponseAccepted</td>
+        <td class="table-item-odd">Disallow zero input</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">NoNegativeResponseAccepted</td>
+        <td class="table-item-odd">Disallow negative input</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">Accept3dCoordinates</td>
+        <td class="table-item-odd">Allow 3D point input</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">AcceptMouseUpAsPoint</td>
+        <td class="table-item-odd">Treat mouse button release as the selected point</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">AnyBlankTerminatesInput</td>
+        <td class="table-item-odd">Spacebar terminates string input</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">InitialBlankTerminatesInput</td>
+        <td class="table-item-odd">Leading spacebar terminates string input</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">AcceptOtherInputString</td>
+        <td class="table-item-odd">Allow non-keyword string input</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">GovemedByUCSDetect</td>
+        <td class="table-item-odd">Applies to UCS detection</td>
+    </TR>
+    <TR>
+        <td class="table-item-odd">NoZDirectionOrtho</td>
+        <td class="table-item-odd">Disable ortho mode in the Z direction</td>
+    </TR>
+</table>
+
+<hr align="left">
+<p class="define_head_1">Using the DrawJig Class for Dragging</p>
+<p class="define_text_1">To create a dragging effect when generating graphical objects, besides using the <strong>EntityJig</strong> class, you can derive a new class from the <strong>DrawJig</strong> class in the <strong>EditorInput</strong> namespace. This class represents the graphical object to be created. Override the <strong>Sampler</strong> and <strong>WorldDraw</strong> functions of the <strong>DrawJig</strong> class, then add the derived class entity to the drawing database to complete the creation.</p>
+<p class="define_text_1">Steps to implement Jig using the <strong>DrawJig</strong> class:</p>
+<p class="define_text_1">(1) Instantiate a derived class of <strong>DrawJig</strong> and automatically override the <strong>Sampler</strong> and <strong>WorldDraw</strong> functions. When the <strong>Sampler</strong> function is called, the program detects user input and establishes prompt text, which is displayed in the command line during dragging. When the <strong>WorldDraw</strong> function is called, the program dynamically updates the graphical object being created, producing a real-time dragging effect.</p>
+<p class="define_text_1">(2) Call the Drag function of the Editor class to start dragging. During the dragging loop, sequentially call the Sampler function and WorldDraw function of the DrawJig base class until the user ends the loop.</p>
+<p class="define_text_1">(3) Check the return status of the Drag function and determine the modifications made during dragging. If the user cancels or terminates the drag, perform appropriate cleanup operations. The cursor type during dragging, restrictions on user input, and usage are identical to the EntityJig class described in the previous section.</p>
+<p class="define_head_1">Note:</p>
+<p class="define_text_1">The EntityJig class can only drag a single object, while the DrawJig class can drag multiple objects with more concise code. The methods in this section also apply to editing operations with dragging effects (e.g., copy, move).</p>
+<p class="define_text_1">&nbsp;</p>
+<p class="define_text_1">The following code uses the EntityJig class to implement simultaneous dragging of a line and multi-line text:</p>
+<pre class="code_sample">
+[CommandMethod("MyDrawJig")]
+public void MyDrawJig()
+{
+    Document doc = Application.DocumentManager.MdiActiveDocument;
+    Database db = doc.Database;
+    Editor ed = doc.Editor;
+
+    using (Transaction Trans = doc.TransactionManager.StartTransaction())
+    {
+        // Open model space
+        BlockTable BlkTbl = Trans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+        BlockTableRecord BlkTblRec = Trans.GetObject(BlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+        PromptPointOptions ptOpts = new PromptPointOptions("");
+        ptOpts.Message = "Set start point:";
+        PromptPointResult ptRes = ed.GetPoint(ptOpts);
+        Point3d ptStart = ptRes.Value;
+
+        if (PromptStatus.OK == ptRes.Status)
+        {
+            MText text = new MText();
+            text.Location = new Point3d(ptStart.X, ptStart.Y, 0);
+            text.Contents = "MyDrawJig";
+            text.ColorIndex = 1;
+            text.Attachment = AttachmentPoint.MiddleCenter;
+
+            Polyline tmpLine = new Polyline();
+            tmpLine.AddVertexAt(0, new Point2d(ptStart.X, ptStart.Y), 0, 0, 0);
+            tmpLine.AddVertexAt(1, new Point2d(ptStart.X, ptStart.Y), 0, 0, 0);
+            tmpLine.AddVertexAt(2, new Point2d(ptStart.X + 6, ptStart.Y + 6), 0, 0, 0);
+
+            BlkTblRec.AppendEntity(text);
+            Trans.AddNewlyCreatedDBObject(text, true);
+            BlkTblRec.AppendEntity(tmpLine);
+            Trans.AddNewlyCreatedDBObject(tmpLine, true);
+            var flag = text.IsWriteEnabled;
+
+            bool is_cancel = false;
+            MyDrawJig myEntJig = new MyDrawJig(ref text, ref tmpLine, 6, is_cancel);
+            PromptResult pSignRes = ed.Drag(myEntJig);
+
+            if (myEntJig.isCancel)
+            {
+                is_cancel = myEntJig.isCancel;
+                myEntJig = new MyDrawJig(ref text, ref tmpLine, 6, is_cancel);
+                ed.Drag(myEntJig);
+            }
+            Trans.Commit();
+        }
+    }
+}
+
+class MyDrawJig : DrawJig
+{
+    public bool isCancel = false;
+    public Point3d mEndPt, mIntPt;
+    Double labelLineLength = 0;
+    MText mtext;
+    Polyline pline;
+
+    public MyDrawJig(ref MText mtext, ref Polyline pline, double labelLineLength, bool isCancel)
+    {
+        this.mtext = mtext;
+        this.pline = pline;
+        this.labelLineLength = labelLineLength;
+        this.isCancel = isCancel;
+    }
+    protected override SamplerStatus Sampler(JigPrompts prompts)
+    {
+        JigPromptPointOptions jigOpts = new JigPromptPointOptions();
+        jigOpts.UserInputControls = (UserInputControls.Accept3dCoordinates | UserInputControls.NullResponseAccepted);
+        jigOpts.Message = "\nPick the Placement Point:";
+        PromptPointResult res = prompts.AcquirePoint(jigOpts);
+
+        if (res.Status == PromptStatus.Cancel | res.Status == PromptStatus.Keyword)
+            isCancel = true;
+        mEndPt = res.Value;
+        return SamplerStatus.OK;
+    }
+
+    protected override bool WorldDraw(WorldDraw draw)
+    {
+        try
+        {
+            if (mEndPt.X > pline.GetPoint2dAt(0).X)
+            {
+                pline.SetPointAt(1, new Point2d(mEndPt.X, mEndPt.Y));
+                pline.SetPointAt(2, new Point2d(mEndPt.X + labelLineLength, mEndPt.Y));
+                mtext.Location = mEndPt;
+            }
+            else
+            {
+                pline.SetPointAt(1, new Point2d(mEndPt.X, mEndPt.Y));
+                pline.SetPointAt(2, new Point2d(mEndPt.X - labelLineLength, mEndPt.Y));
+                mtext.Location = new Point3d(mEndPt.X - labelLineLength, mEndPt.Y, 0);
+            }
+            draw.Geometry.Draw(mtext);
+            draw.Geometry.Draw(pline);
+        }
+        catch (System.Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+}
+            </pre>
+
+            <p class="define_head_1">Execution Result:</p>
+            <p class="define_text_1">After executing the MyDrawJig command, the user is prompted to "Set start point:". Dragging the mouse displays a line and "MyDrawJig" multi-line text following the cursor. The user selects the second point to complete the drawing.</p>
+            <p class="figure"><img class="pics" src="../pics/4-4-MyDrawJig.png"></p>
+        </div>
+    </div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+    <div class="footer">
+        <span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+        <div class="clr"></div>
+    </div>
+</div> 
+</body>
+</html>

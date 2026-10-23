@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Publish Layouts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link type="text/css" href="../styles/style.css" rel="stylesheet" />
+<link type="text/css" href="../styles/zwcadcss.css" rel="StyleSheet" />
+
+
+</head>
+<body>
+<div id="main" class="main">
+<div id="header" class="header">
+<div class="header_resize">
+<div class="banner">
+	<div class="banner_img_right"><img src="../images/banner_img_right.png"></div>
+	<div class="hear_text">ZWCAD 2026 .NET Developer's Guide</div>
+</div>
+</div>
+</div>
+<div class="clr"></div>
+    <div class="Tophead"><span class="Tophead_text">Publish Layouts</span></div> 
+<div class="clr"></div>
+<div id="content" class="content">
+    <div class="content_resize">
+    <div class="article">
+    <div class="clr"></div>
+
+
+<p class="define_head_1">Description</p>
+<p class="dev_body_text">Since the plotting interface is cumbersome for multi-document and multi-layout plotting, this chapter introduces how to use the interface to implement batch publishing of layouts. The published layouts can be from the same DWG file or different DWG files, making multi-document processing more efficient.</p>
+<hr algin="left" >
+<p class="define_head_1">Steps:</p>
+<p class="define_text_1">Before publishing multiple layouts, you need to collect information for each layout. Create a DsdEntry object for each layout to be published. A DsdEntry object contains the layout name, title, overridden page setup, and the drawing file it belongs to. Add these DsdEntry objects to a DsdEntryCollection object, then use the SetDsdEntryCollection method to add them to the DsdData object.
+
+The DsdData object defines the settings to be used when publishing the specified layouts. After defining the DsdData object, you can use the WriteDsd method to create a DSD file for use with the PUBLISH command or Publisher object.
+
+The Publisher object is used to output layouts defined in the DSD file. Similar to the Publish dialog, you can output layouts using the configured plotting devices and settings, or override the page setups in DsdEntry objects via the PublishDsd method. You can also override device assignments for layouts using the PublishExecute method.</p>
+
+
+<p class="define_head_1">Notes:</p>
+<p class="define_text_1">1.The PlotConfigurationName set by SetPlotConfigurationName for ZWCAD is ****.pc5.</p>
+<p class="define_text_1">2.The bool bPlotToFile parameter in BeginDocument controls whether to plot to a physical file. If bool bPlotToFile = true, it plots to a computer file (e.g., PDF), and the corresponding .pc5 file should be set to "dwg to pdf.pc5". If bool bPlotToFile = false, it plots to a physical device, and the .pc5 file should select a physical printer configuration.</p>
+<p class="define_text_1"></p>
+<p class="define_text_1">3.Set the BACKGROUNDPLOT system variable to 0 ("Background Publish").</p>
+<p class="define_text_1">4.dsdFileData.ProjectPath sets the folder, and dsdFileData.SheetType set to SheetType.SinglePdf will output individual PDF files. The number of PDF files depends on the number of layouts added to DsdEntryCollection.</p>
+<p class="define_text_1">5.dsdFileData.DestinationName sets the PDF target file, and dsdFileData.SheetType set to SheetType.MultiPdf will output a single PDF containing multiple layouts.</p>
+<p class="define_text_1">&nbsp;</p>
+<p class="define_text_1">Below is a complete plotting example:</p>
+
+<pre class="code_sample">
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZwSoft.ZwCAD.Runtime;
+using ZwSoft.ZwCAD.ApplicationServices;
+using ZwSoft.ZwCAD.Geometry;
+using ZwSoft.ZwCAD.DatabaseServices;
+using ZwSoft.ZwCAD.EditorInput;
+using ZwSoft.ZwCAD.PlottingServices;
+using System.Collections.Specialized;
+[assembly: CommandClass(typeof(PlotSample.Commands))]
+
+namespace PlotSample
+{
+    class Commands
+    {
+        [CommandMethod("PublishLayouts")]
+        public static void PublishLayouts()
+        {
+            using (DsdEntryCollection dsdDwgFiles = new DsdEntryCollection())
+            {
+                // Define the first layout
+                using (DsdEntry dsdDwgFile1 = new DsdEntry())
+                {
+                    // Set the file name and layout
+                    dsdDwgFile1.DwgName = "C:\\ZWCAD\\Samples\\Z-01.dwg";
+                    dsdDwgFile1.Layout = "layout1";
+                    dsdDwgFile1.Title = "layout1";
+        
+                    // Set the page setup override
+                    dsdDwgFile1.Nps = "";
+                    dsdDwgFile1.NpsSourceDwg = "";
+        
+                    dsdDwgFiles.Add(dsdDwgFile1);
+                }
+        
+                // Define the second layout
+                using (DsdEntry dsdDwgFile2 = new DsdEntry())
+                {
+                    // Set the file name and layout
+                    dsdDwgFile2.DwgName = "C:\\ZWCAD\\Samples\\Z-02.dwg";
+                    dsdDwgFile2.Layout = "layout2";
+                    dsdDwgFile2.Title = "layout2";
+        
+                    // Set the page setup override
+                    dsdDwgFile2.Nps = "";
+                    dsdDwgFile2.NpsSourceDwg = "";
+        
+                    dsdDwgFiles.Add(dsdDwgFile2);
+                }
+        
+                // Set the properties for the DSD file and then write it out
+                using (DsdData dsdFileData = new DsdData())
+                {
+                    // Set the target information for publishing
+                    //dsdFileData.DestinationName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\MyPublish.pdf";
+                    //dsdFileData.SheetType = SheetType.MultiPdf;
+
+                    dsdFileData.ProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\";
+                    dsdFileData.SheetType = SheetType.SinglePdf;
+        
+                    // Set the drawings that should be added to the publication
+                    dsdFileData.SetDsdEntryCollection(dsdDwgFiles);
+        
+                    // Set the general publishing properties
+                    dsdFileData.LogFilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\myBatch.txt";
+        
+                    // Create the DSD file
+                    dsdFileData.WriteDsd(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\batchdrawings2.dsd");
+        
+                    try
+                    {
+                        // Publish the specified drawing files in the DSD file, and
+                        // honor the behavior of the BACKGROUNDPLOT system variable
+        
+                        using (DsdData dsdDataFile = new DsdData())
+                        {
+[file name]: 5-2-Publish Files.htm
+[file content begin]
+                            dsdDataFile.ReadDsd(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\batchdrawings2.dsd");
+        
+                            // Get the DWG to PDF.pc5 and use it as a 
+                            // device override for all the layouts
+                            PlotConfig acPlCfg = PlotConfigManager.SetCurrentConfig("DWG to PDF.PC5");
+        
+                            Application.Publisher.PublishExecute(dsdDataFile, acPlCfg);
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ex.Message);
+                    }
+                }
+            }
+        }
+     }
+  }</pre>
+
+<hr algin="left" >
+<p class="define_head_1">Execution Result:</p>
+<p class="define_text_1">Executing the PublishLayouts command will batch print Layout1 from Z-01.dwg and Layout2 from Z-02.dwg into Layout1.pdf and Layout2.pdf respectively in one go.</p>
+<p class="define_text_1">Note: If you comment out the two lines of code:  
+                    dsdFileData.ProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\";
+                    dsdFileData.SheetType = SheetType.SinglePdf;
+and restore the original commented lines:
+                    // Set the target information for publishing
+                    //dsdFileData.DestinationName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\MyPublish2.pdf";
+then executing PublishLayouts will generate a single MyPublish.pdf file containing two pages: one with Layout1 content from Z-01.dwg and the other with Layout2 content from Z-02.dwg.</p>
+
+
+    </div>
+</div>
+</div>
+<div class="blank"></div>
+<div class="footer_placeholder"></div>
+</div>
+<div id="fbg" class="fbg">
+<div class="footer">
+<span class="lr">&copy; 1998-2025 ZWSOFT CO., LTD.(Guangzhou). All Rights Reserved.</span>
+<div class="clr"></div>
+</div>
+</div> 
+</body>
+</html>
+[file content end]
