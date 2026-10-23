@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD>
+<BODY>
+   <OBJECT type="text/site properties"> 
+     <param name="FrameName" value="right">
+     <param name="Font" value=",10,0">
+     <param name="ImageType" value="Book">
+     <param name="Window Styles" value="0x27">
+     <param name="ExWindow Styles" value="0x0">
+   </OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Overview">
+<param name="Local" value="html/1-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Overview">
+<param name="Local" value="html/1-1-API%20Overview.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Assemblies">
+<param name="Local" value="html/1-2-Assemblies.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="API Overview">
+<param name="Local" value="html/1-3-Basics%20of%20.NET%20API.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="First .NET Program">
+<param name="Local" value="html/2-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="First .NET Program">
+<param name="Local" value="html/2-1-First%20.NET%20Program.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Program Entry and Command Registration">
+<param name="Local" value="html/2-2-Entry%20and%20Command.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Loading and Debugging Assembly (dll) Files">
+<param name="Local" value="html/2-3-Run%20and%20Debug.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="DWG Database Applications">
+<param name="Local" value="html/3-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Basic Operations of DWG Database">
+<param name="Local" value="html/3-1-Database%20Overview.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Basic Operations of DWG Database">
+<param name="Local" value="html/3-2-Database%20Basic.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Cloning Database Objects">
+<param name="Local" value="html/3-3-Database%20Object%20Clone.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Creation and Editing of Common Entities">
+<param name="Local" value="html/3-4-Create%20Entities.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Usage of Extended Data">
+<param name="Local" value="html/3-5-Xdata%20and%20XRecord.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Usage of Transactions">
+<param name="Local" value="html/3-6-Transaction.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Interaction in ZWCAD">
+<param name="Local" value="html/4-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Retrieve user input information">
+<param name="Local" value="html/4-1-Retrieve%20user%20input%20information.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="User Interaction in the Drawing Area">
+<param name="Local" value="html/4-2-User%20Interaction%20in%20the%20Drawing%20Area.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Selection Set">
+<param name="Local" value="html/4-3-Entity%20Selection%20Set.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Jig Drag Interaction">
+<param name="Local" value="html/4-4-JigEntity.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Usage of Printing Interface">
+<param name="Local" value="html/5-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Plot Printing">
+<param name="Local" value="html/5-1-Plot.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Publish Files">
+<param name="Local" value="html/5-2-Publish%20Files.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Interface Development">
+<param name="Local" value="html/6-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Modal Dialog and Non-Modal Dialog">
+<param name="Local" value="html/6-1-Modal%20and%20Modeless%20Dialog.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Menu and Toolbar">
+<param name="Local" value="html/6-2-Customize%20Menu.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Status Bar">
+<param name="Local" value="html/6-3-Customize%20StatusBar.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Ribbon">
+<param name="Local" value="html/6-4-Customize%20Ribbon.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="PaletteSet Interface">
+<param name="Local" value="html/6-5-Add%20PaletteSet.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="CUIX Interface">
+<param name="Local" value="html/6-6-Customize%20CUIX.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Right-Click Menu">
+<param name="Local" value="html/6-7-ContextMenu.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Reactors and Events">
+<param name="Local" value="html/7-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Database Events">
+<param name="Local" value="html/7-1-DatabaseEvents.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Document Events">
+<param name="Local" value="html/7-2-DocumentEvents.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Editor Events">
+<param name="Local" value="html/7-3-EditorEvents.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Application Events">
+<param name="Local" value="html/7-4-ApplicationEvents.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Rule Redefinition">
+<param name="Local" value="html/8-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Display Overrule">
+<param name="Local" value="html/8-1-DrawableOverrule.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="Grip Overrule">
+<param name="Local" value="html/8-2-GripOverrule.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="COM Interface Usage">
+<param name="Local" value="html/9-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Introduction to ZWCAD COM Components">
+<param name="Local" value="html/9-1-Introduction%20to%20ZWCAD%20COM%20Interface.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="External Invocation of ZWCAD COM Interface">
+<param name="Local" value="html/9-2-External%20Invocation%20of%20ZWCAD%20COM.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Hybrid Programming">
+<param name="Local" value="html/12-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value=".NET Calls ZRX Files">
+<param name="Local" value="html/12-1-Calling%20ZRX%20File.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Package and Publish a .NET Application">
+<param name="Local" value="html/10-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Automatic Loading of DLL Files">
+<param name="Local" value="html/10-1-Auto%20Load%20dll.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Frequently Asked Questions">
+<param name="Local" value="html/11-0-Main.htm">
+<param name="ImageNumber" value="1">
+</OBJECT>
+<UL><LI><OBJECT type="text/sitemap">
+<param name="Name" value="Frequently Asked Questions">
+<param name="Local" value="html/11-1-FAQ.htm">
+<param name="ImageNumber" value="9">
+</OBJECT>
+</UL></UL>
+</BODY>
+</HTML>
