@@ -1,0 +1,414 @@
+<?xml version="1.0"?>
+<!--
+警告！请勿编辑此文件的内容。
+如果试图使用 XML 编辑器来编辑此文件，可能会丢失
+自定义和移植功能。如果需要修改
+自定义文件中的信息，请使用产品中的
+“自定义用户界面”对话框。
+若要访问“自定义用户界面”对话框，请依次单击“工具”菜单、
+“自定义”面板和“用户界面”按钮，或者在命令行中输入 CUI。
+-->
+<RibbonRoot>
+  <RibbonPanelSourceCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <RibbonPanelSource UID="ID_RBPS_588EB" Text="Attacher" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Attach</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_578F5">Assistant Nuage de Points - Attacher</Name>
+      <RibbonRow UID="ID_RBRW_22FF7">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonCommandButton UID="ID_RBTN_903D1" Id="ZwRibbonCommandButton" Text="Attacher le&#xD;nuage de points" ButtonStyle="LargeWithText" MenuMacroID="ID_PointCloudAttach" KeyTip="AT">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_6D881">Attacher le nuage de points</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonCommandButton UID="ID_RBTN_FA768" Id="ZwRibbonCommandButton" Text="Convertir le&#xD;nuage de points" ButtonStyle="LargeWithText" MenuMacroID="ID_PCConvert" KeyTip="CO">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_A1867">Convertir le nuage de points</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_50A01" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+    <RibbonPanelSource UID="ID_RBPS_17064" Text="Orientation" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Orientation</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_279EC">Assistant Nuage de Points - Orientation</Name>
+      <RibbonRow UID="ID_RBRW_AC3F3">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonCommandButton UID="ID_RBTN_AB7D7" Id="ZwRibbonCommandButton" Text="Aligner" ButtonStyle="LargeWithText" MenuMacroID="ID_PCAlign" KeyTip="AL">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_CC98F">Aligner</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonSplitButton UID="ID_RBTN_8FF5C" Id="ZwRibbonSplitButton" Text="Mur+Mur" Behavior="SplitFollow" ListStyle="IconText" ButtonStyle="LargeWithText" Grouping="false" KeyTip="WW">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonCommandButton UID="ID_RBTN_25BE4" Id="ZwRibbonCommandButton" Text="Mur+Mur" ButtonStyle="LargeWithText" MenuMacroID="ID_PCUcsWallWall" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_3971D">Mur+Mur</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+          <RibbonCommandButton UID="ID_RBTN_65C81" Id="ZwRibbonCommandButton" Text="Sol+Mur" ButtonStyle="LargeWithText" MenuMacroID="ID_PCUcsFloorWall" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_7DB42">Sol+Mur</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+          <RibbonCommandButton UID="ID_RBTN_3731E" Id="ZwRibbonCommandButton" Text="Mur" ButtonStyle="LargeWithText" MenuMacroID="ID_PCUcsWall" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_C6A1B">Mur</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+        </RibbonSplitButton>
+        <RibbonRowPanel UID="ID_RBRWP_BAB51" ResizeStyle="None" ResizePriority="100" TopJustify="True">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonRow UID="ID_RBRW_17711">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_6AFD4" Id="ZwRibbonCommandButton" Text="Enregistrer le SCU" ButtonStyle="SmallWithText" MenuMacroID="ID_PCSaveUcs" KeyTip="SA">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_558C8">Enregistrer le SCU</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+          <RibbonRow UID="ID_RBRW_FE96D">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_67A4A" Id="ZwRibbonCommandButton" Text="Gestionnaire de SCU" ButtonStyle="SmallWithText" MenuMacroID="ID_PCUcsman" KeyTip="UM">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_CAAF6">Gestionnaire de SCU</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+          <RibbonRow UID="ID_RBRW_05E80">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_6E8E7" Id="ZwRibbonCommandButton" Text="Réinitialiser le système de coordonnées de travail (WCS)" ButtonStyle="SmallWithText" MenuMacroID="ID_PCReset2World" KeyTip="RW">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_F796E">Réinitialiser le système de coordonnées de travail (WCS)</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+        </RibbonRowPanel>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_2F0F7" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+    <RibbonPanelSource UID="ID_RBPS_6F7E3" Text="Section" HiddenInEditor="false" KeyTip="SI">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Slice</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_88CAB">Assistant Nuage de Points - Section</Name>
+      <RibbonRow UID="ID_RBRW_C41A0">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonCommandButton UID="ID_RBTN_89FEE" Id="ZwRibbonCommandButton" Text="Gestionnaire de&#xD;tranches" ButtonStyle="LargeWithText" MenuMacroID="ID_PCSliceman" KeyTip="SM">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_1DA5A">Gestionnaire de tranches</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonCommandButton UID="ID_RBTN_D31B2" Id="ZwRibbonCommandButton" Text="Tranche selon&#xD;le SCU" ButtonStyle="LargeWithText" MenuMacroID="ID_PCSliceUcs" KeyTip="SU">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_4B09D">Tranche selon le SCU</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonCommandButton UID="ID_RBTN_31BB0" Id="ZwRibbonCommandButton" Text="Sections&#xD;multiples" ButtonStyle="LargeWithText" MenuMacroID="ID_PCSliceMulti" KeyTip="MU">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_84957">Sections multiples</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonCommandButton UID="ID_RBTN_EECD8" Id="ZwRibbonCommandButton" Text="Détecter&#xD;le sol" ButtonStyle="LargeWithText" MenuMacroID="ID_PCDetectFloors" KeyTip="DF">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_BE259">Détecter le sol</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_70609" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+      <RibbonRow UID="ID_RBRW_BC129">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonRowPanel UID="ID_RBRWP_76F96" ResizeStyle="None" ResizePriority="100" TopJustify="True">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonRow UID="ID_RBRW_E9061">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_A301E" Id="ZwRibbonCommandButton" Text="Définir l’incrément d’épaisseur de tranche" ButtonStyle="SmallWithText" MenuMacroID="ID_PCSliceSet" KeyTip="SS">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_B4338">Définir l’incrément d’épaisseur de tranche</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+        </RibbonRowPanel>
+      </RibbonRow>
+    </RibbonPanelSource>
+    <RibbonPanelSource UID="ID_RBPS_1452B" Text="Plan d’étage" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Drawing2D</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_BF2E6">Assistant Nuage de Points - Plan d’étage</Name>
+      <RibbonRow UID="ID_RBRW_F142F">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <!--<RibbonRowPanel UID="ID_RBRWP_FCFB2" ResizeStyle="None" ResizePriority="100" TopJustify="True">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonRow UID="ID_RBRW_3903A">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_90587" Id="ZwRibbonCommandButton" Text="Fit Line" ButtonStyle="SmallWithText" MenuMacroID="ID_PCFitLine" KeyTip="FL">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_6C59E">Fit Line</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+          <RibbonRow UID="ID_RBRW_0190C">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_43476" Id="ZwRibbonCommandButton" Text="Fit Arc" ButtonStyle="SmallWithText" MenuMacroID="ID_PCFitArc" KeyTip="FA">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_9FF34">Fit Arc</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+        </RibbonRowPanel>-->
+        <RibbonCommandButton UID="ID_RBTN_F431C" Id="ZwRibbonCommandButton" Text="Ajuster la&#xD;ligne de mur" ButtonStyle="LargeWithText" MenuMacroID="ID_PCFitWall" KeyTip="FW">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_243CE">Ajuster la ligne de mur</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonCommandButton UID="ID_RBTN_ABC7B" Id="ZwRibbonCommandButton" Text="Suivre la&#xD;ligne de mur" ButtonStyle="LargeWithText" MenuMacroID="ID_PCTrackWall" KeyTip="TW">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_111E2">Suivre la ligne de mur</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonRowPanel UID="ID_RBRWP_610C8" ResizeStyle="None" ResizePriority="100" TopJustify="True">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonRow UID="ID_RBRW_AD68C">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_67AE4" Id="ZwRibbonCommandButton" Text="Détecter les lignes de mur" ButtonStyle="SmallWithText" MenuMacroID="ID_PCDetectWalls" KeyTip="DW">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_22E2A">Détecter les lignes de mur</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+          <RibbonRow UID="ID_RBRW_2C213">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_F204E" Id="ZwRibbonCommandButton" Text="Aligner la polyligne" ButtonStyle="SmallWithText" MenuMacroID="ID_PCAlignPolyline" KeyTip="AP">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_2C947">Aligner la polyligne</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+        </RibbonRowPanel>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_0F1A2" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+    <RibbonPanelSource UID="ID_RBPS_B3AE2" Text="Dessin 3D" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Drawing3D</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_ED35C">Assistant Nuage de Points - Dessin 3D</Name>
+      <RibbonRow UID="ID_RBRW_8767D">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonSplitButton UID="ID_RBTN_7C82C" Id="ZwRibbonSplitButton" Text="Extraire la ligne d’intersection" Behavior="SplitFollow" ListStyle="IconText" ButtonStyle="LargeWithText" Grouping="false" KeyTip="EE">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonCommandButton UID="ID_RBTN_594A0" Id="ZwRibbonCommandButton" Text="Extraire la ligne&#xD;d’intersection" ButtonStyle="LargeWithText" MenuMacroID="ID_PCExtractEdge" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_A4C56">Extraire la ligne d’intersection</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+          <RibbonCommandButton UID="ID_RBTN_67490" Id="ZwRibbonCommandButton" Text="Extraire le&#xD;point d’angle" ButtonStyle="LargeWithText" MenuMacroID="ID_PCExtractCorner" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_DC7C3">Extraire le point d’angle</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+          <RibbonCommandButton UID="ID_RBTN_79418" Id="ZwRibbonCommandButton" Text="Extraire l’axe&#xD;du cylindre" ButtonStyle="LargeWithText" MenuMacroID="ID_PCExtractCenterline" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_937EC">Extraire l’axe du cylindre</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+          <RibbonCommandButton UID="ID_RBTN_B67EE" Id="ZwRibbonCommandButton" Text="Extraire le centre&#xD;de la sphère" ButtonStyle="LargeWithText" MenuMacroID="ID_PCExtractCenter" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_7C5B8">Extraire le centre de la sphère</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+        </RibbonSplitButton>
+        <RibbonCommandButton UID="ID_RBTN_2F74E" Id="ZwRibbonCommandButton" Text="Ajuster un plan" ButtonStyle="LargeWithText" MenuMacroID="ID_PCFitPlane" KeyTip="PL">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_955BE">Ajuster un plan</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonRowPanel UID="ID_RBRWP_7A1BA" ResizeStyle="None" ResizePriority="100" TopJustify="True">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonRow UID="ID_RBRW_D1317">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_18ECF" Id="ZwRibbonCommandButton" Text="Cylindre" ButtonStyle="SmallWithText" MenuMacroID="ID_PCFitCylinder" KeyTip="FC">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_C975B">Cylindre</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+          <RibbonRow UID="ID_RBRW_A5200">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_0FBC5" Id="ZwRibbonCommandButton" Text="Cône" ButtonStyle="SmallWithText" MenuMacroID="ID_PCFitCone" KeyTip="FN">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_C7ED9">Cône</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+          <RibbonRow UID="ID_RBRW_79256">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_C1DE2" Id="ZwRibbonCommandButton" Text="Sphère" ButtonStyle="SmallWithText" MenuMacroID="ID_PCFitSphere" KeyTip="FS">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_8834B">Sphère</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+        </RibbonRowPanel>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_AC8B2" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+    <RibbonPanelSource UID="ID_RBPS_AD75B" Text="Mesurer" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Measure</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_3DF02">Assistant Nuage de Points - Mesurer</Name>
+      <RibbonRow UID="ID_RBRW_5A78F">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonCommandButton UID="ID_RBTN_FC7F6" Id="ZwRibbonCommandButton" Text="Informations&#xD;sur le point" ButtonStyle="LargeWithText" MenuMacroID="ID_PCPointInfo" KeyTip="PI">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_A31ED">Informations sur le point</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonSplitButton UID="ID_RBTN_6384D" Id="ZwRibbonSplitButton" Text="Mesurer la distance" Behavior="SplitFollow" ListStyle="IconText" ButtonStyle="LargeWithText" Grouping="false" KeyTip="DI">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonCommandButton UID="ID_RBTN_ED55D" Id="ZwRibbonCommandButton" Text="Mesurer la&#xD;distance" ButtonStyle="LargeWithText" MenuMacroID="ID_PCDist" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_CAA97">Mesurer la distance</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+          <RibbonCommandButton UID="ID_RBTN_CCBF2" Id="ZwRibbonCommandButton" Text="Mesurer&#xD;l’angle" ButtonStyle="LargeWithText" MenuMacroID="ID_PCAng" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_FE4D9">Mesurer l’angle</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+        </RibbonSplitButton>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_5A51B" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+    <RibbonPanelSource UID="ID_RBPS_57376" Text="Cotes" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Dimension</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_07E16">Assistant Nuage de Points - Cotes</Name>
+      <RibbonRow UID="ID_RBRW_D8BC5">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonSplitButton UID="ID_RBTN_1B013" Id="ZwRibbonSplitButton" Text="Cotation de distance" Behavior="SplitFollow" ListStyle="IconText" ButtonStyle="LargeWithText" Grouping="false" KeyTip="DA">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonCommandButton UID="ID_RBTN_47D9E" Id="ZwRibbonCommandButton" Text="Cotation de&#xD;distance" ButtonStyle="LargeWithText" MenuMacroID="ID_PCDimAligned" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_EDF63">Cotation de distance</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+          <RibbonCommandButton UID="ID_RBTN_F87F9" Id="ZwRibbonCommandButton" Text="Cote&#xD;Angulaire" ButtonStyle="LargeWithText" MenuMacroID="ID_PCDimAngular" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_A7155">Cote Angulaire</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+        </RibbonSplitButton>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_52823" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+    <RibbonPanelSource UID="ID_RBPS_DB7DB" Text="Outils" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Orthophoto</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_E3ECE">Assistant Nuage de Points - Outils</Name>
+      <RibbonRow UID="ID_RBRW_49406">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonCommandButton UID="ID_RBTN_35BDB" Id="ZwRibbonCommandButton" Text="Image orthographique&#xD;(orthoimage)" ButtonStyle="LargeWithText" MenuMacroID="ID_PCOrthoImage" KeyTip="OI">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_D1022">Image orthographique (orthoimage)</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonCommandButton UID="ID_RBTN_D4080" Id="ZwRibbonCommandButton" Text="Vectorisation&#xD;d’image" ButtonStyle="LargeWithText" MenuMacroID="ID_Vectorization" KeyTip="VE">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_35E27">Informations sur le point</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+        <RibbonCommandButton UID="ID_RBTN_62CED" Id="ZwRibbonCommandButton" Text="Analyse des&#xD;écarts de plan" ButtonStyle="LargeWithText" MenuMacroID="ID_PCPlaneDeviation" KeyTip="PD">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_7824E">Analyse des écarts de plan</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_A4FA0" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+    <!--<RibbonPanelSource UID="ID_RBPS_61934" Text="BIM" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_BIM</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_B8F68">Point Cloud Assistant - BIM</Name>
+      <RibbonRow UID="ID_RBRW_F8E58">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonSplitButton UID="ID_RBTN_48988" Id="ZwRibbonSplitButton" Text="Analyze Plane Deviation" Behavior="SplitFollow" ListStyle="IconText" ButtonStyle="LargeWithText" Grouping="false" KeyTip="PD">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonCommandButton UID="ID_RBTN_0001D" Id="ZwRibbonCommandButton" Text="Analyze&#xD;Contour Deviation" ButtonStyle="LargeWithText" MenuMacroID="ID_PCContourDeviation" KeyTip="">
+            <TooltipTitle xlate="true" UID="ID_RBTN_TT_C3CF2">Analyze Contour Deviation</TooltipTitle>
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          </RibbonCommandButton>
+        </RibbonSplitButton>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_8D53C" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>-->
+    <RibbonPanelSource UID="ID_RBPS_8758E" Text="Exporter" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Export</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_97DE9">Assistant Nuage de Points - Exporter</Name>
+      <RibbonRow UID="ID_RBRW_20519">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonCommandButton UID="ID_RBTN_C9FE8" Id="ZwRibbonCommandButton" Text="Exporter le&#xD;nuage de points" ButtonStyle="LargeWithText" MenuMacroID="ID_PCExport" KeyTip="EX">
+          <TooltipTitle xlate="true" UID="ID_RBTN_TT_AAA7B">Exporter le nuage de points</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_B2932" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+    <RibbonPanelSource UID="ID_RBPS_04AAD" Text="Aide" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_Help</Alias>
+      <Name xlate="true" UID="ID_RBPS_NM_643D0">Assistant Nuage de Points - Aide</Name>
+      <RibbonRow UID="ID_RBRW_AF513">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonRowPanel UID="ID_RBRWP_C8CE8" ResizeStyle="None" ResizePriority="100" TopJustify="True">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+          <RibbonRow UID="ID_RBRW_C17BA">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_B13E3" Id="ZwRibbonCommandButton" Text="Documentation d’aide" ButtonStyle="SmallWithText" MenuMacroID="ID_PCHelp" KeyTip="HP">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_97F38">Documentation d’aide</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+          <RibbonRow UID="ID_RBRW_69F5A">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_12237" Id="ZwRibbonCommandButton" Text="A propos" ButtonStyle="SmallWithText" MenuMacroID="ID_PCAbout" KeyTip="AB">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_74934">A propos</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+          <RibbonRow UID="ID_RBRW_BA3D9">
+            <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            <RibbonCommandButton UID="ID_RBTN_41E89" Id="ZwRibbonCommandButton" Text="Paramètres" ButtonStyle="SmallWithText" MenuMacroID="ID_PCSettings" KeyTip="SE">
+              <TooltipTitle xlate="true" UID="ID_RBTN_TT_65EBC">Paramètres</TooltipTitle>
+              <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+            </RibbonCommandButton>
+          </RibbonRow>
+        </RibbonRowPanel>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_RPBRK_EFE0E" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+  </RibbonPanelSourceCollection>
+  <RibbonTabSourceCollection>
+    <RibbonTabSource Text="Assistant Nuage de Points" UID="ID_RBTS_8AA66" KeyTip="PC" DisplayType="Full" DefaultDisplay="AddToWorkspace" WorkspaceBehavior="MergeOrAddTab">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Name xlate="true" UID="ID_RBTS_NM_56FD2">Assistant Nuage de Points</Name>
+      <Alias>ID_PCArch</Alias>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_0F620" PanelId="ID_RBPS_588EB" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_7A097" PanelId="ID_RBPS_17064" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_D34CE" PanelId="ID_RBPS_6F7E3" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_3EF68" PanelId="ID_RBPS_1452B" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_399EF" PanelId="ID_RBPS_B3AE2" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_509EB" PanelId="ID_RBPS_AD75B" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_09E05" PanelId="ID_RBPS_57376" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_ABE59" PanelId="ID_RBPS_DB7DB" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_F1CB9" PanelId="ID_RBPS_8758E" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+      <RibbonPanelSourceReference UID="ID_RBPSREF_C00F4" PanelId="ID_RBPS_04AAD" ResizeStyle="Default">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+    </RibbonTabSource>
+  </RibbonTabSourceCollection>
+</RibbonRoot>

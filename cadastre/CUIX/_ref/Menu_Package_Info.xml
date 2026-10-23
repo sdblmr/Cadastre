@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MenuPackageParts>
+  <PartData PartData_Name="/AcceleratorRoot.cui" PartData_Modified="2012-02-22T14:22:32.9512923+08:00" />
+  <PartData PartData_Name="/DoubleClickRoot.cui" PartData_Modified="2020-03-27T15:36:42.3712702+08:00" />
+  <PartData PartData_Name="/Header.cui" PartData_Modified="2017-06-29T10:01:19.6347250+08:00" />
+  <PartData PartData_Name="/MenuGroup.cui" PartData_Modified="2017-06-12T21:21:29.4721645+08:00" />
+  <PartData PartData_Name="/MouseButtonRoot.cui" PartData_Modified="2020-03-27T15:36:42.3244041+08:00" />
+  <PartData PartData_Name="/PopMenuRoot.cui" PartData_Modified="2024-09-19T19:51:31.7511904+08:00" />
+  <PartData PartData_Name="/PopMenuRoot_Documentless.cui" PartData_Modified="2019-06-25T13:36:38.2113415+08:00" />
+  <PartData PartData_Name="/QuickAccessToolbarRoot.cui" PartData_Modified="2017-06-15T13:05:29.4565845+08:00" />
+  <PartData PartData_Name="/RibbonRoot.cui" PartData_Modified="2017-06-25T19:47:49.8197911+08:00" />
+  <PartData PartData_Name="/ToolbarRoot.cui" PartData_Modified="2024-09-20T14:06:11.6434300+08:00" />
+  <PartData PartData_Name="/WorkspaceRoot.cui" PartData_Modified="2017-06-29T10:01:19.6659250+08:00" />
+  <PartData PartData_Name="/VirtualMNRRoot" PartData_Modified="2024-09-20T14:06:11.6434300+08:00" />
+  <PartData PartData_Name="/Menu_Package_Info.xml" PartData_Modified="2012-02-22T14:22:33.1072923+08:00" />
+</MenuPackageParts>

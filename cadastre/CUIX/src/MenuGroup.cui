@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<MenuGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="CADASTRE" DisplayName="CADASTRE">
+  <MacroGroup Name="CADASTREMacros" Citizen="Z">
+    <MenuMacro UID="ID_CADASTRE_IMPORT">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_CADASTRE_MM_NM_IMPORT">Importer parcelles cadastrales</Name>
+        <Command>^C^C_CADASTRE</Command>
+        <HelpString xlate="true" UID="ID_CADASTRE_MM_HS_IMPORT">Importe les parcelles cadastrales depuis l'API IGN dans l'emprise selectionnee : CADASTRE</HelpString>
+        <SmallImage Name="ZWRC_CADASTRE"/>
+        <LargeImage Name="ZWRC_CADASTRE"/>
+        <CLICommand xlate="true" UID="ID_CADASTRE_MM_CLIC_IMPORT">CADASTRE</CLICommand>
+      </Macro>
+    </MenuMacro>
+  </MacroGroup>
+</MenuGroup>

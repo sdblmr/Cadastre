@@ -1,0 +1,144 @@
+﻿<?xml version="1.0"?>
+<!--
+警告！请勿编辑此文件的内容。
+如果试图使用 XML 编辑器来编辑此文件，可能会丢失
+自定义和移植功能。如果需要修改
+自定义文件中的信息，请使用产品中的
+“自定义用户界面”对话框。
+若要访问“自定义用户界面”对话框，请依次单击“工具”菜单、
+“自定义”面板和“用户界面”按钮，或者在命令行中输入 CUI。
+-->
+<WorkspaceRoot xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <WorkspaceConfigRoot>
+    <WorkspaceConfig Display="true" myWorkspace="true" UID="ID_WSCFG_14CF8">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Name xlate="true" UID="ID_WSCFG_NM_9C72F">Dessin 2D et annotation</Name>
+    </WorkspaceConfig>
+    <WorkspaceConfig Display="true" myWorkspace="false" UID="ID_WSCFG_F9A47">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Name xlate="true" UID="ID_WSCFG_NM_6F536">ZWCAD Classique</Name>
+    </WorkspaceConfig>
+  </WorkspaceConfigRoot>
+  <Workspace StartOn="Model" ScrollBars="off" ScreenMenus="off" StatusBar="ApplicationOnly" NavigationBar="ignore" MenuBar="off" LayoutModelTabs="on" DefaultWorkspace="true" UID="ID_WS_0E6E2">
+    <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+    <Name xlate="true" UID="ID_WS_NM_F50DF">Dessin 2D et annotation</Name>
+    <WSPopRoot>
+      <WSPop MenuGroup="POINTCLOUD" pUID="ID_PM_351D5" Display="1" UID="ID_DSP_351D5">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSPop>
+    </WSPopRoot>
+    <WSToolbarRoot>
+      <WSToolbar MenuGroup="POINTCLOUD" pUID="ID_TB_E4B39" Display="0" ToolbarOrient="floating" xval="150" yval="300" rows="1" dockrow="300" dockcolumn="150" UID="ID_DSTB_BA34A">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSToolbar>
+      <WSToolbar MenuGroup="POINTCLOUD" pUID="ID_TB_FDBB3" Display="0" ToolbarOrient="floating" xval="150" yval="350" rows="1" dockrow="350" dockcolumn="150" UID="ID_DSTB_6FCE5">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSToolbar>
+      <WSToolbar MenuGroup="POINTCLOUD" pUID="ID_TB_758F8" Display="0" ToolbarOrient="floating" xval="150" yval="400" rows="1" dockrow="400" dockcolumn="150" UID="ID_DSTB_E980D">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSToolbar>
+      <WSToolbar MenuGroup="POINTCLOUD" pUID="ID_TB_5D7F4" Display="0" ToolbarOrient="floating" xval="150" yval="450" rows="1" dockrow="450" dockcolumn="150" UID="ID_DSTB_67A7D">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSToolbar>
+    </WSToolbarRoot>
+    <WSQuickAccessToolbarRoot/>
+    <WSESWRoot/>
+    <WSRibbonRoot AutoHideMode="None" LockMode="None" ShowPanelTitleInHorizontalOrientation="true" ShowPanelTitleInVerticalOrientation="true">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <WSRibbonTabSourceReference MenuGroup="POINTCLOUD" TabId="ID_RBTS_8AA66" Show="true" IsActive="true" UID="ID_WSRTSREF_EE301">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_588EB" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_3890B">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_17064" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_28A67">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_6F7E3" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_7E951">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_1452B" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_2E9A3">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_B3AE2" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_4C5FF">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_AD75B" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_8F048">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_57376" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_4BDCC">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_DB7DB" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_9A621">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_8758E" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_73EB6">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_04AAD" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_91B82">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+      </WSRibbonTabSourceReference>
+    </WSRibbonRoot>
+  </Workspace>
+  <Workspace StartOn="Model" ScrollBars="off" ScreenMenus="off" StatusBar="ApplicationOnly" NavigationBar="ignore" MenuBar="on" LayoutModelTabs="on" DefaultWorkspace="false" UID="ID_WS_B2EAD">
+    <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+    <Name xlate="true" UID="ID_WS_NM_434BD">ZWCAD Classique</Name>
+    <WSPopRoot>
+      <WSPop MenuGroup="POINTCLOUD" pUID="ID_PM_351D5" Display="1" UID="ID_WSP_351D5">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSPop>
+    </WSPopRoot>
+    <WSToolbarRoot>
+      <WSToolbar MenuGroup="POINTCLOUD" pUID="ID_TB_E4B39" Display="0" ToolbarOrient="floating" xval="150" yval="300" rows="1" dockrow="300" dockcolumn="150" UID="ID_WSTB_BA34A">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSToolbar>
+      <WSToolbar MenuGroup="POINTCLOUD" pUID="ID_TB_FDBB3" Display="0" ToolbarOrient="floating" xval="150" yval="350" rows="1" dockrow="350" dockcolumn="150" UID="ID_WSTB_6FCE5">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSToolbar>
+      <WSToolbar MenuGroup="POINTCLOUD" pUID="ID_TB_758F8" Display="0" ToolbarOrient="floating" xval="150" yval="400" rows="1" dockrow="400" dockcolumn="150" UID="ID_WSTB_E980D">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSToolbar>
+      <WSToolbar MenuGroup="POINTCLOUD" pUID="ID_TB_5D7F4" Display="0" ToolbarOrient="floating" xval="150" yval="450" rows="1" dockrow="450" dockcolumn="150" UID="ID_WSTB_67A7D">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </WSToolbar>
+    </WSToolbarRoot>
+    <WSQuickAccessToolbarRoot/>
+    <WSESWRoot/>
+    <WSRibbonRoot AutoHideMode="None" LockMode="None" ShowPanelTitleInHorizontalOrientation="true" ShowPanelTitleInVerticalOrientation="true">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <WSRibbonTabSourceReference MenuGroup="POINTCLOUD" TabId="ID_RBTS_8AA66" Show="true" IsActive="true" UID="ID_WSRTSREF_865FG">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+         <WSRibbonPanelSourceReference PanelId="ID_RBPS_588EB" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_8763C">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_17064" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_85AD0">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_6F7E3" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_CD6F4">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_1452B" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_A81D5">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_B3AE2" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_EC254">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_AD75B" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_C4975">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_57376" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_A1323">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_DB7DB" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_CC658">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_8758E" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_9AC57">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+        <WSRibbonPanelSourceReference PanelId="ID_RBPS_04AAD" Orientation="Docked" Show="true" xval="0" yval="0" FloatingGroup="0" FloatingOrder="0" FloatingOrientation="Vertical" PanelResizeOrder="100" UID="ID_WSRPSREF_CECDE">
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </WSRibbonPanelSourceReference>
+      </WSRibbonTabSourceReference>
+    </WSRibbonRoot>
+  </Workspace>
+</WorkspaceRoot>

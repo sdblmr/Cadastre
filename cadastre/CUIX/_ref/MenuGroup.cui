@@ -1,0 +1,509 @@
+<?xml version="1.0"?>
+<!--
+警告！请勿编辑此文件的内容。
+如果试图使用 XML 编辑器来编辑此文件，可能会丢失
+自定义和移植功能。如果需要修改
+自定义文件中的信息，请使用产品中的
+“自定义用户界面”对话框。
+若要访问“自定义用户界面”对话框，请依次单击“工具”菜单、
+“自定义”面板和“用户界面”按钮，或者在命令行中输入 CUI。
+-->
+<MenuGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="POINTCLOUD" DisplayName="POINTCLOUD">
+  <MacroGroup Name="POINTCLOUDMacros" Citizen="Z">
+    <MenuMacro UID="ID_PointCloudAttach">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_D2067">Attacher le nuage de points</Name>
+        <Command>^C^C_pointcloudattach</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_0783C">Insère un fichier RCS, RCP, E57, LAS, LAZ ou PTS dans le dessin actuel : ATTACHERNUAGEPOINTS</HelpString>
+        <SmallImage Name="ZWRC_POINTCLOUDATTACH"/>
+        <LargeImage Name="ZWRC_POINTCLOUDATTACH"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_1C1B5">ATTACHERNUAGEPOINTS</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCExport">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_0B15A">Exporter le nuage de points</Name>
+        <Command>^C^C_pcexport</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_37E2B">Exporte tous les points visibles des nuages sélectionnés dans un fichier unique : PCEXPORT</HelpString>
+        <SmallImage Name="ZWRC_PCEXPORT"/>
+        <LargeImage Name="ZWRC_PCEXPORT"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_B0635">PCEXPORT</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCConvert">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_8A48B">Convertir le nuage de points</Name>
+        <Command>^C^C_pcconvert</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_2EA75">Convertit un ou plusieurs fichiers de nuage de points du même format au format RCP : PCCONVERT</HelpString>
+        <SmallImage Name="ZWRC_PCCONVERT"/>
+        <LargeImage Name="ZWRC_PCCONVERT"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_1D129">PCCONVERT</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCAlign">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_02B05">Aligner le nuage de points</Name>
+        <Command>^C^C_pcalign</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_C5BA8">Fait pivoter le nuage de points pour un alignement optimal avec les axes du SCU actuel : PCALIGN</HelpString>
+        <SmallImage Name="ZWRC_PCALIGN"/>
+        <LargeImage Name="ZWRC_PCALIGN"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_34579">PCALIGN</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCUcsFloorWall">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_4566D">Sol+Mur</Name>
+        <Command>^C^C_pcucsfloorwall</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_DE44E">Crée un SCU basé sur un sol et un mur : PCUCSFLOORWALL</HelpString>
+        <SmallImage Name="ZWRC_PCUCSFLOORWALL"/>
+        <LargeImage Name="ZWRC_PCUCSFLOORWALL"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_C4125">PCUCSFLOORWALL</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCUcsWallWall">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_51352">Mur+Mur</Name>
+        <Command>^C^C_pcucswallwall</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_43E10">Crée un SCU basé sur deux murs perpendiculaires : PCUCSWALLWALL</HelpString>
+        <SmallImage Name="ZWRC_PCUCSWALLWALL"/>
+        <LargeImage Name="ZWRC_PCUCSWALLWALL"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_BF086">PCUCSWALLWALL</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCUcsWall">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_E71EE">Mur</Name>
+        <Command>^C^C_pcucswall</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_106F9">Crée un SCU basé sur un point sélectionné unique sur un mur : PCUCSWALL</HelpString>
+        <SmallImage Name="ZWRC_PCUCSWALL"/>
+        <LargeImage Name="ZWRC_PCUCSWALL"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_DD28D">PCUCSWALL</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSaveUcs">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_B89FA">Enregistrer le SCU</Name>
+        <Command>^C^C_ucs _s</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_BE8B3">Enregistre le SCU actuel : SCU</HelpString>
+        <SmallImage Name="ZWRC_PCUCSSAVE"/>
+        <LargeImage Name="ZWRC_PCUCSSAVE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_C0B58">SCU</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCUcsman">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_95FC8">Gestionnaire de SCU</Name>
+        <Command>^C^C_ucsman</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_039BC">Ouvre le gestionnaire de SCU : GESTSCU</HelpString>
+        <SmallImage Name="ZWRC_PCUCSMAN"/>
+        <LargeImage Name="ZWRC_PCUCSMAN"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_2EEA5">GESTSCU</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCReset2World">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_33DF8">Réinitialiser le système de coordonnées de travail (WCS)</Name>
+        <Command>^C^C_ucs _w</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_3D340">Réinitialise le système de coordonnées de travail (WCS) : SCU</HelpString>
+        <SmallImage Name="ZWRC_PCRESET2WORLD"/>
+        <LargeImage Name="ZWRC_PCRESET2WORLD"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_CE335">SCU</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSliceUcs">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_31FE2">Tranche selon le SCU</Name>
+        <Command>^C^C_pcsliceucs</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_15912">Crée une tranche parallèle au plan du SCU : PCSLICEUCS</HelpString>
+        <SmallImage Name="ZWRC_PCSLICEUCS"/>
+        <LargeImage Name="ZWRC_PCSLICEUCS"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_89472">PCSLICEUCS</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSliceMulti">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_EC7CD">Sections multiples</Name>
+        <Command>^C^C_pcslicemulti</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_DDBC9">Crée plusieurs tranches : PCSLICEMULTI</HelpString>
+        <SmallImage Name="ZWRC_PCSLICEMULTI"/>
+        <LargeImage Name="ZWRC_PCSLICEMULTI"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_FDDD5">PCSLICEMULTI</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSliceSite">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_0AC8D">Définir la position de la tranche</Name>
+        <Command>^C^C_pcslicesite</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_44191">Définit la distance entre le plan de tranche et l’origine du système de coordonnées de travail (WCS) : PCSLICESITE</HelpString>
+        <SmallImage Name="ZWRC_PCSLICESITE"/>
+        <LargeImage Name="ZWRC_PCSLICESITE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_650D3">PCSLICESITE</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSliceSiteUpdown">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_6602C">Ajuster la position de la tranche</Name>
+        <Command>^C^C_pcslicesiteupdown</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_F9DEF">Augmente ou diminue la distance entre le plan de tranche et l’origine du système de coordonnées de travail (WCS) : PCSLICESITEUPDOWN</HelpString>
+        <SmallImage Name="ZWRC_PCSLICESITEUPDOWN"/>
+        <LargeImage Name="ZWRC_PCSLICESITEUPDOWN"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_13F63">PCSLICESITEUPDOWN</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSliceThick">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_BC57D">Définir l’épaisseur de la tranche</Name>
+        <Command>^C^C_pcslicethickness</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_40F4C">Définit l’épaisseur de la tranche : PCSLICETHICKNESS</HelpString>
+        <SmallImage Name="ZWRC_PCSLICETHICKNESS"/>
+        <LargeImage Name="ZWRC_PCSLICETHICKNESS"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_437C2">PCSLICETHICKNESS</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSliceThickUpdown">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_70E30">Ajuster l’épaisseur de la tranche</Name>
+        <Command>^C^C_pcslicethicknessupdown</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_CD213">Augmente ou diminue l’épaisseur de la tranche : PCSLICETHICKNESSUPDOWN</HelpString>
+        <SmallImage Name="ZWRC_PCSLICETHICKNESSUPDOWN"/>
+        <LargeImage Name="ZWRC_PCSLICETHICKNESSUPDOWN"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_74517">PCSLICETHICKNESSUPDOWN</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSliceSet">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_530C1">Définir l’incrément d’épaisseur de tranche</Name>
+        <Command>^C^C_pcsliceset</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_6C072">Définit l’incrément d’épaisseur de tranche : PCSLICESET</HelpString>
+        <SmallImage Name="ZWRC_PCSLICESET"/>
+        <LargeImage Name="ZWRC_PCSLICESET"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_18100">PCSLICESET</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSliceman">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_2A189">Gestionnaire de tranches</Name>
+        <Command>^C^C_pcsliceman</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_5D76C">Ouvre le gestionnaire de tranches : PCSLICEMAN</HelpString>
+        <SmallImage Name="ZWRC_PCSLICEMAN"/>
+        <LargeImage Name="ZWRC_PCSLICEMAN"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_413D2">PCSLICEMAN</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <!--<MenuMacro UID="ID_PCFitLine">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_D585E">Fit Line</Name>
+        <Command>^C^C_pcfitline</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_E96A5">Fits a line based on the point cloud data surrounding a selected point: PCFITLINE</HelpString>
+        <SmallImage Name="ZWRC_PCFITLINE"/>
+        <LargeImage Name="ZWRC_PCFITLINE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_078A4">PCFITLINE</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCFitArc">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_AFF6D">Fit Arc</Name>
+        <Command>^C^C_pcfitarc</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_2CF7D">Fits an arc based on the point cloud data surrounding a selected point: PCFITARC</HelpString>
+        <SmallImage Name="ZWRC_PCFITARC"/>
+        <LargeImage Name="ZWRC_PCFITARC"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_85DB0">PCFITARC</CLICommand>
+      </Macro>
+    </MenuMacro>-->
+    <MenuMacro UID="ID_PCFitWall">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_DFA24">Ajuster la ligne de mur</Name>
+        <Command>^C^C_pcfitwall</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_335F6">Ajuste une ligne de mur basée sur les données du nuage de points autour d’un point sélectionné : PCFITWALL</HelpString>
+        <SmallImage Name="ZWRC_PCFITWALL"/>
+        <LargeImage Name="ZWRC_PCFITWALL"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_3E286">PCFITWALL</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCTrackWall">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_21A16">Suivre la ligne de mur</Name>
+        <Command>^C^C_pctrackwall</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_53F64">Ajuste une ligne de mur autour d’un point sélectionné et suit la polyligne le long du nuage de points : PCTRACKWALL</HelpString>
+        <SmallImage Name="ZWRC_PCTRACKWALL"/>
+        <LargeImage Name="ZWRC_PCTRACKWALL"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_C6578">PCTRACKWALL</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCDetectWalls">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_E70B2">Détecter les lignes de mur</Name>
+        <Command>^C^C_pcdetectwalls</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_C5A88">Détecte la distribution des lignes de mur dans le nuage de points et crée toutes les lignes de mur : PCDETECTWALLS</HelpString>
+        <SmallImage Name="ZWRC_PCDETECTWALLS"/>
+        <LargeImage Name="ZWRC_PCDETECTWALLS"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_73338">PCDETECTWALLS</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCAlignPolyline">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_0202B">Aligner la polyligne</Name>
+        <Command>^C^C_pcalignpolyline</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_87C37">Aligne la polyligne avec le nuage de points : PCALIGNPOLYLINE</HelpString>
+        <SmallImage Name="ZWRC_PCALIGNPOLYLINE"/>
+        <LargeImage Name="ZWRC_PCALIGNPOLYLINE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_96F6E">PCALIGNPOLYLINE</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCExtractEdge">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_857F8">Extraire la ligne d’intersection</Name>
+        <Command>^C^C_pcextractedge</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_59A6B">Extrait la ligne d’intersection de deux plans ajustés à partir du nuage de points : NPEXTRACTIONARETE</HelpString>
+        <SmallImage Name="ZWRC_PCEXTRACTEDGE"/>
+        <LargeImage Name="ZWRC_PCEXTRACTEDGE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_8B945">NPEXTRACTIONARETE</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCExtractCorner">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_7D005">Extraire le point d’angle</Name>
+        <Command>^C^C_pcextractcorner</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_BDD64">Extrait le point d’angle issu de l’intersection de trois plans ajustés à partir du nuage de points : NPEXTRACTIONCOIN</HelpString>
+        <SmallImage Name="ZWRC_PCEXTRACTCORNER"/>
+        <LargeImage Name="ZWRC_PCEXTRACTCORNER"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_991D7">NPEXTRACTIONCOIN</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCExtractCenterline">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_E107D">Extraire l’axe du cylindre</Name>
+        <Command>^C^C_pcextractcenterline</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_EBD97">Extrait la ligne centrale d’un cylindre ajusté à partir du nuage de points : PCEXTRACTCENTERLINE</HelpString>
+        <SmallImage Name="ZWRC_PCEXTRACTCENTERLINE"/>
+        <LargeImage Name="ZWRC_PCEXTRACTCENTERLINE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_2D03D">PCEXTRACTCENTERLINE</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCExtractCenter">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_2CCA1">Extraire le centre de la sphère</Name>
+        <Command>^C^C_pcextractcenter</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_0BF56">Extrait le centre de la sphère ajustée à partir du nuage de points : PCEXTRACTCENTER</HelpString>
+        <SmallImage Name="ZWRC_PCEXTRACTCENTER"/>
+        <LargeImage Name="ZWRC_PCEXTRACTCENTER"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_91896">PCEXTRACTCENTER</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCFitPlane">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_9699F">Ajuster un plan</Name>
+        <Command>^C^C_pcfitplane</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_A7114">Ajuste un plan à partir des données du nuage de points autour d’un point sélectionné : PCFITPLANE</HelpString>
+        <SmallImage Name="ZWRC_PCFITPLANE"/>
+        <LargeImage Name="ZWRC_PCFITPLANE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_DFA55">PCFITPLANE</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCFitCylinder">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_CDBD1">Ajuster un cylindre</Name>
+        <Command>^C^C_pcfitcylinder</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_E255E">Ajuste un cylindre à partir des données du nuage de points autour d’un point sélectionné : PCFITCYLINDER</HelpString>
+        <SmallImage Name="ZWRC_PCFITCYLINDER"/>
+        <LargeImage Name="ZWRC_PCFITCYLINDER"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_61276">PCFITCYLINDER</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCFitCone">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_C2AC3">Ajuster un cône</Name>
+        <Command>^C^C_pcfitcone</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_36FF9">Ajuste un cône à partir des données du nuage de points autour d’un point sélectionné : PCFITCONE</HelpString>
+        <SmallImage Name="ZWRC_PCFITCONE"/>
+        <LargeImage Name="ZWRC_PCFITCONE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_83AAB">PCFITCONE</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCFitSphere">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_23CA3">Ajuster une sphère</Name>
+        <Command>^C^C_pcfitsphere</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_ED73C">Ajuste une sphère à partir des données du nuage de points autour d’un point sélectionné : PCFITSPHERE</HelpString>
+        <SmallImage Name="ZWRC_PCFITSPHERE"/>
+        <LargeImage Name="ZWRC_PCFITSPHERE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_783CB">PCFITSPHERE</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCPointInfo">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_61713">Informations sur le point</Name>
+        <Command>^C^C_pcpointinfo</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_4DB5B">Mesure les coordonnées et les attributs d’un point sélectionné dans le nuage de points : PCPOINTINFO</HelpString>
+        <SmallImage Name="ZWRC_PCPOINTINFO"/>
+        <LargeImage Name="ZWRC_PCPOINTINFO"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_C8E63">PCPOINTINFO</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCDist">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_9D399">Mesurer la distance</Name>
+        <Command>^C^C_pcdist</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_AE8C6">Mesure la distance spatiale entre deux points : PCDIST</HelpString>
+        <SmallImage Name="ZWRC_PCDIST"/>
+        <LargeImage Name="ZWRC_PCDIST"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_51C00">PCDIST</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCAng">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_2F686">Mesurer l’angle</Name>
+        <Command>^C^C_pcang</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_A9244">Mesure l’angle entre deux plans ajustés à partir du nuage de points : PCANG</HelpString>
+        <SmallImage Name="ZWRC_PCANG"/>
+        <LargeImage Name="ZWRC_PCANG"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_57A67">PCANG</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCDimAligned">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_DCFFF">Cotation de distance</Name>
+        <Command>^C^C_pcdimaligned</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_BA732">Crée une cotation spatiale de distance entre deux points : PCDIMALIGNED</HelpString>
+        <SmallImage Name="ZWRC_PCDIMALIGNED"/>
+        <LargeImage Name="ZWRC_PCDIMALIGNED"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_F7ACA">PCDIMALIGNED</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCDimAngular">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_046A4">Cote Angulaire</Name>
+        <Command>^C^C_pcdimangular</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_8CDAD">Crée une cotation angulaire entre deux plans ajustés à partir du nuage de points : PCDIMANGULAR</HelpString>
+        <SmallImage Name="ZWRC_PCDIMANGULAR"/>
+        <LargeImage Name="ZWRC_PCDIMANGULAR"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_B880C">PCDIMANGULAR</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCOrthoImage">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_788DE">Image orthographique (orthoimage)</Name>
+        <Command>^C^C_pcorthoimage</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_AB9E9">Projette le nuage de points sur un plan spécifié pour créer une image orthographique : PCORTHOIMAGE</HelpString>
+        <SmallImage Name="ZWRC_PCORTHOIMAGE"/>
+        <LargeImage Name="ZWRC_PCORTHOIMAGE"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_3EEF7">PCORTHOIMAGE</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_Vectorization">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_85362">Vectorisation d’image</Name>
+        <Command>^C^C_vectorization</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_D20AC">Crée des primitives à partir d'images raster : VECTORISATION</HelpString>
+        <SmallImage Name="ZWRC_VECTORIZATION"/>
+        <LargeImage Name="ZWRC_VECTORIZATION"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_EC61C">VECTORISATION</CLICommand>
+      </Macro>
+    </MenuMacro>	
+    <MenuMacro UID="ID_PCDetectFloors">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_FA4D9">Détecter le sol</Name>
+        <Command>^C^C_pcdetectfloors</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_6CCE4">Détecte la répartition des étages dans le nuage de points et crée des tranches pour chaque étage : PCDETECTFLOORS</HelpString>
+        <SmallImage Name="ZWRC_PCDETECTFLOORS"/>
+        <LargeImage Name="ZWRC_PCDETECTFLOORS"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_56D58">PCDETECTFLOORS</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCPlaneDeviation">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_1573F">Analyse des écarts de plan</Name>
+        <Command>^C^C_pcplanedeviation</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_BD70B">Analyse l’écart entre le nuage de points et le plan sélectionné : PCPLANEDEVIATION</HelpString>
+        <SmallImage Name="ZWRC_PCPLANEDEVIATION"/>
+        <LargeImage Name="ZWRC_PCPLANEDEVIATION"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_24193">PCPLANEDEVIATION</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCContourDeviation">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_4CECF">Analyse des écarts de contour</Name>
+        <Command>^C^C_pccontourdeviation</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_4E37A">Analyse l’écart entre le nuage de points et la polyligne sélectionnée : PCCONTOURDEVIATION</HelpString>
+        <SmallImage Name="ZWRC_PCCONTOURDEVIATION"/>
+        <LargeImage Name="ZWRC_PCCONTOURDEVIATION"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_A9638">PCCONTOURDEVIATION</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCHelp">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_F530A">Aide</Name>
+        <Command>^C^C_pchelp</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_3E732">Ouvre la documentation d’aide de l’Assistant Nuage de Points : PCHELP</HelpString>
+        <SmallImage Name="ZWRC_PCHELP"/>
+        <LargeImage Name="ZWRC_PCHELP"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_413F2">PCHELP</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCAbout">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_98CC1">A propos</Name>
+        <Command>^C^C_pcabout</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_83DF1">Affiche les informations de version de l’Assistant Nuage de Points : PCABOUT</HelpString>
+        <SmallImage Name="ZWRC_PCABOUT"/>
+        <LargeImage Name="ZWRC_PCABOUT"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_F416E">PCABOUT</CLICommand>
+      </Macro>
+    </MenuMacro>
+    <MenuMacro UID="ID_PCSettings">
+      <Macro type="Any">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <Name xlate="true" UID="ID_MM_NM_19C16">Paramètres</Name>
+        <Command>^C^C_pcsettings</Command>
+        <HelpString xlate="true" UID="ID_MM_HS_65606">Définit les paramètres de l’Assistant Nuage de Points : PCSETTINGS</HelpString>
+        <SmallImage Name="ZWRC_PCSETTINGS"/>
+        <LargeImage Name="ZWRC_PCSETTINGS"/>
+        <CLICommand xlate="true" UID="ID_MM_CLIC_2FDE4">PCSETTINGS</CLICommand>
+      </Macro>
+    </MenuMacro>
+  </MacroGroup>
+</MenuGroup>

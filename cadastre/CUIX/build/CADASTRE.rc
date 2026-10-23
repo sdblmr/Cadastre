@@ -1,0 +1,3 @@
+// Ressources icones pour le plugin Cadastre
+// Une seule ressource 32x32 : ZWCAD gere le scaling (comme PointCloudAssistant)
+ZWRC_CADASTRE  PNG  "icon_32.png"

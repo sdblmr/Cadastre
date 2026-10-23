@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<RibbonRoot>
+  <RibbonPanelSourceCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <RibbonPanelSource UID="ID_CADASTRE_RBPS_IMPORT" Text="Import" HiddenInEditor="false">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Alias>ID_CADASTRE_Import</Alias>
+      <Name xlate="true" UID="ID_CADASTRE_RBPS_NM_IMPORT">Cadastre - Import</Name>
+      <RibbonRow UID="ID_CADASTRE_RBRW_IMPORT">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        <RibbonCommandButton UID="ID_CADASTRE_RBTN_IMPORT" Id="ZwRibbonCommandButton" Text="Importer&#xD;parcelles" ButtonStyle="LargeWithText" MenuMacroID="ID_CADASTRE_IMPORT" KeyTip="CA">
+          <TooltipTitle xlate="true" UID="ID_CADASTRE_RBTN_TT_IMPORT">Importer parcelles cadastrales</TooltipTitle>
+          <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+        </RibbonCommandButton>
+      </RibbonRow>
+      <RibbonPanelBreak UID="ID_CADASTRE_RPBRK_IMPORT" Id="ZwRibbonPanelBreak">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelBreak>
+    </RibbonPanelSource>
+  </RibbonPanelSourceCollection>
+  <RibbonTabSourceCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <RibbonTabSource UID="ID_CADASTRE_RBTS_MAIN" Id="ZwRibbonTabSource" Text="Cadastre" KeyTip="CD">
+      <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      <Name xlate="true" UID="ID_CADASTRE_RBTS_NM_MAIN">Cadastre</Name>
+      <RibbonPanelSourceReference PanelId="ID_CADASTRE_RBPS_IMPORT" UID="ID_CADASTRE_RBPSREF_IMPORT">
+        <ModifiedRev MajorVersion="25" MinorVersion="0" UserVersion="0"/>
+      </RibbonPanelSourceReference>
+    </RibbonTabSource>
+  </RibbonTabSourceCollection>
+</RibbonRoot>
